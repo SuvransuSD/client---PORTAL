@@ -1,0 +1,75 @@
+.site-list {
+    list-style: square;
+    margin-left: 20px;
+    margin-bottom: 10px;
+}
+
+.ro-text-active {
+    font-weight: bold;
+}
+.sidebar-container {
+    margin-top: -16px;
+    background-color: #dae3f3;
+    padding-left: 10px;
+    padding-top: 10px;
+    height: 529px;
+    width: 285px;;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.searchbtn {
+  color: #fff;
+  background-color: #7c9cd4;
+}
+
+
+
+// sidebar dropdown code 
+
+/* Remove default bullets */
+ul, #myUL {
+    list-style-type: none;
+  }
+  
+  /* Remove margins and padding from the parent ul */
+  #myUL {
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Style the caret/arrow */
+  .caret {
+    cursor: pointer;
+    user-select: none; /* Prevent text selection */
+  }
+//  .smbl{
+//   font-weight: bold;
+//  }
+  h4.caret.caret-down span, h5.caret.caret-down span {
+    transform: rotate(90deg);
+    display: inline-block;
+  }
+  
+  /* Create the caret/arrow with a unicode, and style it */
+  .caret::before {
+    //content: "\2BC8";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+  }
+  
+  /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+  .caret-down::before {
+    transform: rotate(90deg);
+  }
+  
+  /* Hide the nested list */
+  .nested {
+    display: none;
+  }
+  
+  /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+  .active {
+    display: block;
+  }

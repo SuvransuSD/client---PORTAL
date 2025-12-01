@@ -1,0 +1,143 @@
+// If you want to override variables do it here
+@import "variables";
+
+// Import CoreUI styles
+@import "~@coreui/coreui/scss/coreui.scss";
+
+// If you want to add something do it here
+@import "custom";
+
+// .form-control {
+//   background-color: #ebedef !important;
+// }
+
+.rotate-315 {
+  -webkit-transform: rotate(315deg);
+  -moz-transform: rotate(315deg);
+  -ms-transform: rotate(315deg);
+  -o-transform: rotate(315deg);
+  transform: rotate(315deg);
+  top: 50px;
+  font-size: 17px;
+  margin-right: 5px;
+}
+
+.outline {
+  // color: #ced2d8 !important;
+  // -webkit-text-stroke-width: 1px !important;
+  //   -webkit-text-stroke-color: #4f5d73 !important;
+  //color: black;
+  font-size: 18px;
+
+  //margin-right: 2px;
+}
+
+.keyGreen {
+  color: #2eb85c;
+}
+.Green {
+  background-color: #2eb85c;
+  color: #2eb85c;
+}
+
+.keyYellow {
+  color: #ffdd40;
+}
+.Yellow {
+  background-color: #ffdd40;
+  color: #ffdd40;
+}
+
+//.keyTransparent{
+//color: transparent;
+// -webkit-text-stroke-width: 1px;
+// -webkit-text-stroke-color: #4f5d73;
+// text-shadow: 0px 0px 1px red;
+// color: white;
+
+//}
+
+.NoColor {
+  background-color: white;
+  color: white;
+}
+
+.keyNoColor {
+  color: white;
+}
+
+.keyLightBlue {
+  color: #3399ff;
+}
+.LightBlue {
+  background-color: #3399ff;
+  color: #3399ff;
+}
+
+.keySaffron {
+  color: #ed8b00;
+}
+.Orange {
+  background-color: #ed8b00;
+  color: #ed8b00;
+}
+
+.keyDarkBlue {
+  color: #072776;
+}
+.DarkBlue {
+  background-color: #072776;
+  color: #072776;
+}
+
+.keyPink {
+  color: #dfafbf;
+}
+.Pink {
+  background-color: #dfafbf;
+  color: #dfafbf;
+}
+
+.keyRed {
+  color: #e55353;
+}
+.Red {
+  background-color: #e55353;
+  color: #e55353;
+}
+
+.keyGrey {
+  color: #9da5b1;
+}
+.Grey {
+  background-color: #9da5b1;
+  color: #9da5b1;
+}
+
+.fa-stack {
+  height: 1em;
+  display: block;
+}
+
+a:hover,
+a:visited,
+a:link,
+a:active {
+  text-decoration: none;
+}
+
+.ag-header-cell {
+  // background-color: #000;
+  //  background-color: var(--ag-foreground-color, #000);
+  color: #003366;
+  color: var(--ag-background-color, #003366);
+}
+.ag-cell-focus,
+.ag-cell {
+  border: none !important;
+}
+
+.cursor {
+  cursor: pointer;
+  margin: 15px 0;
+}

@@ -1,0 +1,66 @@
+{
+    "siteInformation": {
+        "siteName": "Test",
+        "street": "Test",
+        "district": "Test",
+        "city": "Test",
+        "state": "Test",
+        "areaPincode": "12345",
+        "siteContactNumber": "12345",
+        "siteRegisterNumber": "12345"
+    },
+    "cabinetOverview": {
+        "cabinetName": "Test",
+        "noOfDoors": "5",
+        "noOfStrips": "5",
+        "roLocation": "Test",
+        "alarmTimeoutForOpenDoors": "10",
+        "alarmTimeoutForLowBatteries": "10",
+        "ipAddress": "192.168.1.1",
+        "subnetMask": "12345",
+        "gateway": "12345",
+        "primaryDNS": "12345",
+        "secondaryDNS": "12345"
+    },
+    "manageKeys": {
+        "keyName": "Test",
+        "keyDescription": "Test",
+        "color": "green",
+        "door": "door 1",
+        "strip": "strip 2",
+        "position": "position 3"
+    },
+    "manageUsersForm": {
+        "name": "Test",
+        "role": "role 2",
+        "email": "test@gmail.com",
+        "mobileNo": "+91987654321",
+        "validityFrom": "2022-05-23",
+        "validityTo": "2022-05-23",
+        "pinCode": "654321",
+        "status": false
+    },
+    "manageActivitiesForm": {
+        "name": "Test",
+        "code": 123,
+        "timeLimit": 10,
+        "freq": 5,
+        "days": [
+            1,
+            0,
+            1,
+            0,
+            1,
+            0,
+            1
+        ],
+        "assoKeys": "FPL2",
+        "assoUsers": "Risul"
+    },
+    "manageRolesForm": {
+        "roleName": "Test"
+    },
+    "manageEventsForm": {
+        "eventName": "Test"
+    }
+}

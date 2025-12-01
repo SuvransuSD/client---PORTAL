@@ -1,0 +1,67 @@
+.rotatekey{
+    transform: rotate(-45deg);
+}
+.rotatekey1{
+    transform: rotate(180deg);
+
+}
+.icon-stack {
+    position: relative;
+    display: inline-block;
+    width: 3.5em;
+    /* height: 3em; */
+    line-height: 3em;
+    vertical-align: middle;
+  }
+.icon-stack-1x,
+.icon-stack-3x {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    text-align: center;
+}
+.icon-stack-1x {
+    line-height: inherit;
+    transform: rotate(-45deg);
+}
+
+.icon-stack-3x {
+    /* font-size: 2em; */
+    transform: rotate(180deg);  
+}  
+.alert {
+    height: 40px !important;
+    line-height: 5px !important;
+}
+.fa-key{
+    text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000;
+}
+.textopacity{
+    opacity: 0.5;
+}
+.col p{
+  margin-bottom: 0px !important;
+}
+.rowmargin{
+  margin-right: 5px !important;
+  margin-left: 5px !important;
+}
+.col{
+    padding-right: 7px !important;
+}
+// .svg-inline--fa.fa-stack-2x {
+//     margin-left: 16px !important;
+// }
+
+.key-bg{
+    background-color: lightgray !important;
+    height: 450px;
+}
+
+.wrong-slot {
+    text-shadow: -1px 0 #000, 0 1px #000, 1px 0 #000, 0 -1px #000!important;
+}
+
+.keyhead {
+    text-align: center !important;
+}
