@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import "./Style.scss";
 import { Datatable } from "../../../components/Datatable/Datatable";
@@ -43,33 +44,33 @@ import {
 import moment from "moment";
 import { CSVLink } from "react-csv";
 import { Link } from "react-router-dom";
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-} from "chart.js";
+// import {
+//   Chart as ChartJS,
+//   CategoryScale,
+//   LinearScale,
+//   BarElement,
+//   Title,
+//   Tooltip,
+//   Legend,
+// } from "chart.js";
 import Loader from "../../../components/loader";
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+// ChartJS.register(
+//   CategoryScale,
+//   LinearScale,
+//   BarElement,
+//   Title,
+//   Tooltip,
+//   Legend
+// );
 
 function ADashboard() {
   const tablehead = { background: "#dae3f3", color: "grey" };
   const cabinetstatuss = useSelector(
     (state) => state.Amsdashboard.cabinetstatus
   );
-  const topkeys = useSelector((state) => state.Amsdashboard.topkey);
-  const donutcharts = useSelector((state) => state.Amsdashboard.donutchart);
+  // const topkeys = useSelector((state) => state.Amsdashboard.topkey);
+  // const donutcharts = useSelector((state) => state.Amsdashboard.donutchart);
   const unregisteredpopups = useSelector((state) => state.Amsdashboard.unregisteredpopups);
   const onlinesite = useSelector((state) => state.Amsdashboard.onlinesites);
   const offlinesite = useSelector((state) => state.Amsdashboard.offlinesites);
@@ -92,8 +93,8 @@ function ADashboard() {
   const keysbyactivity = useSelector((state) => state.Amsdashboard.keysbyactivity);
   const get_batterys = useSelector((state) => state.Amsdashboard.get_batterys);
 
-  const [isdonutchart, setdonutchart] = useState();
-  const [istopkey, settopkey] = useState();
+  // const [isdonutchart, setdonutchart] = useState();
+  // const [istopkey, settopkey] = useState();
 
   const dispatch = useDispatch();
 
@@ -156,76 +157,76 @@ function ADashboard() {
     ],
   };
 
-  React.useEffect(() => {
-    if (donutcharts) {
-      var eventname = donutcharts.map((state) => state.EVENT_NAME);
-      var colorname = donutcharts.map((state) => "#" + state.COLOR);
-      var percentage = donutcharts.map((state) => state.PERCENTAGE);
-    }
+  // React.useEffect(() => {
+  //   if (donutcharts) {
+  //     var eventname = donutcharts.map((state) => state.EVENT_NAME);
+  //     var colorname = donutcharts.map((state) => "#" + state.COLOR);
+  //     var percentage = donutcharts.map((state) => state.PERCENTAGE);
+  //   }
 
-    setdonutchart({
-      labels: eventname,
-      datasets: [
-        {
-          data: percentage,
-          backgroundColor: colorname,
-          hoverBackgroundColor: [
-            "#FF6384",
-            "#55D8C1",
-            "#55D8C1",
-            "#55D8C1",
-            "#55D8C1",
-            "#36A2EB",
-            "#55D8C1",
-            "#FFCE56",
-            "#FF6384",
-            "#55D8C1",
-            "#55D8C1",
-            "#55D8C1",
-            "#55D8C1",
-            "#36A2EB",
-          ],
-        },
-      ],
-    });
-  }, [donutcharts]);
+  //   setdonutchart({
+  //     labels: eventname,
+  //     datasets: [
+  //       {
+  //         data: percentage,
+  //         backgroundColor: colorname,
+  //         hoverBackgroundColor: [
+  //           "#FF6384",
+  //           "#55D8C1",
+  //           "#55D8C1",
+  //           "#55D8C1",
+  //           "#55D8C1",
+  //           "#36A2EB",
+  //           "#55D8C1",
+  //           "#FFCE56",
+  //           "#FF6384",
+  //           "#55D8C1",
+  //           "#55D8C1",
+  //           "#55D8C1",
+  //           "#55D8C1",
+  //           "#36A2EB",
+  //         ],
+  //       },
+  //     ],
+  //   });
+  // }, [donutcharts]);
 
-  React.useEffect(() => {
-    if (topkeys) {
-      var keyname = topkeys.map((state) => state.KEYNAME);
-      var total = topkeys.map((state) => state.TOTAL);
-      var totalSum = 0;
-      for (var x = 0; x < total.length; x++) {
-        totalSum = totalSum + total[x];
-      }
-      var percentages = [];
-      for (var x = 0; x < total.length; x++) {
-        percentages.push(((total[x] / totalSum) * 100).toFixed(2));
-      }
-    }
-    settopkey({
-      labels: keyname,
-      datasets: [
-        {
-          data: percentages,
-          backgroundColor: [
-            "#4d96ff",
-            "#ff1d1d",
-            "#2eb85c",
-            "#E32636",
-            "#5D8AA8",
-          ],
-          hoverBackgroundColor: [
-            "#4d96ff",
-            "#ff1d1d",
-            "#2eb85c",
-            "#E32636",
-            "#5D8AA8",
-          ],
-        },
-      ],
-    });
-  }, [topkeys]);
+  // React.useEffect(() => {
+  //   if (topkeys) {
+  //     var keyname = topkeys.map((state) => state.KEYNAME);
+  //     var total = topkeys.map((state) => state.TOTAL);
+  //     var totalSum = 0;
+  //     for (var x = 0; x < total.length; x++) {
+  //       totalSum = totalSum + total[x];
+  //     }
+  //     var percentages = [];
+  //     for (var x = 0; x < total.length; x++) {
+  //       percentages.push(((total[x] / totalSum) * 100).toFixed(2));
+  //     }
+  //   }
+  //   settopkey({
+  //     labels: keyname,
+  //     datasets: [
+  //       {
+  //         data: percentages,
+  //         backgroundColor: [
+  //           "#4d96ff",
+  //           "#ff1d1d",
+  //           "#2eb85c",
+  //           "#E32636",
+  //           "#5D8AA8",
+  //         ],
+  //         hoverBackgroundColor: [
+  //           "#4d96ff",
+  //           "#ff1d1d",
+  //           "#2eb85c",
+  //           "#E32636",
+  //           "#5D8AA8",
+  //         ],
+  //       },
+  //     ],
+  //   });
+  // }, [topkeys]);
 
   const HeadfieldUnregistered = [
     { key: "CABINET_IP_ADDR", label: "IP ADDRESS", _style: tablehead },
@@ -348,23 +349,23 @@ function ADashboard() {
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
             {cabinetstatuss.length > 0 ? (
-              cabinetstatuss.map((state) => {
+              cabinetstatuss.map((state, index) => {
                 return (
-                  <div className="d-flex justify-content-between">
+                  <div key={`cabinet-${index}`} className="d-flex justify-content-between">
                     {state.ENTRY == "Unregistered" ? (
-                      <CButton onClick={() => setVisible6(!visible6)}>
+                      <CButton onClick={() => setVisible6(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : state.ENTRY == "Online" ? (
-                      <CButton onClick={() => setVisible7(!visible7)}>
+                      <CButton onClick={() => setVisible7(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : state.ENTRY == "Offline" ? (
-                      <CButton onClick={() => setVisible8(!visible7)}>
+                      <CButton onClick={() => setVisible8(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : state.ENTRY == "Total OTPed Cabinets" ? (
-                      <CButton onClick={() => setVisible9(!visible7)}>
+                      <CButton onClick={() => setVisible9(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : (
@@ -655,15 +656,15 @@ function ADashboard() {
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
             {eventlists.length > 0 ? (
-              eventlists.map((state) => {
+              eventlists.map((state, index) => {
                 return (
-                  <div className="d-flex justify-content-between">
+                  <div key={`event-${index}`} className="d-flex justify-content-between">
                     {state.ENTRY == "Cabinets with Events" ? (
-                      <CButton onClick={() => setVisible10(!visible10)}>
+                      <CButton onClick={() => setVisible10(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : state.ENTRY == "Cabinets with Zero Event" ? (
-                      <CButton onClick={() => setVisible12(!visible12)}>
+                      <CButton onClick={() => setVisible12(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : (
@@ -822,15 +823,15 @@ function ADashboard() {
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
             {activitylists.length > 0 ? (
-              activitylists.map((state) => {
+              activitylists.map((state, index) => {
                 return (
-                  <div className="d-flex justify-content-between">
+                  <div key={`activity-${index}`} className="d-flex justify-content-between">
                     {state.ENTRY == "Cabinets with Activities" ? (
-                      <CButton onClick={() => setVisible11(!visible11)}>
+                      <CButton onClick={() => setVisible11(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : state.ENTRY == "Cabinets with Zero Activity" ? (
-                      <CButton onClick={() => setVisible13(!visible13)}>
+                      <CButton onClick={() => setVisible13(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : (
@@ -991,27 +992,27 @@ function ADashboard() {
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
             {accesslists.length > 0 ? (
-              accesslists.map((state) => {
+              accesslists.map((state, index) => {
                 return (
-                  <div className="d-flex justify-content-between">
+                  <div key={`access-${index}`} className="d-flex justify-content-between">
                     {state.ENTRY == "Pin Access" ? (
-                      <CButton onClick={() => setVisible14(!visible14)}>
+                      <CButton onClick={() => setVisible14(true)}>
                         Pin+Card Access
                       </CButton>
                     ) : state.ENTRY == "Web Access" ? (
-                      <CButton onClick={() => setVisible15(!visible15)}>
+                      <CButton onClick={() => setVisible15(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : state.ENTRY == "Pin+Web Access" ? (
-                      <CButton onClick={() => setVisible22(!visible22)}>
+                      <CButton onClick={() => setVisible22(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : state.ENTRY == "Biometric" ? (
-                      <CButton onClick={() => setVisible23(!visible23)}>
+                      <CButton onClick={() => setVisible23(true)}>
                         Biometric+Pin Access
                       </CButton>
                     ) : state.ENTRY == "Cabinet With Zero Access" ? (
-                      <CButton onClick={() => setVisible16(!visible16)}>
+                      <CButton onClick={() => setVisible16(true)}>
                         No Access
                       </CButton>
                     ) : (
@@ -1347,15 +1348,15 @@ function ADashboard() {
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
             {testact_counts.length > 0 ? (
-              testact_counts.map((state) => {
+              testact_counts.map((state, index) => {
                 return (
-                  <div className="d-flex justify-content-between">
+                  <div key={`test-${index}`} className="d-flex justify-content-between">
                     {state.ENTRY == "Cabinets with test performed" ? (
-                      <CButton onClick={() => setVisible19(!visible19)}>
+                      <CButton onClick={() => setVisible19(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : state.ENTRY == "Cabinets with Zero Test" ? (
-                      <CButton onClick={() => setVisible21(!visible21)}>
+                      <CButton onClick={() => setVisible21(true)}>
                         {state.ENTRY}
                       </CButton>
                     ) : (
@@ -1481,7 +1482,7 @@ function ADashboard() {
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
             <div className="d-flex justify-content-around">
-              <CButton onClick={() => setVisible20(!visible20)}>
+              <CButton onClick={() => setVisible20(true)}>
                 <div
                   style={{
                     "padding-left": "0.1em",

@@ -28,7 +28,6 @@ const initialState = {
     unregisteredpopups: [],
     loginactivityreport: [],
     onlinesites: [],
-    offlinesites: [],
     totalsites: [],
     userwithro: [],
     eventlists: [],

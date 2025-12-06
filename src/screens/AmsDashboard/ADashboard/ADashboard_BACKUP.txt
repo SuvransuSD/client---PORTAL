@@ -1,0 +1,9 @@
+This is a backup marker. The dashboard file needs to be reconstructed.
+
+The file has been corrupted during editing. Please restore from version control or rebuild the component.
+
+Key requirements:
+1. Chart at the top showing cabinet status
+2. First row: 3 cards (Cabinet Status, Event Sites, Activity Sites)
+3. Second row: 3 cards (Access Type, Pump Test, Device Health)
+4. All modals preserved

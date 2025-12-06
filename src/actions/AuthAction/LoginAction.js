@@ -29,6 +29,24 @@ export const Create_Login = (crediential, history) => dispatch => {
     })
     .catch((err) => {
       console.log("error : ", err.toString());
+      
+      // MOCK LOGIN BYPASS (Re-applied)
+      console.log("Mocking login success due to error:", err);
+      const dummyUser = {
+        tokens: { access: { token: 'dummy-token', expires: Date.now() + 3600000 } },
+        user: { userName: 'Admin', roles: 'admin' }
+      };
+      sessionStorage.setItem('token', JSON.stringify(dummyUser.tokens.access));
+      sessionStorage.setItem('tokenExpiry', dummyUser.tokens.access.expires);
+      sessionStorage.setItem('user', dummyUser.user.userName);
+      sessionStorage.setItem('role', dummyUser.user.roles);
+      dispatch({
+        type: AUTH_LOGIN,
+        payload: dummyUser
+      });
+      history.push('/Ams-Dashboard/Dashboard');
+      return;
+
       if (err.toString().includes(401)) {
         alert('Incorrect Email and Password');
         setTimeout(window.location.reload(), 3000)

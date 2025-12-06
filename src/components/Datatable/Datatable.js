@@ -3,9 +3,12 @@ import { CDataTable, CBadge, CButton, CCollapse, CCardBody } from '@coreui/react
 import "./Style.scss"
 
 export const Datatable = (props) => {
+  // Ensure data is always an array to prevent slice errors
+  const safeData = Array.isArray(props.data) ? props.data : [];
+  
   return (
     <CDataTable
-      items={props.data}
+      items={safeData}
       fields={props.Headfields}
       //columnFilter
       tableFilter

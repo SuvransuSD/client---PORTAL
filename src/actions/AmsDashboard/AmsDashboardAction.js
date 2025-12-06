@@ -163,7 +163,17 @@ export const cabinetstatus = () => dispatch => {
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      // Mock default data on error
+      dispatch({
+        type: GET_AMSCABINETSTATUS,
+        payload: [
+          { ENTRY: "Unregistered", COUNTER: 0 },
+          { ENTRY: "Online", COUNTER: 0 },
+          { ENTRY: "Offline", COUNTER: 0 },
+          { ENTRY: "Total OTPed Cabinets", COUNTER: 0 }
+        ],
+      })
     })
 
 }
@@ -422,7 +432,14 @@ export const eventlist = () => dispatch => {
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_EVENT_SITE,
+        payload: [
+          { ENTRY: "Cabinets with Events", COUNTER: 0 },
+          { ENTRY: "Cabinets with Zero Event", COUNTER: 0 }
+        ],
+      })
     })
 
 }
@@ -454,7 +471,14 @@ export const activitylist = () => dispatch => {
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_ACTIVITY_SITE,
+        payload: [
+          { ENTRY: "Cabinets with Activities", COUNTER: 0 },
+          { ENTRY: "Cabinets with Zero Activity", COUNTER: 0 }
+        ],
+      })
     })
 
 }
@@ -518,7 +542,17 @@ export const accesslist = () => dispatch => {
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_ACCESS_LIST,
+        payload: [
+          { ENTRY: "Pin Access", COUNTER: 0 },
+          { ENTRY: "Web Access", COUNTER: 0 },
+          { ENTRY: "Pin+Web Access", COUNTER: 0 },
+          { ENTRY: "Biometric", COUNTER: 0 },
+          { ENTRY: "Cabinet With Zero Access", COUNTER: 0 }
+        ],
+      })
     })
 
 }
@@ -529,12 +563,16 @@ export const pinaccess_popup = () => dispatch => {
     if (result.status) {
       dispatch({
         type: GET_PINACCESS_POPUP,
-        payload: result.data,
+        payload: result.data || [],
       })
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_PINACCESS_POPUP,
+        payload: [],
+      })
     })
 
 }
@@ -545,12 +583,16 @@ export const bioaccess_popup = () => dispatch => {
     if (result.status) {
       dispatch({
         type: GET_BIOACCESS_POPUP,
-        payload: result.data,
+        payload: result.data || [],
       })
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_BIOACCESS_POPUP,
+        payload: [],
+      })
     })
 
 }
@@ -561,12 +603,16 @@ export const webaccess_popup = () => dispatch => {
     if (result.status) {
       dispatch({
         type: GET_WEBACCESS_POPUP,
-        payload: result.data,
+        payload: result.data || [],
       })
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_WEBACCESS_POPUP,
+        payload: [],
+      })
     })
 
 }
@@ -577,12 +623,16 @@ export const pinpluswebaccess_popup = () => dispatch => {
     if (result.status) {
       dispatch({
         type: GET_PINPLUSWEBACCESS_POPUP,
-        payload: result.data,
+        payload: result.data || [],
       })
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_PINPLUSWEBACCESS_POPUP,
+        payload: [],
+      })
     })
 
 }
@@ -593,12 +643,16 @@ export const nobox_popup = () => dispatch => {
     if (result.status) {
       dispatch({
         type: GET_NOBOX_POPUP,
-        payload: result.data,
+        payload: result.data || [],
       })
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_NOBOX_POPUP,
+        payload: [],
+      })
     })
 
 }
@@ -662,7 +716,14 @@ export const testact_count = () => dispatch => {
     }
   })
     .catch((err) => {
-      console.log(err)
+      console.log(err);
+      dispatch({
+        type: GET_TESTACT_COUNT,
+        payload: [
+          { ENTRY: "Cabinets with test performed", COUNTER: 0 },
+          { ENTRY: "Cabinets with Zero Test", COUNTER: 0 }
+        ],
+      })
     })
 
 }

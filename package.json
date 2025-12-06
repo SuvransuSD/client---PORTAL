@@ -41,6 +41,7 @@
     "ag-grid-react": "^25.3.0",
     "axios": "^0.24.0",
     "bootstrap": "^5.2.1",
+    "chart.js": "^2.9.4",
     "classnames": "^2.2.6",
     "core-js": "^3.6.5",
     "demos-react-captcha": "^1.0.11",
@@ -56,7 +57,7 @@
     "react": "^16.13.1",
     "react-admin": "^4.6.2",
     "react-app-polyfill": "^1.0.6",
-    "react-chartjs-2": "^4.3.1",
+    "react-chartjs-2": "^2.11.2",
     "react-confirm-box": "^1.2.0",
     "react-csv": "^2.2.2",
     "react-dom": "^16.13.1",
@@ -81,8 +82,8 @@
     "sass": "^1.49.11"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "node fix-openssl.js start",
+    "build": "node fix-openssl.js build",
     "test": "react-scripts test",
     "test:cov": "npm test -- --coverage --watchAll=false",
     "test:debug": "react-scripts --inspect-brk test --runInBand",
