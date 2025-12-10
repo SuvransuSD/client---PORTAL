@@ -33,6 +33,7 @@ import {
   GET_BIOACCESS_POPUP,
   GET_WEBACCESS_POPUP,
   GET_PINPLUSWEBACCESS_POPUP,
+  GET_FPACCESS_POPUP,
   GET_NOBOX_POPUP,
   GET_NOACTIVITY_BOX,
   GET_TOTALEVENT_DESC,
@@ -577,6 +578,22 @@ export const pinpluswebaccess_popup = () => dispatch => {
     if (result.status) {
       dispatch({
         type: GET_PINPLUSWEBACCESS_POPUP,
+        payload: result.data,
+      })
+    }
+  })
+    .catch((err) => {
+      console.log(err)
+    })
+
+}
+
+export const fpaccess_popup = () => dispatch => {
+  const MYURL = uri + 'get_fpaccess_popup';
+  axiosInstance.get(MYURL).then((result) => {
+    if (result.status) {
+      dispatch({
+        type: GET_FPACCESS_POPUP,
         payload: result.data,
       })
     }
