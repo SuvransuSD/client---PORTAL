@@ -531,14 +531,13 @@ export const pinaccess_popup = () => dispatch => {
       dispatch({
         type: GET_PINACCESS_POPUP,
         payload: result.data,
-      })
+      });
     }
   })
     .catch((err) => {
-      console.log(err)
-    })
-
-}
+      console.log(err);
+    });
+};
 
 export const bioaccess_popup = () => dispatch => {
   const MYURL = uri + 'get_bioaccess_popup';
@@ -547,14 +546,13 @@ export const bioaccess_popup = () => dispatch => {
       dispatch({
         type: GET_BIOACCESS_POPUP,
         payload: result.data,
-      })
+      });
     }
   })
     .catch((err) => {
-      console.log(err)
-    })
-
-}
+      console.log(err);
+    });
+};
 
 export const webaccess_popup = () => dispatch => {
   const MYURL = uri + 'get_webaccess_popup';
@@ -563,14 +561,13 @@ export const webaccess_popup = () => dispatch => {
       dispatch({
         type: GET_WEBACCESS_POPUP,
         payload: result.data,
-      })
+      });
     }
   })
     .catch((err) => {
-      console.log(err)
-    })
-
-}
+      console.log(err);
+    });
+};
 
 export const pinpluswebaccess_popup = () => dispatch => {
   const MYURL = uri + 'get_pinpluswebaccess_popup';
@@ -579,14 +576,13 @@ export const pinpluswebaccess_popup = () => dispatch => {
       dispatch({
         type: GET_PINPLUSWEBACCESS_POPUP,
         payload: result.data,
-      })
+      });
     }
   })
     .catch((err) => {
-      console.log(err)
-    })
-
-}
+      console.log(err);
+    });
+};
 
 export const fpaccess_popup = () => dispatch => {
   const MYURL = uri + 'get_fpaccess_popup';
@@ -595,14 +591,13 @@ export const fpaccess_popup = () => dispatch => {
       dispatch({
         type: GET_FPACCESS_POPUP,
         payload: result.data,
-      })
+      });
     }
   })
     .catch((err) => {
-      console.log(err)
-    })
-
-}
+      console.log(err);
+    });
+};
 
 export const nobox_popup = () => dispatch => {
   const MYURL = uri + 'get_nobox_popup';

@@ -70,6 +70,7 @@ function ADashboard() {
   const cabinetstatuss = useSelector(
     (state) => state.Amsdashboard.cabinetstatus
   );
+
   // const topkeys = useSelector((state) => state.Amsdashboard.topkey);
   // const donutcharts = useSelector((state) => state.Amsdashboard.donutchart);
   const unregisteredpopups = useSelector((state) => state.Amsdashboard.unregisteredpopups);
@@ -84,16 +85,18 @@ function ADashboard() {
   const zeroactivitylists_popup = useSelector((state) => state.Amsdashboard.zeroactivitylists_popup);
   const accesslists = useSelector((state) => state.Amsdashboard.accesslists);
   const pinsaccess_popup = useSelector((state) => state.Amsdashboard.pinsaccess_popup);
-  const bioaccess_popup = useSelector((state) => state.Amsdashboard.bioaccess_popup);
+  const bioaccess_popup_data = useSelector((state) => state.Amsdashboard.bioaccess_popup);
   const websaccess_popup = useSelector((state) => state.Amsdashboard.websaccess_popup);
   const pinwebaccess_popup = useSelector((state) => state.Amsdashboard.pinwebaccess_popup);
-  const fpaccess_popup = useSelector((state) => state.Amsdashboard.fpaccess_popup);
+  const fpaccess_popup_data = useSelector((state) => state.Amsdashboard.fpaccess_popup);
   const noboxs_popup = useSelector((state) => state.Amsdashboard.noboxs_popup);
   const testact_counts = useSelector((state) => state.Amsdashboard.testact_counts);
   const testact_popups = useSelector((state) => state.Amsdashboard.testact_popups);
   const notestact_popups = useSelector((state) => state.Amsdashboard.notestact_popups);
   const keysbyactivity = useSelector((state) => state.Amsdashboard.keysbyactivity);
   const get_batterys = useSelector((state) => state.Amsdashboard.get_batterys);
+
+
 
   // const [isdonutchart, setdonutchart] = useState();
   // const [istopkey, settopkey] = useState();
@@ -238,6 +241,112 @@ function ADashboard() {
     { key: "RO_NAME", label: "RO NAME", _style: tablehead },
   ];
 
+  // CSV headers without _style property for react-csv
+  const csvHeadersUnregistered = [
+    { key: "CABINET_IP_ADDR", label: "IP ADDRESS" },
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+  ];
+
+  const csvHeadersOnline = [
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+    { key: "CABINET_IP_ADDR", label: "IP Address" },
+    { key: "LAST_PING_TS", label: "LAST CONNECTED" },
+    { key: "OTP", label: "OTP Date" },
+    { key: "MAKE", label: "MAKE" },
+  ];
+
+  const csvHeadersOffline = [
+    { key: "RO_NAME", label: "CABINET LOCATION" },
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "CABINET_IP_ADDR", label: "CABINET IP ADDRESS" },
+    { key: "Last_Active_On", label: "LAST ACTIVE ON" },
+    { key: "OTP", label: "OTP Date" },
+    { key: "MAKE", label: "MAKE" },
+  ];
+
+  const csvHeadersTotal = [
+    { key: "STATUS", label: "STATUS" },
+    { key: "LAST_ACTIVE", label: "LAST ACTIVE" },
+    { key: "IP ADDRESS", label: "IP ADDRESS" },
+    { key: "CABINET_CODE", label: "CABINET CODE" },
+    { key: "MAKE", label: "MAKE" },
+  ];
+
+  const csvHeadersEventlist = [
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+    { key: "ZONE_NAME", label: "REGION NAME" },
+    { key: "STATE_NAME", label: "STATE NAME" },
+    { key: "TOTAL_EVENTS", label: "TOTAL EVENTS" },
+  ];
+
+  const csvHeadersActivitylist = [
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+    { key: "ZONE_NAME", label: "REGION NAME" },
+    { key: "STATE_NAME", label: "STATE NAME" },
+    { key: "TOTAL_ACITIVITIES", label: "TOTAL ACTIVITIES" },
+  ];
+
+  const csvHeadersZeroEvent = [
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+    { key: "ZONE_NAME", label: "REGION NAME" },
+    { key: "STATE_NAME", label: "STATE NAME" },
+    { key: "MAX_TS", label: "LAST ACTIVE ON" },
+  ];
+
+  const csvHeadersAccess = [
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+    { key: "ZONE_NAME", label: "REGION" },
+    { key: "STATE_NAME", label: "STATE NAME" },
+    { key: "LOGIN_TYPE", label: "LOGIN TYPE" },
+    { key: "TOTAL_ACCESS", label: "TOTAL ACCESS" },
+  ];
+
+  const csvHeadersNoBox = [
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+    { key: "ZONE_NAME", label: "REGION" },
+    { key: "STATE_NAME", label: "STATE NAME" },
+    { key: "LOGIN_TYPE", label: "LOGIN TYPE" },
+  ];
+
+  const csvHeadersTotalTest = [
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+    { key: "ZONE_NAME", label: "REGION" },
+    { key: "STATE_NAME", label: "STATE NAME" },
+    { key: "TIMES_TEST_PERFORMED", label: "TIMES TEST PERFORMED" },
+  ];
+
+  const csvHeadersBattery = [
+    { key: "RO_CODE", label: "RO CODE" },
+    { key: "RO_NAME", label: "RO NAME" },
+    { key: "ZONE_NAME", label: "REGION NAME" },
+    { key: "STATE_NAME", label: "STATE NAME" },
+    { key: "BATTERY_PC", label: "BATTERY PERCENTAGE" },
+  ];
+
+  // Helper function to ensure data is in correct format for CSV export
+  const formatCSVData = (data) => {
+    if (!data) return [];
+    if (Array.isArray(data)) return data;
+    if (typeof data === 'object') return [data];
+    if (typeof data === 'string') {
+      try {
+        const parsed = JSON.parse(data);
+        return Array.isArray(parsed) ? parsed : [parsed];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  };
+
   const HeadfieldOnline = [
     { key: "RO_CODE", label: "RO CODE", _style: tablehead },
     { key: "RO_NAME", label: "RO NAME", _style: tablehead },
@@ -340,8 +449,8 @@ function ADashboard() {
   
   // Show today's date with time range (start of day to 30 minutes ago)
   const todayStart = moment().startOf("day").format("HH:mm");
-  const currentMinus30 = moment().subtract(30, "minutes").format("HH:mm");
-  const timeRangeDate = `${date} (${todayStart} - ${currentMinus30})`;
+  const currentMinus30 = moment().subtract(30, "minutes").format("HH:mm");  
+  const timeRangeDate = `Updated on ${currentMinus30}`;
   
   const previousDate = moment(new Date(Date.now() - 864e5)).format(
     "DD/MM/YYYY"
@@ -387,7 +496,7 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
@@ -453,9 +562,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={unregisteredpopups}
+                    data={formatCSVData(unregisteredpopups)}
                     filename={"Unregistered-Sites.csv"}
-                    headers={HeadfieldUnregistered}
+                    headers={csvHeadersUnregistered}
                   >
                     Export to Excel
                   </CSVLink>
@@ -520,9 +629,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={onlinesite}
+                    data={formatCSVData(onlinesite)}
                     filename={"Online-Sites.csv"}
-                    headers={HeadfieldOnline}
+                    headers={csvHeadersOnline}
                   >
                     Export to Excel
                   </CSVLink>
@@ -575,9 +684,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={offlinesite}
+                    data={formatCSVData(offlinesite)}
                     filename={"Offline-Sites.csv"}
-                    headers={HeadfieldOffline}
+                    headers={csvHeadersOffline}
                   >
                     Export to Excel
                   </CSVLink>
@@ -636,9 +745,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={totalsite}
+                    data={formatCSVData(totalsite)}
                     filename={"Total-Sites.csv"}
-                    headers={Headfieldstotal}
+                    headers={csvHeadersTotal}
                   >
                     Export to Excel
                   </CSVLink>
@@ -684,7 +793,7 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
@@ -737,9 +846,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={eventlists_popup}
+                    data={formatCSVData(eventlists_popup)}
                     filename={"Event-Sites.csv"}
-                    headers={HeadfieldsEventlist}
+                    headers={csvHeadersEventlist}
                   >
                     Export to Excel
                   </CSVLink>
@@ -803,9 +912,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={zeroeventlists_popup}
+                    data={formatCSVData(zeroeventlists_popup)}
                     filename={"Zero-Event-Sites.csv"}
-                    headers={ZeroEventHeadfields}
+                    headers={csvHeadersZeroEvent}
                   >
                     Export to Excel
                   </CSVLink>
@@ -820,7 +929,9 @@ function ADashboard() {
             className="text-center"
             style={{ backgroundColor: "peachpuff" }}
           >
-            <b>Event Sites Status ({timeRangeDate})</b>
+            <b>Event Sites Status</b>
+            <br />
+            <b>({timeRangeDate})</b>
           </CCardFooter>
         </CCard>
 
@@ -851,7 +962,7 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
@@ -904,9 +1015,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={activitylists_popup}
+                    data={formatCSVData(activitylists_popup)}
                     filename={"Activity-Sites.csv"}
-                    headers={HeadfieldsActivitylist}
+                    headers={csvHeadersActivitylist}
                   >
                     Export to Excel
                   </CSVLink>
@@ -970,9 +1081,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={zeroactivitylists_popup}
+                    data={formatCSVData(zeroactivitylists_popup)}
                     filename={"Zero-Activity-Sites.csv"}
-                    headers={ZeroEventHeadfields}
+                    headers={csvHeadersZeroEvent}
                   >
                     Export to Excel
                   </CSVLink>
@@ -987,7 +1098,9 @@ function ADashboard() {
             className="text-center"
             style={{ backgroundColor: "#dae3f3" }}
           >
-            <b>Activities Sites Status ({timeRangeDate})</b>
+            <b>Activities Sites Status</b>
+            <br />
+            <b>({timeRangeDate})</b>
           </CCardFooter>
         </CCard>
       </div>
@@ -1044,7 +1157,7 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
@@ -1098,9 +1211,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={pinsaccess_popup}
+                    data={formatCSVData(pinsaccess_popup)}
                     filename={"PinOnly-Entry.csv"}
-                    headers={HeadfieldAccess}
+                    headers={csvHeadersAccess}
                   >
                     Export to Excel
                   </CSVLink>
@@ -1156,9 +1269,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={websaccess_popup}
+                    data={formatCSVData(websaccess_popup)}
                     filename={"WebOnly-Entry.csv"}
-                    headers={HeadfieldOnline}
+                    headers={csvHeadersAccess}
                   >
                     Export to Excel
                   </CSVLink>
@@ -1219,9 +1332,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={noboxs_popup}
+                    data={formatCSVData(noboxs_popup)}
                     filename={"ZeroAccess-Entry.csv"}
-                    headers={HeadfieldsNoBox}
+                    headers={csvHeadersNoBox}
                   >
                     Export to Excel
                   </CSVLink>
@@ -1278,9 +1391,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={pinwebaccess_popup}
+                    data={formatCSVData(pinwebaccess_popup)}
                     filename={"Multi-Access-Entry.csv"}
-                    headers={HeadfieldAccess}
+                    headers={csvHeadersAccess}
                   >
                     Export to Excel
                   </CSVLink>
@@ -1301,7 +1414,7 @@ function ADashboard() {
               <CModalBody>
                 <div className="table text-center">
                   <Datatable
-                    data={bioaccess_popup}
+                    data={bioaccess_popup_data}
                     Headfields={[
                       { key: "RO_CODE", label: "RO CODE", _style: tablehead },
                       { key: "RO_NAME", label: "RO NAME", _style: tablehead },
@@ -1336,9 +1449,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={bioaccess_popup}
+                    data={formatCSVData(bioaccess_popup_data)}
                     filename={"Biometric-Entry.csv"}
-                    headers={HeadfieldAccess}
+                    headers={csvHeadersAccess}
                   >
                     Export to Excel
                   </CSVLink>
@@ -1359,7 +1472,7 @@ function ADashboard() {
               <CModalBody>
                 <div className="table text-center">
                   <Datatable
-                    data={fpaccess_popup}
+                    data={fpaccess_popup_data}
                     Headfields={[
                       { key: "RO_CODE", label: "RO CODE", _style: tablehead },
                       { key: "RO_NAME", label: "RO NAME", _style: tablehead },
@@ -1394,9 +1507,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={fpaccess_popup}
+                    data={formatCSVData(fpaccess_popup_data)}
                     filename={"FP-Access-Entry.csv"}
-                    headers={HeadfieldAccess}
+                    headers={csvHeadersAccess}
                   >
                     Export to Excel
                   </CSVLink>
@@ -1411,7 +1524,9 @@ function ADashboard() {
             className="text-center"
             style={{ backgroundColor: "peachpuff" }}
           >
-            <b>Access Type Status ({timeRangeDate})</b>
+            <b>Access Type Status</b>
+            <br />
+              <b>({timeRangeDate})</b>
           </CCardFooter>
         </CCard>
 
@@ -1441,7 +1556,7 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
@@ -1484,9 +1599,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={testact_popups}
+                    data={formatCSVData(testact_popups)}
                     filename={"TotalTestActivity.csv"}
-                    headers={HeadfieldsTotalTest}
+                    headers={csvHeadersTotalTest}
                   >
                     Export to Excel
                   </CSVLink>
@@ -1527,9 +1642,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={notestact_popups}
+                    data={formatCSVData(notestact_popups)}
                     filename={"NoTestActivity.csv"}
-                    headers={HeadfieldsTotalTest}
+                    headers={csvHeadersTotalTest}
                   >
                     Export to Excel
                   </CSVLink>
@@ -1612,9 +1727,9 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={get_batterys}
+                    data={formatCSVData(get_batterys)}
                     filename={"Event-Sites.csv"}
-                    headers={HeadfieldsBattery}
+                    headers={csvHeadersBattery}
                   >
                     Export to Excel
                   </CSVLink>

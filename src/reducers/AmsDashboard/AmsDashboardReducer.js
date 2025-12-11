@@ -42,6 +42,7 @@ const initialState = {
     bioaccess_popup: [],
     websaccess_popup: [],
     pinwebaccess_popup: [],
+    fpaccess_popup: [],
     noboxs_popup: [],
     noactivityboxs: [],
     totalevent_descs: [],
