@@ -10,16 +10,14 @@ export const Create_Login = (crediential, history) => dispatch => {
   axiosInstance.post(MYURL, crediential).then((result) => {
     console.log("result", result.data);
     if (result.status) {
-      let settoken = sessionStorage.setItem('token', JSON.stringify(result.data.tokens.access));
-      const tokexp = sessionStorage.setItem('tokenExpiry', result.data.tokens.access.expires);
-      const username = sessionStorage.setItem('user', result.data.user.userName);
-      const role = sessionStorage.setItem('role', result.data.user.roles);
-      if (settoken) {
-        dispatch({
-          type: AUTH_LOGIN,
-          payload: result.data
-        });
-      }
+      sessionStorage.setItem('token', JSON.stringify(result.data.tokens.access));
+      sessionStorage.setItem('tokenExpiry', result.data.tokens.access.expires);
+      sessionStorage.setItem('user', result.data.user.userName);
+      sessionStorage.setItem('role', result.data.user.roles);
+      dispatch({
+        type: AUTH_LOGIN,
+        payload: result.data
+      });
     }
   })
     .then(() => {
@@ -30,36 +28,20 @@ export const Create_Login = (crediential, history) => dispatch => {
     .catch((err) => {
       console.log("error : ", err.toString());
       
-      // MOCK LOGIN BYPASS (Re-applied)
-      console.log("Mocking login success due to error:", err);
-      const dummyUser = {
-        tokens: { access: { token: 'dummy-token', expires: Date.now() + 3600000 } },
-        user: { userName: 'Admin', roles: 'admin' }
-      };
-      sessionStorage.setItem('token', JSON.stringify(dummyUser.tokens.access));
-      sessionStorage.setItem('tokenExpiry', dummyUser.tokens.access.expires);
-      sessionStorage.setItem('user', dummyUser.user.userName);
-      sessionStorage.setItem('role', dummyUser.user.roles);
-      dispatch({
-        type: AUTH_LOGIN,
-        payload: dummyUser
-      });
-      history.push('/Ams-Dashboard/Dashboard');
-      return;
-
-      if (err.toString().includes(401)) {
-        alert('Incorrect Email and Password');
-        setTimeout(window.location.reload(), 3000)
-      }
-      if (err.toString().includes(429)) {
+      if (err.response && err.response.status === 401) {
+        alert('Incorrect Username, Password or Captcha');
+        setTimeout(() => window.location.reload(), 3000);
+      } else if (err.response && err.response.status === 429) {
         alert('Too many login attempts - Login after 15 minutes');
-        setTimeout(window.location.reload(), 3000)
+        setTimeout(() => window.location.reload(), 3000);
+      } else if (err.response && err.response.status === 409) {
+        alert('Incorrect captcha entered!');
+        setTimeout(() => window.location.reload(), 3000);
+      } else {
+        alert('Login failed. Please check your connection and try again.');
+        console.error('Login error:', err);
       }
-      // if (err.toString().includes(409)) {
-      //   alert('Incorrect captcha entered!');
-      // }
 
-      console.log('result', err.toString());
       dispatch({
         type: UPDATE_LOGIN_ATTEMPTS,
         payload: err

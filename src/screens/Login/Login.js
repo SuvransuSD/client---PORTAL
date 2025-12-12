@@ -239,7 +239,7 @@ function Login() {
                       <CRow>
 
                         <CCol xs="14">
-                          <div class="container">
+                          <div className="container">
                             <img src={captchaImg} className="mt-3 mb-3" height="50" />
                             <div className="centered"><h4 id="captcha">{captchavalue}</h4></div>
 

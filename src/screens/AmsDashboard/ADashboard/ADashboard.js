@@ -126,7 +126,7 @@ function ADashboard() {
     dispatch(activitylist());
     dispatch(activitylist_popup());
     dispatch(pinaccess_popup());
-    dispatch(bioaccess_popup());
+    // dispatch(bioaccess_popup()); // Temporarily commented out to debug
     dispatch(webaccess_popup());
     dispatch(pinpluswebaccess_popup());
     dispatch(noactivitybox());
@@ -348,7 +348,7 @@ function ADashboard() {
       <div className="d-flex justify-content-around">
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
-            {cabinetstatuss.length > 0 ? (
+            {cabinetstatuss && cabinetstatuss.length > 0 ? (
               cabinetstatuss.map((state, index) => {
                 return (
                   <div key={`cabinet-${index}`} className="d-flex justify-content-between">
@@ -383,13 +383,27 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
               })
             ) : (
-              <Loader />
+              <div className="text-center">
+                <p>No cabinet status data available</p>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Online</p>
+                  <p className="text-success counter"><b>0</b></p>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Offline</p>
+                  <p className="text-danger counter"><b>0</b></p>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Unregistered</p>
+                  <p className="text-primary counter"><b>0</b></p>
+                </div>
+              </div>
             )}
             <CModal
               style={{ width: 600 }}
@@ -655,7 +669,7 @@ function ADashboard() {
 
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
-            {eventlists.length > 0 ? (
+            {eventlists && eventlists.length > 0 ? (
               eventlists.map((state, index) => {
                 return (
                   <div key={`event-${index}`} className="d-flex justify-content-between">
@@ -680,13 +694,23 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
               })
             ) : (
-              <Loader />
+              <div className="text-center">
+                <p>No event data available</p>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Cabinets with Events</p>
+                  <p className="text-success counter"><b>0</b></p>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Cabinets with Zero Event</p>
+                  <p className="text-danger counter"><b>0</b></p>
+                </div>
+              </div>
             )}
             <CModal
               style={{ width: 600 }}
@@ -822,7 +846,7 @@ function ADashboard() {
 
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
-            {activitylists.length > 0 ? (
+            {activitylists && activitylists.length > 0 ? (
               activitylists.map((state, index) => {
                 return (
                   <div key={`activity-${index}`} className="d-flex justify-content-between">
@@ -847,13 +871,23 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
               })
             ) : (
-              <Loader />
+              <div className="text-center">
+                <p>No activity data available</p>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Cabinets with Activities</p>
+                  <p className="text-success counter"><b>0</b></p>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Cabinets with Zero Activity</p>
+                  <p className="text-danger counter"><b>0</b></p>
+                </div>
+              </div>
             )}
             <CModal
               style={{ width: 600 }}
@@ -991,7 +1025,7 @@ function ADashboard() {
       <div className="d-flex justify-content-around">
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
-            {accesslists.length > 0 ? (
+            {accesslists && accesslists.length > 0 ? (
               accesslists.map((state, index) => {
                 return (
                   <div key={`access-${index}`} className="d-flex justify-content-between">
@@ -1032,13 +1066,27 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
               })
             ) : (
-              <Loader />
+              <div className="text-center">
+                <p>No access data available</p>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Pin Access</p>
+                  <p className="text-primary counter"><b>0</b></p>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Web Access</p>
+                  <p className="text-primary counter"><b>0</b></p>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">No Access</p>
+                  <p className="text-danger counter"><b>0</b></p>
+                </div>
+              </div>
             )}
             <CModal
               style={{ width: 600 }}
@@ -1347,7 +1395,7 @@ function ADashboard() {
 
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
-            {testact_counts.length > 0 ? (
+            {testact_counts && testact_counts.length > 0 ? (
               testact_counts.map((state, index) => {
                 return (
                   <div key={`test-${index}`} className="d-flex justify-content-between">
@@ -1371,13 +1419,23 @@ function ADashboard() {
                           : "text-dark counter"
                       }
                     >
-                      <b>{state.COUNTER}</b>
+                      <b>{state.COUNTER || 0}</b>
                     </p>
                   </div>
                 );
               })
             ) : (
-              <Loader />
+              <div className="text-center">
+                <p>No test data available</p>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Cabinets with test performed</p>
+                  <p className="text-success counter"><b>0</b></p>
+                </div>
+                <div className="d-flex justify-content-between">
+                  <p className="cabstatus">Cabinets with Zero Test</p>
+                  <p className="text-danger counter"><b>0</b></p>
+                </div>
+              </div>
             )}
             <CModal
               style={{ width: 600 }}
@@ -1490,7 +1548,7 @@ function ADashboard() {
                     "align-self": "center",
                   }}
                 >
-                  <p style={{ color: "red" }}>{get_batterys.length}</p>
+                  <p style={{ color: "red" }}>{get_batterys ? get_batterys.length : 0}</p>
                 </div>
               </CButton>
             </div>
