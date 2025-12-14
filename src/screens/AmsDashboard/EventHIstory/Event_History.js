@@ -148,8 +148,8 @@ function Event_History() {
 
   const Headfields = [
     { key: "EVENT_TS", label: "DATE", _style: tablehead },
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
+    { key: "RO_CODE", label: "SITE CODE", _style: tablehead },
+    { key: "RO_NAME", label: "SITE NAME", _style: tablehead },
     { key: "EVENT_DESC", label: "DESCRIPTION", _style: tablehead },
     { key: "SIGNIN_USER_NAME", label: "USERS", _style: tablehead },
     { key: "LOGIN_TYPE", label: "LOGIN TYPE", _style: tablehead },
@@ -214,7 +214,7 @@ function Event_History() {
                 autoComplete="off"
                 value={isform.rocode}
                 type="text"
-                placeholder="Enter RO Code"
+                placeholder="Enter Site Code"
                 onChange={onChangeText}
               ></CInput>
             </CCol>
@@ -383,8 +383,8 @@ function Event_History() {
           data={Issubmit ? gettable : getsearchtbl}
           Headfields={[
             { key: "EVENT_TS", label: "DATE", _style: tablehead },
-            { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-            { key: "RO_NAME", label: "RO NAME", _style: tablehead },
+            { key: "RO_CODE", label: "SITE CODE", _style: tablehead },
+            { key: "RO_NAME", label: "SITE NAME", _style: tablehead },
             { key: "EVENT_DESC", label: "DESCRIPTION", _style: tablehead },
             { key: "SIGNIN_USER_NAME", label: "USERS", _style: tablehead },
             { key: "LOGIN_TYPE", label: "LOGIN TYPE", _style: tablehead },

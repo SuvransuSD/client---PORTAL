@@ -155,8 +155,8 @@ function Event_History() {
   }, [gettable, getsearchtbl]);
 
   const Headfields = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
+    { key: "RO_CODE", label: "SITE CODE", _style: tablehead },
+    { key: "RO_NAME", label: "SITE NAME", _style: tablehead },
     { key: "ACTIVITY_CODE", label: "ACTIVITY CODE", _style: tablehead },
     { key: "ACTIVITY_NAME", label: "ACTIVITY NAME", _style: tablehead },
     {
@@ -229,7 +229,7 @@ function Event_History() {
                 value={isform.rocode}
                 type="text"
                 autoComplete="off"
-                placeholder="Enter RO Code"
+                placeholder="Enter Site Code"
                 onChange={onChangeText}
               ></CInput>
             </CCol>
@@ -407,8 +407,8 @@ function Event_History() {
           Headfields={[
             // { key: 'ZONE_NAME', label: 'REGION', _style: tablehead },
             // { key: 'STATE_NAME', label: 'STATE', _style: tablehead },
-            { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-            { key: "RO_NAME", label: "RO NAME", _style: tablehead },
+            { key: "RO_CODE", label: "SITE CODE", _style: tablehead },
+            { key: "RO_NAME", label: "SITE NAME", _style: tablehead },
             // { key: 'SIGNIN_TIME', label: 'SIGN IN TIME', _style: tablehead },
             // { key: 'SIGNIN_MODE', label: 'SIGN IN MODE', _style: tablehead },
             // { key: 'SIGNIN_SUCCEEDED', label: 'SIGN IN STATE', _style: tablehead },

@@ -157,7 +157,7 @@ function Event_History() {
                   { key: "ROLE_NAME", _style: tablehead },
                   {
                     key: "CABINET_LOCATION",
-                    label: "RO LOCATION",
+                    label: "SITE LOCATION",
                     _style: tablehead,
                   },
                   { key: "USER_EMAIL", _style: tablehead },

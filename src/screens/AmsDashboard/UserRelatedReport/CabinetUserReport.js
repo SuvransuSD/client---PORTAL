@@ -279,12 +279,12 @@ function Cabinet_User() {
           isLoading={isLoading}
           data={getCabwithRo}
           Headfields={[
-            { key: "RO_CODE", _style: tablehead },
+            { key: "SITE_CODE", _style: tablehead },
             { key: "USER_NAME", _style: tablehead },
             { key: "ROLE_NAME", _style: tablehead },
             {
               key: "CABINET_LOCATION",
-              label: "RO LOCATION",
+              label: "SITE LOCATION",
               _style: tablehead,
             },
             { key: "USER_EMAIL", _style: tablehead },

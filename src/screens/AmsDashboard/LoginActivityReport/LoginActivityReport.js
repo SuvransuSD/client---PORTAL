@@ -71,7 +71,7 @@ function LoginActivityReport() {
   const validateForm = (values) => {
     const err = {};
     if (!values.rocode) {
-      err.rocode = "RO Code is Required";
+      err.rocode = "SITE Code is Required";
     }
     if (!values.dt_from) {
       err.dt_from = "Date from is Required";
@@ -107,7 +107,7 @@ function LoginActivityReport() {
   }, [gettable]);
 
   const Headfields = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
+    { key: "RO_CODE", label: "SITE CODE", _style: tablehead },
     { key: "KEY_NAME", label: "KEY NAME", _style: tablehead },
     { key: "ACT_CODE_TAKEN", label: "ACTIVITY CODE TAKEN", _style: tablehead },
     { key: "KEY_TAKEN_AT", label: "KEY TAKEN OUT", _style: tablehead },
@@ -133,7 +133,7 @@ function LoginActivityReport() {
             <CCol lg={4}>
               <CFormGroup>
                 <CLabel htmlFor="nf-email">
-                  RO Code<i style={{ color: "red" }}>*</i>
+                  SITE Code<i style={{ color: "red" }}>*</i>
                 </CLabel>
                 <CInput
                   type="Name"
@@ -141,7 +141,7 @@ function LoginActivityReport() {
                   name="rocode"
                   value={isform.rocode}
                   onChange={onChangeText}
-                  placeholder="Enter RO Code.."
+                  placeholder="Enter Site Code.."
                 />
                 <CFormText className="help-block text-danger">
                   <p style={{ color: "red" }}>{formError.rocode}</p>
@@ -213,7 +213,7 @@ function LoginActivityReport() {
           isLoading={isLoading}
           data={gettable}
           Headfields={[
-            { key: "RO_CODE", label: "RO CODE", _style: tablehead },
+            { key: "RO_CODE", label: "SITE CODE", _style: tablehead },
             { key: "KEY_NAME", label: "KEY NAME", _style: tablehead },
             {
               key: "ACT_CODE_TAKEN",
