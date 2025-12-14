@@ -1,19 +1,27 @@
+/* "use client";  // harmless in CRA/Vite, needed in Next.js */
 
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import "./Style.scss";
-import { Datatable } from "../../../components/Datatable/Datatable";
-import {
-  CModal,
-  CModalHeader,
-  CModalTitle,
-  CModalBody,
-  CModalFooter,
-  CCardBody,
-  CCardFooter,
-  CCard,
-  CButton,
-} from "@coreui/react";
 import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
+import {
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  PieChart,
+  Pie,
+  Cell,
+  LineChart,
+  Line,
+  AreaChart,
+  Area,
+} from "recharts";
+
 import {
   cabinetstatus,
   offlinesites,
@@ -41,87 +49,111 @@ import {
   notestact_popup,
   get_battery,
   clearCaptcha,
+  load_demo_dashboard,
 } from "../../../actions/AmsDashboard/AmsDashboardAction";
-import moment from "moment";
-import { CSVLink } from "react-csv";
-import { Link } from "react-router-dom";
-// import {
-//   Chart as ChartJS,
-//   CategoryScale,
-//   LinearScale,
-//   BarElement,
-//   Title,
-//   Tooltip,
-//   Legend,
-// } from "chart.js";
-import Loader from "../../../components/loader";
 
-// ChartJS.register(
-//   CategoryScale,
-//   LinearScale,
-//   BarElement,
-//   Title,
-//   Tooltip,
-//   Legend
-// );
+const DEMO_DASHBOARD = process.env.REACT_APP_DEMO_DASHBOARD === "true";
 
-function ADashboard() {
-  const tablehead = { background: "#dae3f3", color: "grey" };
-  const cabinetstatuss = useSelector(
-    (state) => state.Amsdashboard.cabinetstatus
+const COLORS = ["#22c55e", "#ef4444", "#3b82f6", "#eab308", "#8b5cf6", "#06b6d4"];
+
+const VIEWS = {
+  OVERVIEW: "OVERVIEW",
+  EVENTS: "EVENTS",
+  ACCESS: "ACCESS",
+  TESTS: "TESTS",
+  HEALTH: "HEALTH",
+};
+
+/* ----------------- small reusable UI pieces ----------------- */
+
+const Tile = ({ label, value, color, subLabel }) => (
+  <div className="dash-tile">
+    <span className="dash-tile__label">{label}</span>
+    <span className="dash-tile__value" style={{ color: color || "#0f172a" }}>
+      {value}
+    </span>
+    {subLabel ? <span className="dash-tile__sub">{subLabel}</span> : null}
+  </div>
+);
+
+const Card = ({ title, subtitle, children, height = 320 }) => (
+  <div className="dash-card" style={{ height }}>
+    <div className="dash-card__head">
+      <div>
+        <h3 className="dash-card__title">{title}</h3>
+        {subtitle ? <p className="dash-card__sub">{subtitle}</p> : null}
+      </div>
+    </div>
+    <div className="dash-card__body">{children}</div>
+  </div>
+);
+
+const TabButton = ({ label, active, onClick }) => (
+  <button onClick={onClick} className={`dash-tab ${active ? "is-active" : ""}`}>
+    {label}
+  </button>
+);
+
+/* ----------------- helpers (safe parsing + grouping) ----------------- */
+
+const toNum = (v) => {
+  const n = Number(v);
+  return Number.isFinite(n) ? n : 0;
+};
+
+const pickCounter = (list, entryName) => {
+  if (!Array.isArray(list)) return 0;
+  const found = list.find(
+    (x) => String(x?.ENTRY || "").toLowerCase() === String(entryName).toLowerCase()
   );
+  return toNum(found?.COUNTER);
+};
 
-  // const topkeys = useSelector((state) => state.Amsdashboard.topkey);
-  // const donutcharts = useSelector((state) => state.Amsdashboard.donutchart);
-  const unregisteredpopups = useSelector((state) => state.Amsdashboard.unregisteredpopups);
-  const onlinesite = useSelector((state) => state.Amsdashboard.onlinesites);
-  const offlinesite = useSelector((state) => state.Amsdashboard.offlinesites);
-  const totalsite = useSelector((state) => state.Amsdashboard.totalsites);
-  const eventlists = useSelector((state) => state.Amsdashboard.eventlists);
-  const eventlists_popup = useSelector((state) => state.Amsdashboard.eventlists_popup);
-  const activitylists = useSelector((state) => state.Amsdashboard.activitylists);
-  const activitylists_popup = useSelector((state) => state.Amsdashboard.activitylists_popup);
-  const zeroeventlists_popup = useSelector((state) => state.Amsdashboard.zeroeventlists_popup);
-  const zeroactivitylists_popup = useSelector((state) => state.Amsdashboard.zeroactivitylists_popup);
-  const accesslists = useSelector((state) => state.Amsdashboard.accesslists);
-  const pinsaccess_popup = useSelector((state) => state.Amsdashboard.pinsaccess_popup);
-  const bioaccess_popup_data = useSelector((state) => state.Amsdashboard.bioaccess_popup);
-  const websaccess_popup = useSelector((state) => state.Amsdashboard.websaccess_popup);
-  const pinwebaccess_popup = useSelector((state) => state.Amsdashboard.pinwebaccess_popup);
-  const fpaccess_popup_data = useSelector((state) => state.Amsdashboard.fpaccess_popup);
-  const noboxs_popup = useSelector((state) => state.Amsdashboard.noboxs_popup);
-  const testact_counts = useSelector((state) => state.Amsdashboard.testact_counts);
-  const testact_popups = useSelector((state) => state.Amsdashboard.testact_popups);
-  const notestact_popups = useSelector((state) => state.Amsdashboard.notestact_popups);
-  const keysbyactivity = useSelector((state) => state.Amsdashboard.keysbyactivity);
-  const get_batterys = useSelector((state) => state.Amsdashboard.get_batterys);
+const groupBy = (arr, keyFn) => {
+  const map = new Map();
+  (arr || []).forEach((item) => {
+    const k = keyFn(item);
+    if (!map.has(k)) map.set(k, []);
+    map.get(k).push(item);
+  });
+  return map;
+};
 
+const formatDay = (d) => moment(d).format("DD MMM");
 
+/* --------------------------- main component --------------------------- */
 
-  // const [isdonutchart, setdonutchart] = useState();
-  // const [istopkey, settopkey] = useState();
-
+export default function ADashboard() {
   const dispatch = useDispatch();
+  const [view, setView] = useState(VIEWS.OVERVIEW);
 
-  const [visible6, setVisible6] = useState(false);
-  const [visible7, setVisible7] = useState(false);
-  const [visible8, setVisible8] = useState(false);
-  const [visible9, setVisible9] = useState(false);
-  const [visible10, setVisible10] = useState(false);
-  const [visible11, setVisible11] = useState(false);
-  const [visible12, setVisible12] = useState(false);
-  const [visible13, setVisible13] = useState(false);
-  const [visible14, setVisible14] = useState(false);
-  const [visible15, setVisible15] = useState(false);
-  const [visible16, setVisible16] = useState(false);
-  const [visible19, setVisible19] = useState(false);
-  const [visible20, setVisible20] = useState(false);
-  const [visible21, setVisible21] = useState(false);
-  const [visible22, setVisible22] = useState(false);
-  const [visible23, setVisible23] = useState(false);
-  const [visible24, setVisible24] = useState(false);
+  // --- redux state (keep what you already have) ---
+  const cabinetstatuss = useSelector((s) => s.Amsdashboard.cabinetstatus);
 
-  React.useEffect(() => {
+  const unregisteredpopups = useSelector((s) => s.Amsdashboard.unregisteredpopups);
+  const onlinesite = useSelector((s) => s.Amsdashboard.onlinesites);
+  const offlinesite = useSelector((s) => s.Amsdashboard.offlinesites);
+  const totalsite = useSelector((s) => s.Amsdashboard.totalsites);
+
+  const eventlists = useSelector((s) => s.Amsdashboard.eventlists);
+  const eventlists_popup = useSelector((s) => s.Amsdashboard.eventlists_popup);
+
+  const activitylists = useSelector((s) => s.Amsdashboard.activitylists);
+  const activitylists_popup = useSelector((s) => s.Amsdashboard.activitylists_popup);
+
+  const accesslists = useSelector((s) => s.Amsdashboard.accesslists);
+
+  const testact_counts = useSelector((s) => s.Amsdashboard.testact_counts);
+
+  const get_batterys = useSelector((s) => s.Amsdashboard.get_batterys);
+
+  useEffect(() => {
+    if (DEMO_DASHBOARD) {
+      dispatch(load_demo_dashboard());
+      return;
+    }
+
+    // your existing API calls (same flow)
     dispatch(emergencydoor_popup());
     dispatch(emergencydoor());
     dispatch(get_unregistered_popup());
@@ -148,1608 +180,584 @@ function ADashboard() {
     dispatch(testact_popup());
     dispatch(notestact_popup());
     dispatch(nobox_popup());
-  }, []);
+  }, [dispatch]);
 
-  const labels = keysbyactivity.map((state) => state.KEYNAME);
-  const activities = keysbyactivity.map((state) => state.ACTIVITY_CODE);
-  const data = {
-    labels,
-    activities,
-    datasets: [
-      {
-        label: "Total Count",
-        data: keysbyactivity.map((state) => state.TOTAL),
-        backgroundColor: "rgb(255, 99, 132)",
+  // ---------------- build dashboard "shape" from redux ----------------
+  const dashboard = useMemo(() => {
+    // Cabinet status counters
+    const online = pickCounter(cabinetstatuss, "Online");
+    const offline = pickCounter(cabinetstatuss, "Offline");
+    const unregistered = pickCounter(cabinetstatuss, "Unregistered");
+    const totalOtpedCabinets = pickCounter(cabinetstatuss, "Total OTPed Cabinets");
+
+    // Events / Activities counters
+    const cabinetsWithEvents = pickCounter(eventlists, "Cabinets with Events");
+    const cabinetsWithZeroEvent = pickCounter(eventlists, "Cabinets with Zero Event");
+
+    const cabinetsWithActivities = pickCounter(activitylists, "Cabinets with Activities");
+    const cabinetsWithZeroActivity = pickCounter(activitylists, "Cabinets with Zero Activity");
+
+    // Access counters (labels vary sometimes; handle common variants)
+    const pinAccess =
+      pickCounter(accesslists, "PIN + CARD Access") || pickCounter(accesslists, "PIN + CARD");
+    const webAccess =
+      pickCounter(accesslists, "WEB + Emergency Access") || pickCounter(accesslists, "WEB + Emergency");
+    const pinWebAccess = pickCounter(accesslists, "Multi Access");
+    const cabinetWithZeroAccess =
+      pickCounter(accesslists, "Cabinet With Zero Access") || pickCounter(accesslists, "No Access");
+
+    // Tests
+    const cabinetsWithTest =
+      pickCounter(testact_counts, "Cabinets with test performed") ||
+      pickCounter(testact_counts, "Cabinets with Test performed");
+    const cabinetsWithZeroTest =
+      pickCounter(testact_counts, "Cabinets with Zero Test") || pickCounter(testact_counts, "Zero Test");
+
+    // Device health
+    const alertCount = Array.isArray(get_batterys) ? get_batterys.length : 0;
+    const batteryNums = (get_batterys || [])
+      .map((x) => toNum(x?.BATTERY_PC))
+      .filter((n) => n > 0 || n === 0);
+    const avgBatteryPc =
+      batteryNums.length > 0
+        ? Math.round(batteryNums.reduce((a, b) => a + b, 0) / batteryNums.length)
+        : 0;
+
+    const totalCabinets =
+      toNum(totalOtpedCabinets) ||
+      (Array.isArray(totalsite) ? totalsite.length : 0) ||
+      (online + offline + unregistered);
+
+    // Region aggregation (best-effort using ZONE_NAME; fallback Unknown)
+    const onlineByRegion = groupBy(onlinesite, (x) => x?.ZONE_NAME || "Unknown");
+    const offlineByRegion = groupBy(offlinesite, (x) => x?.ZONE_NAME || "Unknown");
+    const unregByRegion = groupBy(unregisteredpopups, (x) => x?.ZONE_NAME || "Unknown");
+
+    // events/activities by region from popup lists (if present)
+    const eventsByRegion = groupBy(eventlists_popup, (x) => x?.ZONE_NAME || "Unknown");
+    const actByRegion = groupBy(activitylists_popup, (x) => x?.ZONE_NAME || "Unknown");
+
+    const regionSet = new Set([
+      ...onlineByRegion.keys(),
+      ...offlineByRegion.keys(),
+      ...unregByRegion.keys(),
+      ...eventsByRegion.keys(),
+      ...actByRegion.keys(),
+    ]);
+
+    const byRegion = Array.from(regionSet).map((region) => ({
+      region,
+      online: (onlineByRegion.get(region) || []).length,
+      offline: (offlineByRegion.get(region) || []).length,
+      unregistered: (unregByRegion.get(region) || []).length,
+      // events/activities: sum totals if present, else count rows
+      events: (eventsByRegion.get(region) || []).reduce((sum, r) => sum + toNum(r?.TOTAL_EVENTS), 0),
+      activities: (actByRegion.get(region) || []).reduce(
+        (sum, r) => sum + toNum(r?.TOTAL_ACTIVITIES || r?.TOTAL_ACITIVITIES),
+        0
+      ),
+    }));
+
+    // 7-day trends (if you don’t have a time-series API yet, we render a flat trend)
+    const today = moment().startOf("day");
+    const cabinetTrend = Array.from({ length: 7 }).map((_, i) => {
+      const d = today.clone().subtract(6 - i, "days");
+      return {
+        date: formatDay(d),
+        online,
+        offline,
+        unregistered,
+      };
+    });
+
+    const eventsTrend = Array.from({ length: 7 }).map((_, i) => {
+      const d = today.clone().subtract(6 - i, "days");
+      return {
+        date: formatDay(d),
+        events: cabinetsWithEvents,
+        activities: cabinetsWithActivities,
+      };
+    });
+
+    const accessTrend = Array.from({ length: 7 }).map((_, i) => {
+      const d = today.clone().subtract(6 - i, "days");
+      return {
+        date: formatDay(d),
+        pin: pinAccess,
+        web: webAccess,
+        pinWeb: pinWebAccess,
+        zero: cabinetWithZeroAccess,
+      };
+    });
+
+    const testsTrend = Array.from({ length: 7 }).map((_, i) => {
+      const d = today.clone().subtract(6 - i, "days");
+      return {
+        date: formatDay(d),
+        withTest: cabinetsWithTest,
+        zeroTest: cabinetsWithZeroTest,
+      };
+    });
+
+    // battery distribution
+    const buckets = [
+      { bucket: "0-20", min: 0, max: 20 },
+      { bucket: "21-40", min: 21, max: 40 },
+      { bucket: "41-60", min: 41, max: 60 },
+      { bucket: "61-80", min: 61, max: 80 },
+      { bucket: "81-100", min: 81, max: 100 },
+    ];
+
+    const healthByBattery = buckets.map((b) => ({
+      bucket: b.bucket,
+      count: (get_batterys || []).filter((x) => {
+        const n = toNum(x?.BATTERY_PC);
+        return n >= b.min && n <= b.max;
+      }).length,
+    }));
+
+    return {
+      meta: {
+        cabinetStatusDate: moment().format("DD-MM-YYYY"),
+        eventStatusDate: moment().format("DD-MM-YYYY"),
+        accessStatusDate: moment().format("DD-MM-YYYY"),
+        period: "Last 7 days",
       },
+      cabinetStatus: { online, offline, unregistered, totalOtpedCabinets },
+      eventSitesStatus: { cabinetsWithEvents, cabinetsWithZeroEvent },
+      activitySitesStatus: { cabinetsWithActivities, cabinetsWithZeroActivity },
+      accessTypeStatus: { pinAccess, webAccess, pinWebAccess, cabinetWithZeroAccess },
+      pumpTestStatus: { cabinetsWithTest, cabinetsWithZeroTest },
+      deviceHealth: { alertCount, totalCabinets, avgBatteryPc },
+      byRegion,
+      cabinetTrend,
+      eventsTrend,
+      accessTrend,
+      testsTrend,
+      healthByBattery,
+    };
+  }, [
+    cabinetstatuss,
+    unregisteredpopups,
+    onlinesite,
+    offlinesite,
+    totalsite,
+    eventlists,
+    eventlists_popup,
+    activitylists,
+    activitylists_popup,
+    accesslists,
+    testact_counts,
+    get_batterys,
+  ]);
+
+  const totalCabinets =
+    dashboard.deviceHealth.totalCabinets || dashboard.cabinetStatus.totalOtpedCabinets;
+
+  const cabinetStatusPie = useMemo(
+    () => [
+      { name: "Online", value: dashboard.cabinetStatus.online },
+      { name: "Offline", value: dashboard.cabinetStatus.offline },
+      { name: "Unregistered", value: dashboard.cabinetStatus.unregistered },
     ],
+    [dashboard]
+  );
+
+  const accessPie = useMemo(
+    () => [
+      { name: "Pin", value: dashboard.accessTypeStatus.pinAccess },
+      { name: "Web", value: dashboard.accessTypeStatus.webAccess },
+      { name: "Pin + Web", value: dashboard.accessTypeStatus.pinWebAccess },
+      { name: "Zero", value: dashboard.accessTypeStatus.cabinetWithZeroAccess },
+    ],
+    [dashboard]
+  );
+
+  const testsPie = useMemo(
+    () => [
+      { name: "With Test", value: dashboard.pumpTestStatus.cabinetsWithTest },
+      { name: "Zero Test", value: dashboard.pumpTestStatus.cabinetsWithZeroTest },
+    ],
+    [dashboard]
+  );
+
+  /* ------------------------ views ------------------------ */
+
+  const Overview = () => (
+    <>
+      {/* KPI row */}
+      <div className="dash-grid dash-grid--kpi">
+        <Tile
+          label="Online Cabinets"
+          value={dashboard.cabinetStatus.online}
+          color={COLORS[0]}
+          subLabel="Actively communicating"
+        />
+        <Tile
+          label="Offline Cabinets"
+          value={dashboard.cabinetStatus.offline}
+          color={COLORS[1]}
+          subLabel="Need attention"
+        />
+        <Tile
+          label="Total OTPed"
+          value={dashboard.cabinetStatus.totalOtpedCabinets}
+          color={COLORS[2]}
+          subLabel="Onboarded to AMS"
+        />
+        <Tile
+          label="Unregistered"
+          value={dashboard.cabinetStatus.unregistered}
+          color={COLORS[3]}
+          subLabel="Cabinets to onboard"
+        />
+        <Tile
+          label="Sites with Events"
+          value={dashboard.eventSitesStatus.cabinetsWithEvents}
+          color={COLORS[4]}
+          subLabel="Operational activity"
+        />
+        <Tile
+          label="Devices with Alerts"
+          value={dashboard.deviceHealth.alertCount}
+          color={COLORS[1]}
+          subLabel={`Avg Battery: ${dashboard.deviceHealth.avgBatteryPc}%`}
+        />
+      </div>
+
+      {/* Charts row */}
+      <div className="dash-grid dash-grid--charts-3">
+        <Card title="Cabinet Status Split" subtitle={`As of ${dashboard.meta.cabinetStatusDate}`}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={cabinetStatusPie}
+                dataKey="value"
+                nameKey="name"
+                innerRadius="45%"
+                outerRadius="75%"
+                paddingAngle={3}
+              >
+                {cabinetStatusPie.map((entry, idx) => (
+                  <Cell key={entry.name} fill={COLORS[idx % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card title="7-Day Cabinet Trend" subtitle={dashboard.meta.period}>
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={dashboard.cabinetTrend}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area type="monotone" dataKey="online" name="Online" stroke={COLORS[0]} fill="#22c55e22" />
+              <Area type="monotone" dataKey="offline" name="Offline" stroke={COLORS[1]} fill="#ef444422" />
+              <Area type="monotone" dataKey="unregistered" name="Unregistered" stroke={COLORS[3]} fill="#eab30822" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card title="Status by Region" subtitle="Online vs Offline vs Unregistered">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dashboard.byRegion}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="region" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="online" name="Online" fill={COLORS[0]} />
+              <Bar dataKey="offline" name="Offline" fill={COLORS[1]} />
+              <Bar dataKey="unregistered" name="Unregistered" fill={COLORS[3]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+    </>
+  );
+
+  const Events = () => (
+    <>
+      <div className="dash-grid dash-grid--kpi-4">
+        <Tile label="Sites with Events" value={dashboard.eventSitesStatus.cabinetsWithEvents} color={COLORS[4]} />
+        <Tile label="Sites with Zero Events" value={dashboard.eventSitesStatus.cabinetsWithZeroEvent} color="#64748b" />
+        <Tile label="Sites with Activities" value={dashboard.activitySitesStatus.cabinetsWithActivities} color={COLORS[5]} />
+        <Tile label="Sites with Zero Activity" value={dashboard.activitySitesStatus.cabinetsWithZeroActivity} color={COLORS[1]} />
+      </div>
+
+      <div className="dash-grid dash-grid--charts-3">
+        <Card title="Events & Activities – 7 Day Trend" subtitle="Behaviour over time">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={dashboard.eventsTrend}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="events" name="Events" stroke={COLORS[2]} strokeWidth={2} />
+              <Line type="monotone" dataKey="activities" name="Activities" stroke={COLORS[5]} strokeWidth={2} />
+            </LineChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card title="Events by Region" subtitle="Where is the network busy?">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dashboard.byRegion}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="region" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="events" name="Events" fill={COLORS[2]} />
+              <Bar dataKey="activities" name="Activities" fill={COLORS[5]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card title="Events vs Status" subtitle="Quick comparison">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dashboard.byRegion}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="region" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="offline" name="Offline" fill={COLORS[1]} />
+              <Bar dataKey="unregistered" name="Unregistered" fill={COLORS[3]} />
+              <Bar dataKey="events" name="Events" fill={COLORS[2]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+    </>
+  );
+
+  const Access = () => (
+    <>
+      <div className="dash-grid dash-grid--kpi-4">
+        <Tile label="Pin Access" value={dashboard.accessTypeStatus.pinAccess} color={COLORS[0]} />
+        <Tile label="Web Access" value={dashboard.accessTypeStatus.webAccess} color={COLORS[2]} />
+        <Tile label="Pin + Web" value={dashboard.accessTypeStatus.pinWebAccess} color={COLORS[4]} />
+        <Tile label="Zero Access" value={dashboard.accessTypeStatus.cabinetWithZeroAccess} color={COLORS[1]} />
+      </div>
+
+      <div className="dash-grid dash-grid--charts-3">
+        <Card title="Access Split" subtitle={`As of ${dashboard.meta.accessStatusDate}`}>
+          <ResponsiveContainer width="100%" height="100%">
+            <PieChart>
+              <Pie
+                data={accessPie}
+                dataKey="value"
+                nameKey="name"
+                innerRadius="45%"
+                outerRadius="75%"
+                paddingAngle={3}
+              >
+                {accessPie.map((entry, idx) => (
+                  <Cell key={entry.name} fill={COLORS[idx % COLORS.length]} />
+                ))}
+              </Pie>
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card title="Access Trend – 7 Days" subtitle="Usage vs zero-access">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart data={dashboard.accessTrend}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area type="monotone" dataKey="pin" name="Pin" stroke={COLORS[0]} fill="#22c55e22" />
+              <Area type="monotone" dataKey="web" name="Web" stroke={COLORS[2]} fill="#3b82f622" />
+              <Area type="monotone" dataKey="pinWeb" name="Pin+Web" stroke={COLORS[4]} fill="#8b5cf622" />
+              <Area type="monotone" dataKey="zero" name="Zero" stroke={COLORS[1]} fill="#ef444422" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+
+        <Card title="Access vs Status by Region" subtitle="Where access risk is higher">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dashboard.byRegion}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="region" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="offline" name="Offline" fill={COLORS[1]} />
+              <Bar dataKey="unregistered" name="Unregistered" fill={COLORS[3]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+    </>
+  );
+
+  const Tests = () => {
+    const tested = dashboard.pumpTestStatus.cabinetsWithTest;
+    const zeroTest = dashboard.pumpTestStatus.cabinetsWithZeroTest;
+    const testedPct = totalCabinets > 0 ? Math.round((tested / totalCabinets) * 100) : 0;
+
+    return (
+      <>
+        <div className="dash-grid dash-grid--kpi-3">
+          <Tile label="Cabinets with Test" value={tested} color={COLORS[0]} subLabel="Covered by recent pump test" />
+          <Tile label="Cabinets with Zero Test" value={zeroTest} color={COLORS[1]} subLabel="High risk – no validation" />
+          <Tile label="Test Coverage" value={`${testedPct}%`} color={COLORS[2]} subLabel="Tested / total cabinets" />
+        </div>
+
+        <div className="dash-grid dash-grid--charts-3">
+          <Card title="Test vs No Test" subtitle="Overall validation coverage">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie data={testsPie} dataKey="value" nameKey="name" innerRadius="45%" outerRadius="75%" paddingAngle={3}>
+                  {testsPie.map((entry, idx) => (
+                    <Cell key={entry.name} fill={COLORS[idx % COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip />
+                <Legend />
+              </PieChart>
+            </ResponsiveContainer>
+          </Card>
+
+          <Card title="Tests Trend – 7 Days" subtitle="With test vs zero test">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={dashboard.testsTrend}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="withTest" name="With Test" stroke={COLORS[0]} strokeWidth={2} />
+                <Line type="monotone" dataKey="zeroTest" name="Zero Test" stroke={COLORS[1]} strokeWidth={2} />
+              </LineChart>
+            </ResponsiveContainer>
+          </Card>
+
+          <Card title="Offline + Zero Test Risk" subtitle="Priority combination">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={[
+                  { name: "Offline", value: dashboard.cabinetStatus.offline },
+                  { name: "Zero Test", value: dashboard.pumpTestStatus.cabinetsWithZeroTest },
+                ]}
+              >
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="value" name="Count" fill={COLORS[1]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </Card>
+        </div>
+      </>
+    );
   };
 
-  // React.useEffect(() => {
-  //   if (donutcharts) {
-  //     var eventname = donutcharts.map((state) => state.EVENT_NAME);
-  //     var colorname = donutcharts.map((state) => "#" + state.COLOR);
-  //     var percentage = donutcharts.map((state) => state.PERCENTAGE);
-  //   }
+  const Health = () => (
+    <>
+      <div className="dash-grid dash-grid--kpi-4">
+        <Tile label="Devices with Alerts" value={dashboard.deviceHealth.alertCount} color={COLORS[1]} />
+        <Tile label="Total Cabinets" value={totalCabinets} color={COLORS[2]} />
+        <Tile label="Avg Battery" value={`${dashboard.deviceHealth.avgBatteryPc}%`} color={COLORS[0]} />
+        <Tile
+          label="Offline + Unregistered"
+          value={dashboard.cabinetStatus.offline + dashboard.cabinetStatus.unregistered}
+          color={COLORS[3]}
+        />
+      </div>
 
-  //   setdonutchart({
-  //     labels: eventname,
-  //     datasets: [
-  //       {
-  //         data: percentage,
-  //         backgroundColor: colorname,
-  //         hoverBackgroundColor: [
-  //           "#FF6384",
-  //           "#55D8C1",
-  //           "#55D8C1",
-  //           "#55D8C1",
-  //           "#55D8C1",
-  //           "#36A2EB",
-  //           "#55D8C1",
-  //           "#FFCE56",
-  //           "#FF6384",
-  //           "#55D8C1",
-  //           "#55D8C1",
-  //           "#55D8C1",
-  //           "#55D8C1",
-  //           "#36A2EB",
-  //         ],
-  //       },
-  //     ],
-  //   });
-  // }, [donutcharts]);
+      <div className="dash-grid dash-grid--charts-3">
+        <Card title="Battery Distribution" subtitle="Devices in each battery bucket">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dashboard.healthByBattery}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="bucket" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="count" name="Devices" fill={COLORS[2]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
 
-  // React.useEffect(() => {
-  //   if (topkeys) {
-  //     var keyname = topkeys.map((state) => state.KEYNAME);
-  //     var total = topkeys.map((state) => state.TOTAL);
-  //     var totalSum = 0;
-  //     for (var x = 0; x < total.length; x++) {
-  //       totalSum = totalSum + total[x];
-  //     }
-  //     var percentages = [];
-  //     for (var x = 0; x < total.length; x++) {
-  //       percentages.push(((total[x] / totalSum) * 100).toFixed(2));
-  //     }
-  //   }
-  //   settopkey({
-  //     labels: keyname,
-  //     datasets: [
-  //       {
-  //         data: percentages,
-  //         backgroundColor: [
-  //           "#4d96ff",
-  //           "#ff1d1d",
-  //           "#2eb85c",
-  //           "#E32636",
-  //           "#5D8AA8",
-  //         ],
-  //         hoverBackgroundColor: [
-  //           "#4d96ff",
-  //           "#ff1d1d",
-  //           "#2eb85c",
-  //           "#E32636",
-  //           "#5D8AA8",
-  //         ],
-  //       },
-  //     ],
-  //   });
-  // }, [topkeys]);
+        <Card title="Status by Region" subtitle="Online vs Offline">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={dashboard.byRegion}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="region" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="online" name="Online" fill={COLORS[0]} />
+              <Bar dataKey="offline" name="Offline" fill={COLORS[1]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </Card>
 
-  const HeadfieldUnregistered = [
-    { key: "CABINET_IP_ADDR", label: "IP ADDRESS", _style: tablehead },
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-  ];
+        <Card title="Alerts Summary" subtitle="Proxy risk signal">
+          <ResponsiveContainer width="100%" height="100%">
+            <AreaChart
+              data={dashboard.cabinetTrend.map((x) => ({
+                date: x.date,
+                offlinePlusUnreg: x.offline + x.unregistered,
+              }))}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Area
+                type="monotone"
+                dataKey="offlinePlusUnreg"
+                name="Offline + Unregistered"
+                stroke={COLORS[1]}
+                fill="#ef444422"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </Card>
+      </div>
+    </>
+  );
 
-  // CSV headers without _style property for react-csv
-  const csvHeadersUnregistered = [
-    { key: "CABINET_IP_ADDR", label: "IP ADDRESS" },
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-  ];
-
-  const csvHeadersOnline = [
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-    { key: "CABINET_IP_ADDR", label: "IP Address" },
-    { key: "LAST_PING_TS", label: "LAST CONNECTED" },
-    { key: "OTP", label: "OTP Date" },
-    { key: "MAKE", label: "MAKE" },
-  ];
-
-  const csvHeadersOffline = [
-    { key: "RO_NAME", label: "CABINET LOCATION" },
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "CABINET_IP_ADDR", label: "CABINET IP ADDRESS" },
-    { key: "Last_Active_On", label: "LAST ACTIVE ON" },
-    { key: "OTP", label: "OTP Date" },
-    { key: "MAKE", label: "MAKE" },
-  ];
-
-  const csvHeadersTotal = [
-    { key: "STATUS", label: "STATUS" },
-    { key: "LAST_ACTIVE", label: "LAST ACTIVE" },
-    { key: "IP ADDRESS", label: "IP ADDRESS" },
-    { key: "CABINET_CODE", label: "CABINET CODE" },
-    { key: "MAKE", label: "MAKE" },
-  ];
-
-  const csvHeadersEventlist = [
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-    { key: "ZONE_NAME", label: "REGION NAME" },
-    { key: "STATE_NAME", label: "STATE NAME" },
-    { key: "TOTAL_EVENTS", label: "TOTAL EVENTS" },
-  ];
-
-  const csvHeadersActivitylist = [
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-    { key: "ZONE_NAME", label: "REGION NAME" },
-    { key: "STATE_NAME", label: "STATE NAME" },
-    { key: "TOTAL_ACITIVITIES", label: "TOTAL ACTIVITIES" },
-  ];
-
-  const csvHeadersZeroEvent = [
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-    { key: "ZONE_NAME", label: "REGION NAME" },
-    { key: "STATE_NAME", label: "STATE NAME" },
-    { key: "MAX_TS", label: "LAST ACTIVE ON" },
-  ];
-
-  const csvHeadersAccess = [
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-    { key: "ZONE_NAME", label: "REGION" },
-    { key: "STATE_NAME", label: "STATE NAME" },
-    { key: "LOGIN_TYPE", label: "LOGIN TYPE" },
-    { key: "TOTAL_ACCESS", label: "TOTAL ACCESS" },
-  ];
-
-  const csvHeadersNoBox = [
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-    { key: "ZONE_NAME", label: "REGION" },
-    { key: "STATE_NAME", label: "STATE NAME" },
-    { key: "LOGIN_TYPE", label: "LOGIN TYPE" },
-  ];
-
-  const csvHeadersTotalTest = [
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-    { key: "ZONE_NAME", label: "REGION" },
-    { key: "STATE_NAME", label: "STATE NAME" },
-    { key: "TIMES_TEST_PERFORMED", label: "TIMES TEST PERFORMED" },
-  ];
-
-  const csvHeadersBattery = [
-    { key: "RO_CODE", label: "RO CODE" },
-    { key: "RO_NAME", label: "RO NAME" },
-    { key: "ZONE_NAME", label: "REGION NAME" },
-    { key: "STATE_NAME", label: "STATE NAME" },
-    { key: "BATTERY_PC", label: "BATTERY PERCENTAGE" },
-  ];
-
-  // Helper function to ensure data is in correct format for CSV export
-  const formatCSVData = (data) => {
-    if (!data) return [];
-    if (Array.isArray(data)) return data;
-    if (typeof data === 'object') return [data];
-    if (typeof data === 'string') {
-      try {
-        const parsed = JSON.parse(data);
-        return Array.isArray(parsed) ? parsed : [parsed];
-      } catch {
-        return [];
-      }
-    }
-    return [];
-  };
-
-  const HeadfieldOnline = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-    { key: "CABINET_IP_ADDR", label: "IP Address", _style: tablehead },
-    { key: "LAST_PING_TS", label: "LAST CONNECTED", _style: tablehead },
-    { key: "OTP", label: "OTP Date", _style: tablehead },
-    { key: "MAKE", label: "MAKE", _style: tablehead },
-  ];
-
-  const HeadfieldOffline = [
-    { key: "RO_NAME", label: "CABINET LOCATION", _style: tablehead },
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "CABINET_IP_ADDR", label: "CABINET IP ADDRESS", _style: tablehead },
-    { key: "Last_Active_On", label: "LAST ACTIVE ON", _style: tablehead },
-    { key: "OTP", label: "OTP Date", _style: tablehead },
-    { key: "MAKE", label: "MAKE", _style: tablehead },
-  ];
-
-  const Headfieldstotal = [
-    { key: "STATUS", label: "STATUS", _style: tablehead },
-    { key: "LAST_ACTIVE", label: "LAST ACTIVE", _style: tablehead },
-    { key: "IP ADDRESS", label: "IP ADDRESS", _style: tablehead },
-    { key: "CABINET_CODE", label: "CABINET CODE", _style: tablehead },
-    { key: "MAKE", label: "MAKE", _style: tablehead },
-  ];
-
-  const HeadfieldsEventlist = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-    { key: "ZONE_NAME", label: "REGION NAME", _style: tablehead },
-    { key: "STATE_NAME", label: "STATE NAME", _style: tablehead },
-    { key: "TOTAL_EVENTS", label: "TOTAL EVENTS", _style: tablehead },
-  ];
-
-  const HeadfieldsActivitylist = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-    { key: "ZONE_NAME", label: "REGION NAME", _style: tablehead },
-    { key: "STATE_NAME", label: "STATE NAME", _style: tablehead },
-    { key: "TOTAL_ACITIVITIES", label: "TOTAL ACTIVITIES", _style: tablehead },
-  ];
-
-  const ZeroEventHeadfields = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-    { key: "ZONE_NAME", label: "REGION NAME", _style: tablehead },
-    { key: "STATE_NAME", label: "STATE NAME", _style: tablehead },
-    { key: "MAX_TS", label: "LAST ACTIVE ON", _style: tablehead },
-  ];
-
-  const HeadfieldAccess = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-    { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-    { key: "STATE_NAME", label: "STATE NAME", _style: tablehead },
-    { key: "LOGIN_TYPE", label: "LOGIN TYPE", _style: tablehead },
-    { key: "TOTAL_ACCESS", label: "TOTAL ACCESS", _style: tablehead },
-  ];
-
-  const HeadfieldsNoBox = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-    { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-    { key: "STATE_NAME", label: "STATE NAME", _style: tablehead },
-    { key: "LOGIN_TYPE", label: "LOGIN TYPE", _style: tablehead },
-  ];
-
-  const HeadfieldsTotalTest = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-    { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-    { key: "STATE_NAME", label: "STATE NAME", _style: tablehead },
-    {
-      key: "TIMES_TEST_PERFORMED",
-      label: "TIMES TEST PERFORMED",
-      _style: tablehead,
-    },
-  ];
-
-  const HeadfieldsBattery = [
-    { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-    { key: "ZONE_NAME", label: "REGION NAME", _style: tablehead },
-    { key: "STATE_NAME", label: "STATE NAME", _style: tablehead },
-    { key: "BATTERY_PC", label: "BATTERY PERCENTAGE", _style: tablehead },
-  ];
-
-  const editvalue = (values) => {
-    sessionStorage.setItem("CABINET_IP_ADDR", values.CABINET_IP_ADDR);
-    sessionStorage.setItem("RO_CODE", values.RO_CODE);
-    sessionStorage.setItem("RO_NAME", values.RO_NAME);
-    sessionStorage.setItem("CABINET_CODE", values.RO_CODE);
-    sessionStorage.setItem("LOCATION", values.RO_NAME);
-  };
-
-  const current = new Date();
-  const date = `${current.getDate()}/${
-    current.getMonth() + 1
-  }/${current.getFullYear()}`;
-  
-  // Show today's date with time range (start of day to 30 minutes ago)
-  const todayStart = moment().startOf("day").format("HH:mm");
-  const currentMinus30 = moment().subtract(30, "minutes").format("HH:mm");  
-  const timeRangeDate = `Updated on ${currentMinus30}`;
-  
-  const previousDate = moment(new Date(Date.now() - 864e5)).format(
-    "DD/MM/YYYY"
-  ); // 864e5 == 86400000 == 24*60*60*1000
+  const content =
+    view === VIEWS.EVENTS ? <Events /> :
+    view === VIEWS.ACCESS ? <Access /> :
+    view === VIEWS.TESTS ? <Tests /> :
+    view === VIEWS.HEALTH ? <Health /> :
+    <Overview />;
 
   return (
-    <div>
-      <div className="d-flex justify-content-around">
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
-          <CCardBody className="p-3">
-            {cabinetstatuss.length > 0 ? (
-              cabinetstatuss.map((state, index) => {
-                return (
-                  <div key={`cabinet-${index}`} className="d-flex justify-content-between">
-                    {state.ENTRY == "Unregistered" ? (
-                      <CButton onClick={() => setVisible6(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : state.ENTRY == "Online" ? (
-                      <CButton onClick={() => setVisible7(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : state.ENTRY == "Offline" ? (
-                      <CButton onClick={() => setVisible8(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : state.ENTRY == "Total OTPed Cabinets" ? (
-                      <CButton onClick={() => setVisible9(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : (
-                      <p className="cabstatus">{state.ENTRY}</p>
-                    )}
+    <div className="dash-page">
+      <header className="dash-header">
+        <div>
+          <h1 className="dash-title">AMS Dashboard</h1>
+          <p className="dash-subtitle">Tata Steel – Key Management System overview</p>
+        </div>
 
-                    <p
-                      className={
-                        state.ENTRY == "Offline"
-                          ? "text-danger counter"
-                          : state.ENTRY == "Unregistered"
-                          ? "text-primary counter"
-                          : state.ENTRY == "Online"
-                          ? "text-success counter"
-                          : "text-dark counter"
-                      }
-                    >
-                      <b>{state.COUNTER || 0}</b>
-                    </p>
-                  </div>
-                );
-              })
-            ) : (
-              <Loader />
-            )}
-            <CModal
-              style={{ width: 600 }}
-              show={visible6}
-              onClose={() => setVisible6(false)}
-            >
-              <CModalHeader onClose={() => setVisible6(false)}>
-                <CModalTitle>Unregistered Sites</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={unregisteredpopups}
-                    Headfields={[
-                      {
-                        key: "CABINET_IP_ADDR",
-                        label: "IP ADDRESS",
-                        _style: tablehead,
-                      },
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      {
-                        key: "Register",
-                        label: "REGEISTER HERE",
-                        sorter: false,
-                        filter: false,
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                      Register: (item) => (
-                        <td>
-                          <CButton
-                            className="border border-secondary"
-                            color="white"
-                            onClick={() => editvalue(item)}
-                          >
-                            <Link
-                              to={"/Master-Data/Ro-List"}
-                              style={{ cursor: "pointer" }}
-                            >
-                              Register
-                            </Link>
-                          </CButton>
-                        </td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(unregisteredpopups)}
-                    filename={"Unregistered-Sites.csv"}
-                    headers={csvHeadersUnregistered}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible6(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 700 }}
-              show={visible7}
-              onClose={() => setVisible7(false)}
-            >
-              <CModalHeader onClose={() => setVisible7(false)}>
-                <CModalTitle>Online Sites</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={onlinesite}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      // { key: 'LAST_KEY_ACTIVTTY', label: 'LAST KEY ACTIVITY', _style: tablehead },
-                      {
-                        key: "CABINET_IP_ADDR",
-                        label: "IP Address",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "LAST_PING_TS",
-                        label: "LAST CONNECTED",
-                        _style: tablehead,
-                      },
-                      { key: "OTP", label: "OTP Date", _style: tablehead },
-                      { key: "MAKE", label: "MAKE", _style: tablehead },
-                    ]}
-                    scopedSlots={{
-                      LAST_KEY_ACTIVTTY: (item) => (
-                        <td>
-                          {item.LAST_KEY_ACTIVITY
-                            ? item.LAST_KEY_ACTIVITY
-                            : "-"}
-                        </td>
-                      ),
-                      LAST_PING_TS: (item) => (
-                        <td>
-                          {/*{item.LAST_PING_TS ? item.LAST_PING_TS.substr(0, 19) : '-'}*/}
-                          {item.LAST_PING_TS
-                            ? moment(item.LAST_PING_TS).format(
-                                "DD-MM-YYYY HH:mm:ss"
-                              )
-                            : "-"}
-                        </td>
-                      ),
-                      OTP: (item) => <td>{item.OTP ? item.OTP : "-"}</td>,
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(onlinesite)}
-                    filename={"Online-Sites.csv"}
-                    headers={csvHeadersOnline}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible7(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 700 }}
-              show={visible8}
-              onClose={() => setVisible8(false)}
-            >
-              <CModalHeader onClose={() => setVisible8(false)}>
-                <CModalTitle>Offline Sites</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={offlinesite}
-                    Headfields={[
-                      { key: "RO_CODE", _style: tablehead },
-                      { key: "RO_NAME", _style: tablehead },
-                      {
-                        key: "CABINET_IP_ADDR",
-                        label: "IP Address",
-                        _style: tablehead,
-                      },
-                      { key: "Last_Active_On", _style: tablehead },
-                      { key: "OTP", label: "OTP Date", _style: tablehead },
-                      { key: "MAKE", label: "MAKE", _style: tablehead },
-                    ]}
-                    scopedSlots={{
-                      Last_Active_On: (item) => (
-                        <td>
-                          {/*{item.Last_Active_On ? item.Last_Active_On.substr(0, 19) : '-'}*/}
-                          {item.Last_Active_On
-                            ? moment(item.Last_Active_On).format(
-                                "DD-MM-YYYY HH:mm:ss"
-                              )
-                            : "-"}
-                        </td>
-                      ),
-                      OTP: (item) => <td>{item.OTP ? item.OTP : "-"}</td>,
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(offlinesite)}
-                    filename={"Offline-Sites.csv"}
-                    headers={csvHeadersOffline}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible8(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 700 }}
-              show={visible9}
-              onClose={() => setVisible9(false)}
-            >
-              <CModalHeader onClose={() => setVisible9(false)}>
-                <CModalTitle>Total Cabinets</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={totalsite}
-                    Headfields={[
-                      { key: "STATUS", label: "STATUS", _style: tablehead },
-                      {
-                        key: "LAST_ACTIVE",
-                        label: "LAST ACTIVE",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "IP ADDRESS",
-                        label: "IP ADDRESS",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "CABINET_CODE",
-                        label: "CABINET CODE",
-                        _style: tablehead,
-                      },
-                      { key: "MAKE", label: "MAKE", _style: tablehead },
-                    ]}
-                    scopedSlots={{
-                      LAST_ACTIVE: (item) => (
-                        <td>
-                          {/*{item.LAST_ACTIVE ? item.LAST_ACTIVE.substr(0, 19) : '-'} */}
-                          {item.LAST_ACTIVE
-                            ? moment(item.LAST_ACTIVE).format(
-                                "DD-MM-YYYY HH:mm:ss"
-                              )
-                            : "-"}
-                        </td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(totalsite)}
-                    filename={"Total-Sites.csv"}
-                    headers={csvHeadersTotal}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible9(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-          </CCardBody>
-          <CCardFooter
-            className="text-center"
-            style={{ backgroundColor: "#dae3f3" }}
-          >
-            <b>AMS Cabinet Status ({date})</b>
-          </CCardFooter>
-        </CCard>
+        <div className="dash-tabs">
+          <TabButton label="Overview" active={view === VIEWS.OVERVIEW} onClick={() => setView(VIEWS.OVERVIEW)} />
+          <TabButton label="Events & Activities" active={view === VIEWS.EVENTS} onClick={() => setView(VIEWS.EVENTS)} />
+          <TabButton label="Access Types" active={view === VIEWS.ACCESS} onClick={() => setView(VIEWS.ACCESS)} />
+          <TabButton label="Pump Tests" active={view === VIEWS.TESTS} onClick={() => setView(VIEWS.TESTS)} />
+          <TabButton label="Device Health" active={view === VIEWS.HEALTH} onClick={() => setView(VIEWS.HEALTH)} />
+        </div>
+      </header>
 
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
-          <CCardBody className="p-3">
-            {eventlists.length > 0 ? (
-              eventlists.map((state, index) => {
-                return (
-                  <div key={`event-${index}`} className="d-flex justify-content-between">
-                    {state.ENTRY == "Cabinets with Events" ? (
-                      <CButton onClick={() => setVisible10(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : state.ENTRY == "Cabinets with Zero Event" ? (
-                      <CButton onClick={() => setVisible12(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : (
-                      <p className="cabstatus">{state.ENTRY}</p>
-                    )}
-
-                    <p
-                      className={
-                        state.ENTRY == "Cabinets with Events"
-                          ? "text-success counter"
-                          : state.ENTRY == "Cabinets with Zero Event"
-                          ? "text-danger counter"
-                          : "text-dark counter"
-                      }
-                    >
-                      <b>{state.COUNTER || 0}</b>
-                    </p>
-                  </div>
-                );
-              })
-            ) : (
-              <Loader />
-            )}
-            <CModal
-              style={{ width: 600 }}
-              show={visible10}
-              onClose={() => setVisible10(false)}
-            >
-              <CModalHeader onClose={() => setVisible10(false)}>
-                <CModalTitle>Event performed Sites</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={eventlists_popup}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      {
-                        key: "ZONE_NAME",
-                        label: "REGION NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "TOTAL_EVENTS",
-                        label: "TOTAL EVENTS",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(eventlists_popup)}
-                    filename={"Event-Sites.csv"}
-                    headers={csvHeadersEventlist}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible10(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 600 }}
-              show={visible12}
-              onClose={() => setVisible12(false)}
-            >
-              <CModalHeader onClose={() => setVisible12(false)}>
-                <CModalTitle>Zero Event performed Sites</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={zeroeventlists_popup}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      {
-                        key: "ZONE_NAME",
-                        label: "REGION NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "MAX_TS",
-                        label: "LAST ACTIVE ON",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                      MAX_TS: (item) => (
-                        <td>
-                          {item.MAX_TS
-                            ? moment
-                                .utc(item.MAX_TS)
-                                .format("DD-MM-YYYY HH:mm:ss")
-                            : "-"}
-                        </td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(zeroeventlists_popup)}
-                    filename={"Zero-Event-Sites.csv"}
-                    headers={csvHeadersZeroEvent}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible12(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-          </CCardBody>
-          <CCardFooter
-            className="text-center"
-            style={{ backgroundColor: "peachpuff" }}
-          >
-            <b>Event Sites Status</b>
-            <br />
-            <b>({timeRangeDate})</b>
-          </CCardFooter>
-        </CCard>
-
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
-          <CCardBody className="p-3">
-            {activitylists.length > 0 ? (
-              activitylists.map((state, index) => {
-                return (
-                  <div key={`activity-${index}`} className="d-flex justify-content-between">
-                    {state.ENTRY == "Cabinets with Activities" ? (
-                      <CButton onClick={() => setVisible11(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : state.ENTRY == "Cabinets with Zero Activity" ? (
-                      <CButton onClick={() => setVisible13(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : (
-                      <p className="cabstatus">{state.ENTRY}</p>
-                    )}
-
-                    <p
-                      className={
-                        state.ENTRY == "Cabinets with Activities"
-                          ? "text-success counter"
-                          : state.ENTRY == "Cabinets with Zero Activity"
-                          ? "text-danger counter"
-                          : "text-dark counter"
-                      }
-                    >
-                      <b>{state.COUNTER || 0}</b>
-                    </p>
-                  </div>
-                );
-              })
-            ) : (
-              <Loader />
-            )}
-            <CModal
-              style={{ width: 600 }}
-              show={visible11}
-              onClose={() => setVisible11(false)}
-            >
-              <CModalHeader onClose={() => setVisible11(false)}>
-                <CModalTitle>Activity performed Sites</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={activitylists_popup}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      {
-                        key: "ZONE_NAME",
-                        label: "REGION NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "TOTAL_ACTIVITIES",
-                        label: "TOTAL ACTIVITIES",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(activitylists_popup)}
-                    filename={"Activity-Sites.csv"}
-                    headers={csvHeadersActivitylist}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible11(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 600 }}
-              show={visible13}
-              onClose={() => setVisible13(false)}
-            >
-              <CModalHeader onClose={() => setVisible13(false)}>
-                <CModalTitle>Zero Activity performed Sites</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={zeroactivitylists_popup}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      {
-                        key: "ZONE_NAME",
-                        label: "REGION NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "MAX_TS",
-                        label: "LAST ACTIVE ON",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                      MAX_TS: (item) => (
-                        <td>
-                          {item.MAX_TS
-                            ? moment
-                                .utc(item.MAX_TS)
-                                .format("DD-MM-YYYY HH:mm:ss")
-                            : "-"}
-                        </td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(zeroactivitylists_popup)}
-                    filename={"Zero-Activity-Sites.csv"}
-                    headers={csvHeadersZeroEvent}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible13(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-          </CCardBody>
-          <CCardFooter
-            className="text-center"
-            style={{ backgroundColor: "#dae3f3" }}
-          >
-            <b>Activities Sites Status</b>
-            <br />
-            <b>({timeRangeDate})</b>
-          </CCardFooter>
-        </CCard>
-      </div>
-
-      <div className="d-flex justify-content-around">
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
-          <CCardBody className="p-3">
-            {accesslists.length > 0 ? (
-              accesslists.map((state, index) => {
-                return (
-                  <div key={`access-${index}`} className="d-flex justify-content-between">
-                    {state.ENTRY == "PIN + CARD Access" ? (
-                      <CButton onClick={() => setVisible14(true)}>
-                        PIN + CARD Access
-                      </CButton>
-                    ) : state.ENTRY == "WEB + Emergency Access" ? (
-                      <CButton onClick={() => setVisible15(true)}>
-                        WEB + Emergency Access
-                      </CButton>
-                    ) : state.ENTRY == "Multi Access" ? (
-                      <CButton onClick={() => setVisible22(true)}>
-                        Multi Access
-                      </CButton>
-                    ) : state.ENTRY == "Biometric Access" ? (
-                      <CButton onClick={() => setVisible23(true)}>
-                        Biometric Access
-                      </CButton>
-                    ) : state.ENTRY == "FP + PIN / CARD Access" ? (
-                      <CButton onClick={() => setVisible24(true)}>
-                        FP + PIN / CARD Access
-                      </CButton>
-                    ) : state.ENTRY == "Cabinet With Zero Access" ? (
-                      <CButton onClick={() => setVisible16(true)}>
-                        No Access
-                      </CButton>
-                    ) : (
-                      <p className="cabstatus">{state.ENTRY}</p>
-                    )}
-
-                    <p
-                      className={
-                        state.ENTRY == "PIN + CARD Access"
-                          ? "text-primary counter"
-                          : state.ENTRY == "WEB + Emergency Access"
-                          ? "text-primary counter"
-                          : state.ENTRY == "Biometric Access"
-                          ? "text-success counter"
-                          : state.ENTRY == "Multi Access"
-                          ? "text-info counter"
-                          : state.ENTRY == "FP + PIN / CARD Access"
-                          ? "text-warning counter"
-                          : state.ENTRY == "Cabinet With Zero Access"
-                          ? "text-danger counter"
-                          : "text-dark counter"
-                      }
-                    >
-                      <b>{state.COUNTER || 0}</b>
-                    </p>
-                  </div>
-                );
-              })
-            ) : (
-              <Loader />
-            )}
-            <CModal
-              style={{ width: 600 }}
-              show={visible14}
-              onClose={() => setVisible14(false)}
-            >
-              <CModalHeader onClose={() => setVisible14(false)}>
-                <CModalTitle>Pin+Card Access Entries</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={pinsaccess_popup}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "LOGIN_TYPE",
-                        label: "LOGIN TYPE",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "TOTAL_ACCESS",
-                        label: "TOTAL ACCESS",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(pinsaccess_popup)}
-                    filename={"PinOnly-Entry.csv"}
-                    headers={csvHeadersAccess}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible14(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 600 }}
-              show={visible15}
-              onClose={() => setVisible15(false)}
-            >
-              <CModalHeader onClose={() => setVisible15(false)}>
-                <CModalTitle>Web Only Entries</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={websaccess_popup}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "LOGIN_TYPE",
-                        label: "LOGIN TYPE",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "TOTAL_ACCESS",
-                        label: "TOTAL ACCESS",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(websaccess_popup)}
-                    filename={"WebOnly-Entry.csv"}
-                    headers={csvHeadersAccess}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible15(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-
-            <CModal
-              style={{ width: 600 }}
-              show={visible16}
-              onClose={() => setVisible16(false)}
-            >
-              <CModalHeader onClose={() => setVisible16(false)}>
-                <CModalTitle>No Access Entries</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={noboxs_popup}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "LAST_ACCESS_TS",
-                        label: "LAST ACCESS TIME",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                      LAST_ACCESS_TS: (item) => (
-                        <td>
-                          {item.LAST_ACCESS_TS
-                            ? moment(item.LAST_ACCESS_TS).format(
-                                "DD-MM-YYYY HH:mm:ss"
-                              )
-                            : "-"}
-                        </td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(noboxs_popup)}
-                    filename={"ZeroAccess-Entry.csv"}
-                    headers={csvHeadersNoBox}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible16(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-
-            <CModal
-              style={{ width: 600 }}
-              show={visible22}
-              onClose={() => setVisible22(false)}
-            >
-              <CModalHeader onClose={() => setVisible22(false)}>
-                <CModalTitle>Multi Access Entries</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={pinwebaccess_popup}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "LOGIN_TYPE",
-                        label: "LOGIN TYPE",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "TOTAL_ACCESS",
-                        label: "TOTAL ACCESS",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(pinwebaccess_popup)}
-                    filename={"Multi-Access-Entry.csv"}
-                    headers={csvHeadersAccess}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible22(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 600 }}
-              show={visible23}
-              onClose={() => setVisible23(false)}
-            >
-              <CModalHeader onClose={() => setVisible23(false)}>
-                <CModalTitle>Biometric+Pin Access Entries</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={bioaccess_popup_data}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "LOGIN_TYPE",
-                        label: "LOGIN TYPE",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "TOTAL_ACCESS",
-                        label: "TOTAL ACCESS",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(bioaccess_popup_data)}
-                    filename={"Biometric-Entry.csv"}
-                    headers={csvHeadersAccess}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible23(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 600 }}
-              show={visible24}
-              onClose={() => setVisible24(false)}
-            >
-              <CModalHeader onClose={() => setVisible24(false)}>
-                <CModalTitle>FP + PIN / CARD Access Entries</CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={fpaccess_popup_data}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "LOGIN_TYPE",
-                        label: "LOGIN TYPE",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "TOTAL_ACCESS",
-                        label: "TOTAL ACCESS",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(fpaccess_popup_data)}
-                    filename={"FP-Access-Entry.csv"}
-                    headers={csvHeadersAccess}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible24(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-          </CCardBody>
-          <CCardFooter
-            className="text-center"
-            style={{ backgroundColor: "peachpuff" }}
-          >
-            <b>Access Type Status</b>
-            <br />
-              <b>({timeRangeDate})</b>
-          </CCardFooter>
-        </CCard>
-
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
-          <CCardBody className="p-3">
-            {testact_counts.length > 0 ? (
-              testact_counts.map((state, index) => {
-                return (
-                  <div key={`test-${index}`} className="d-flex justify-content-between">
-                    {state.ENTRY == "Cabinets with test performed" ? (
-                      <CButton onClick={() => setVisible19(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : state.ENTRY == "Cabinets with Zero Test" ? (
-                      <CButton onClick={() => setVisible21(true)}>
-                        {state.ENTRY}
-                      </CButton>
-                    ) : (
-                      <p className="cabstatus">{state.ENTRY}</p>
-                    )}
-                    <p
-                      className={
-                        state.ENTRY == "Cabinets with test performed"
-                          ? "text-success counter"
-                          : state.ENTRY == "Cabinets with Zero Test"
-                          ? "text-danger counter"
-                          : "text-dark counter"
-                      }
-                    >
-                      <b>{state.COUNTER || 0}</b>
-                    </p>
-                  </div>
-                );
-              })
-            ) : (
-              <Loader />
-            )}
-            <CModal
-              style={{ width: 600 }}
-              show={visible19}
-              onClose={() => setVisible19(false)}
-            >
-              <CModalHeader onClose={() => setVisible19(false)}>
-                <CModalTitle>
-                  Total Cabinets With Pump test performed details
-                </CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={testact_popups}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "TIMES_TEST_PERFORMED",
-                        label: "TIMES TEST PERFORMED",
-                        _style: tablehead,
-                      },
-                    ]}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(testact_popups)}
-                    filename={"TotalTestActivity.csv"}
-                    headers={csvHeadersTotalTest}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-
-                <CButton color="secondary" onClick={() => setVisible19(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-            <CModal
-              style={{ width: 600 }}
-              show={visible21}
-              onClose={() => setVisible21(false)}
-            >
-              <CModalHeader onClose={() => setVisible21(false)}>
-                <CModalTitle>
-                  Cabinets With NO Pump test performed details
-                </CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={notestact_popups}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      { key: "ZONE_NAME", label: "REGION", _style: tablehead },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                    ]}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(notestact_popups)}
-                    filename={"NoTestActivity.csv"}
-                    headers={csvHeadersTotalTest}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-
-                <CButton color="secondary" onClick={() => setVisible21(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-          </CCardBody>
-          <CCardFooter
-            className="text-center"
-            style={{ backgroundColor: "#dae3f3" }}
-          >
-            <b>Pump Test performed total sites</b>
-          </CCardFooter>
-        </CCard>
-
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
-          <CCardBody className="p-3">
-            <div className="d-flex justify-content-around">
-              <CButton onClick={() => setVisible20(true)}>
-                <div
-                  style={{
-                    "padding-left": "0.1em",
-                    "font-size": "5rem",
-                    "align-self": "center",
-                  }}
-                >
-                  <p style={{ color: "red" }}>{get_batterys.length}</p>
-                </div>
-              </CButton>
-            </div>
-
-            <CModal
-              style={{ width: 600 }}
-              show={visible20}
-              onClose={() => setVisible20(false)}
-            >
-              <CModalHeader onClose={() => setVisible20(false)}>
-                <CModalTitle>
-                  Device Health Parameters Sites Details
-                </CModalTitle>
-              </CModalHeader>
-              <CModalBody>
-                <div className="table text-center">
-                  <Datatable
-                    data={get_batterys}
-                    Headfields={[
-                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
-                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
-                      {
-                        key: "ZONE_NAME",
-                        label: "REGION NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "STATE_NAME",
-                        label: "STATE NAME",
-                        _style: tablehead,
-                      },
-                      {
-                        key: "BATTERY_PC",
-                        label: "BATTERY PERCENTAGE",
-                        _style: tablehead,
-                      },
-                    ]}
-                    scopedSlots={{
-                      RO_CODE: (item) => (
-                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
-                      ),
-                      RO_NAME: (item) => (
-                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
-                      ),
-                    }}
-                  />
-                </div>
-              </CModalBody>
-              <CModalFooter>
-                <CButton color="secondary">
-                  <CSVLink
-                    data={formatCSVData(get_batterys)}
-                    filename={"Event-Sites.csv"}
-                    headers={csvHeadersBattery}
-                  >
-                    Export to Excel
-                  </CSVLink>
-                </CButton>
-                <CButton color="secondary" onClick={() => setVisible20(false)}>
-                  Close
-                </CButton>
-              </CModalFooter>
-            </CModal>
-          </CCardBody>
-          <CCardFooter
-            className="text-center"
-            style={{ backgroundColor: "peachpuff" }}
-          >
-            <b>Device Health Parameters</b>
-          </CCardFooter>
-        </CCard>
-      </div>
+      {content}
     </div>
   );
 }
-
-export default ADashboard;

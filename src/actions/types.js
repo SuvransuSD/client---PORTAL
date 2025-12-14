@@ -1,37 +1,6 @@
-// export const NEW_PROFILE = "NEW_PROFILE";
-// export const RETRIEVE_SITE = "RETRIEVE_SITE";
-// export const RETRIEVE_CABINET = "RETRIEVE_CABINET";
-// export const RETRIEVE_ENTERPRISE = "RETRIEVE_ENTERPRISE";
-// export const RETRIEVE_SMTP = "RETRIEVE_SMTP";
-// export const RETRIEVE_KEY = "RETRIEVE_KEY";
-// export const FETCH_KEY = "FETCH_KEY";
-// export const DELETE_KEY = "DELETE_KEY";
-// export const FETCH_ROLE = "FETCH_ROLE";
-// export const RETRIEVE_ROLE = "RETRIEVE_ROLE";
-// export const DELETE_ROLE = "DELETE_ROLE";
-// export const RETRIEVE_USER = "RETRIEVE_USER";
-// export const FETCH_USER = "FETCH_USER";
-// export const DELETE_USER = "DELETE_USER";
-// export const RETRIEVE_ACTIVITY = "RETRIEVE_ACTIVITY";
-// export const FETCH_ACTIVITY = "FETCH_ACTIVITY";
-// export const DELETE_ACTIVITY = "DELETE_ACTIVITY";
-// export const NEW_ACTIVITY = "NEW_ACTIVITY";
-// export const FETCH_EVENT = "FETCH_EVENT";
-// export const RETRIEVE_EVENT = "RETRIEVE_EVENT";
-// export const DELETE_EVENT = "DELETE_EVENT";
-// export const FETCH_EXCEPTION = "FETCH_EXCEPTION";
-// export const RETRIEVE_EXCEPTION = "RETRIEVE_EXCEPTION";
-// export const DELETE_EXCEPTION = "DELETE_EXCEPTION";
-// export const FETCH_EVENTLOGS = "FETCH_EVENTLOGS";
-// export const FETCH_NOTIFICATION = "FETCH_NOTIFICATION";
-// export const RETRIEVE_NOTIFICATION = "RETRIEVE_NOTIFICATION";
-// export const DELETE_NOTIFICATION = "DELETE_NOTIFICATION";
+
 export const FETCH_TOP_USERS = "FETCH_TOP_USERS";
 export const FETCH_TOP_KEYS = "FETCH_TOP_KEYS";
-// export const ACKNOWLEDGE_EVENTLOGS = "ACKNOWLEDGE_EVENTLOGS";
-// export const RETRIEVE_PEG = "RETRIEVE_PEG";
-// export const UPDATE_ED = "UPDATE_ED";
-// export const UNACKNOWLEDGE_COUNT = "UNACKNOWLEDGE_COUNT";
 
 //Auth 
 export const AUTH_LOGIN = "AUTH_LOGIN";
@@ -57,6 +26,7 @@ export const CREATE_SMTP = "CREATE_SMTP";
 export const CREATE_FIRMWARE = "CREATE_FIRMWARE";
 export const GET_OTA = "GET_OTA";
 export const UPDATE_FIRMWARE = "UPDATE_FIRMWARE";
+export const LOAD_DEMO_DASHBOARD = "LOAD_DEMO_DASHBOARD";
 
 
 

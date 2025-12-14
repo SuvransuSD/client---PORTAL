@@ -1,6 +1,7 @@
 import axiosInstance from "../../utils/axiosInstance";
 import {
   GET_ACTIVITY,
+  LOAD_DEMO_DASHBOARD,
   GET_ALL_ACTIVITY,
   GET_AMSCABINETSTATUS,
   GET_TOPKEY,
@@ -45,9 +46,119 @@ import {
   GET_BATTERY,
   CLEAR_CAPTCHA_VALUE
 } from "../types";
-var uri = "/api/AMS_Dashboard/"
 
-// actions
+
+import moment from "moment";
+import { MOCK_DASHBOARD } from "../../mock/mockAmsDashboardData";
+const uri = "/api/AMS_Dashboard/"; // ✅ keep after imports, add semicolon
+
+export const load_demo_dashboard = () => (dispatch) => {
+  const m = MOCK_DASHBOARD;
+
+  const cabinetstatus = [
+    { ENTRY: "Unregistered", COUNTER: m.cabinetStatus?.unregistered ?? 0 },
+    { ENTRY: "Online", COUNTER: m.cabinetStatus?.online ?? 0 },
+    { ENTRY: "Offline", COUNTER: m.cabinetStatus?.offline ?? 0 },
+    { ENTRY: "Total OTPed Cabinets", COUNTER: m.cabinetStatus?.totalOtpedCabinets ?? 0 },
+  ];
+
+  const eventlists = [
+    { ENTRY: "Cabinets with Events", COUNTER: m.eventSitesStatus?.cabinetsWithEvents ?? 0 },
+    { ENTRY: "Cabinets with Zero Event", COUNTER: m.eventSitesStatus?.cabinetsWithZeroEvent ?? 0 },
+  ];
+
+  const activitylists = [
+    { ENTRY: "Cabinets with Activities", COUNTER: m.activitySitesStatus?.cabinetsWithActivities ?? 0 },
+    { ENTRY: "Cabinets with Zero Activity", COUNTER: m.activitySitesStatus?.cabinetsWithZeroActivity ?? 0 },
+  ];
+
+  const accesslists = [
+    { ENTRY: "PIN + CARD Access", COUNTER: m.accessTypeStatus?.pinAccess ?? 0 },
+    { ENTRY: "WEB + Emergency Access", COUNTER: m.accessTypeStatus?.webAccess ?? 0 },
+    { ENTRY: "Multi Access", COUNTER: m.accessTypeStatus?.pinWebAccess ?? 0 },
+    { ENTRY: "Biometric Access", COUNTER: 0 },
+    { ENTRY: "FP + PIN / CARD Access", COUNTER: 0 },
+    { ENTRY: "Cabinet With Zero Access", COUNTER: m.accessTypeStatus?.cabinetWithZeroAccess ?? 0 },
+  ];
+
+  const testact_counts = [
+    { ENTRY: "Cabinets with test performed", COUNTER: m.pumpTestStatus?.cabinetsWithTest ?? 0 },
+    { ENTRY: "Cabinets with Zero Test", COUNTER: m.pumpTestStatus?.cabinetsWithZeroTest ?? 0 },
+  ];
+
+  // ---- lists for modals / charts ----
+  const offlinesites = (m.topOfflineSites || []).map((x) => ({
+    RO_CODE: x.siteCode,
+    RO_NAME: x.siteName,
+    CABINET_IP_ADDR: "0.0.0.0",
+    Last_Active_On: moment().subtract(Number(x.hoursOffline || 0), "hours").toISOString(),
+    OTP: "-",
+    MAKE: "-",
+  }));
+
+ // ✅ Build POPUP rows so "Events by Region" + "Activities by Region" charts work
+const eventlists_popup = (m.byRegion || []).map((x) => ({
+  RO_CODE: "-",
+  RO_NAME: "-",
+  ZONE_NAME: x.region,          // 👈 region name becomes ZONE_NAME
+  STATE_NAME: "Demo",
+  TOTAL_EVENTS: x.events,       // 👈 used by charts
+}));
+
+const activitylists_popup = (m.byRegion || []).map((x) => ({
+  RO_CODE: "-",
+  RO_NAME: "-",
+  ZONE_NAME: x.region,          // 👈 region name becomes ZONE_NAME
+  STATE_NAME: "Demo",
+  TOTAL_ACTIVITIES: x.activities, // 👈 used by charts
+}));
+
+  const get_batterys = (m.topAlertDevices || []).map((x) => ({
+    CABINET_ID: x.cabinetId,
+    RO_CODE: x.siteCode,
+    RO_NAME: x.siteName,
+    LAST_PING_TS: moment().toISOString(),
+    BATTERY_PC: x.batteryPc,
+    ZONE_NAME: "Demo",
+    STATE_NAME: "Demo",
+  }));
+
+  // Optional: minimal data for these modals (so click shows something)
+  const onlinesites = [];       // can generate later if needed
+  const totalsites = [];        // can generate later if needed
+  const unregisteredpopups = []; // can generate later if needed
+
+  dispatch({
+    type: LOAD_DEMO_DASHBOARD,
+    payload: {
+      cabinetstatus,
+      eventlists,
+      activitylists,
+      accesslists,
+      testact_counts,
+
+      offlinesites,
+      eventlists_popup,
+      activitylists_popup: [],
+      zeroeventlists_popup: [],
+      zeroactivitylists_popup: [],
+activitylists_popup,
+      onlinesites,
+      totalsites,
+      unregisteredpopups,
+
+      get_batterys,
+
+      // if you want trends available in redux (optional)
+      cabinetTrend: m.cabinetTrend || [],
+      eventsTrend: m.eventsTrend || [],
+      accessTrend: m.accessTrend || [],
+      testsTrend: m.testsTrend || [],
+    },
+  });
+};
+
+
 
 export const get_events = (eventdata) => dispatch => {
   const MYURL = uri + 'get-events';

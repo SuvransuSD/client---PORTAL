@@ -34,7 +34,7 @@
   // opacity: 1 !important;
 }
 .heading{
-  color: #01a757 !important; 
+  color: #0067B1 !important; 
   font-size: 19px !important;
 }
 
@@ -64,6 +64,15 @@
   position: fixed;
   left: 50%;
   top: 50%;
+}
+.loginBtn {
+  background-color: #0067B1 !important;  // Tata Steel blue
+  border-color: #0067B1 !important;
+  color: #fff !important;
+}
+.loginBtn:hover {
+  background-color: #005a9a !important;
+  border-color: #005a9a !important;
 }
 
 @media (prefers-reduced-motion: no-preference) {

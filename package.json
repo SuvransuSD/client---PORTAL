@@ -70,6 +70,7 @@
     "react-toastify": "^9.0.4",
     "react-toastr": "^3.0.0",
     "react-toasts": "^2.0.14",
+    "recharts": "^3.5.1",
     "redux": "^4.0.5",
     "redux-devtools-extension": "^2.13.9",
     "redux-thunk": "^2.3.0",

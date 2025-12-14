@@ -5,7 +5,7 @@ import {
     GET_TOTAL_SITES, GET_USERWITHROCODE, GET_EVENT_SITE, GET_EVENT_SITE_POPUP, GET_ACTIVITY_SITE, GET_ACTIVTIY_SITE_POPUP,
     GET_ZEROEVENT_SITE_POPUP, GET_ZEROACTIVITY_SITE_POPUP, GET_ACCESS_LIST, GET_PINACCESS_POPUP, GET_BIOACCESS_POPUP, GET_WEBACCESS_POPUP, GET_FPACCESS_POPUP, GET_NOBOX_POPUP,
     GET_NOACTIVITY_BOX, GET_TOTALEVENTTYPE_DESC, GET_TOTALEVENT_DESC, GET_TESTACT_COUNT, GET_TESTACT_POPUP, GET_NOTESTACT_POPUP, GET_KEYSBYACT, GET_BATTERY,
-    GET_PINPLUSWEBACCESS_POPUP,
+    GET_PINPLUSWEBACCESS_POPUP, LOAD_DEMO_DASHBOARD,
 } from "../../actions/types";
 
 const initialState = {
@@ -51,7 +51,12 @@ const initialState = {
     testact_popups: [],
     notestact_popups: [],
     keysbyactivity: [],
-    get_batterys: []
+    get_batterys: [],
+    cabinetTrend: [],
+eventsTrend: [],
+accessTrend: [],
+testsTrend: [],
+
 };
 
 export default function (state = initialState, action) {
@@ -277,6 +282,31 @@ export default function (state = initialState, action) {
                 ...state,
                 get_batterys: action.payload,
             };
+            case LOAD_DEMO_DASHBOARD:
+  return {
+    ...state,
+
+    // These are used by your dashboard + charts
+    cabinetstatus: action.payload.cabinetstatus || [],
+    eventlists: action.payload.eventlists || [],
+    activitylists: action.payload.activitylists || [],
+    accesslists: action.payload.accesslists || [],
+    testact_counts: action.payload.testact_counts || [],
+
+    // Needed for region charts
+    eventlists_popup: action.payload.eventlists_popup || [],
+    activitylists_popup: action.payload.activitylists_popup || [],
+
+    // Optional (if you want top offline etc.)
+    offlinesites: action.payload.offlinesites || [],
+
+    // Optional (if you want trend charts in demo)
+    cabinetTrend: action.payload.cabinetTrend || [],
+    eventsTrend: action.payload.eventsTrend || [],
+    accessTrend: action.payload.accessTrend || [],
+    testsTrend: action.payload.testsTrend || [],
+  };
+
 
         default:
             return state;

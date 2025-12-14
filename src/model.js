@@ -1,10 +1,10 @@
 var mainUrl = "http://192.168.1.118:8001";
 
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   mainUrl = "http://localhost:8001";
 }
 
-var logoUrl = 'https://amsenterprise.jiobp.com:8001/images/jio.png';
+var logoUrl = "/images/Tata-logo.png";
 
 // var logoUrl = 'http://localhost:3000/images/jio.png';
 
@@ -17,5 +17,5 @@ module.exports = {
   //role: role,
   mainUrl: mainUrl,
   userId: userId,
-  logoUrl: logoUrl
+  logoUrl: logoUrl,
 };
