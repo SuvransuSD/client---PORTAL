@@ -4,7 +4,7 @@ export const SideBarSecondaryData = [
         link: "/Ams-Configuration/Key-Status"
     },
     {
-        title: "RO Information",
+        title: "Site Information",
         link: "/Ams-Configuration/Site-Information"
     },
     {

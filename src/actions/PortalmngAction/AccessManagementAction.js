@@ -1,4 +1,4 @@
-import axiosInstance from "../../utils/axiosInstance";
+﻿import axiosInstance from "../../utils/axiosInstance";
 import { CHECK_ACCESS, CREATE_ACCESS, FIND_ACCESS, GET_MOULES } from "../types";
 
 var uri = "/api/Portal_Management/get-moules"
@@ -62,7 +62,7 @@ export const FindAccess = (data) => dispatch => {
 
 export const checkaccess = (data) => dispatch => {
   axiosInstance.post('/api/Portal_Management/check-access', data).then((result) => {
-    if (result.status) {
+    if (result.status === 200) {
       dispatch({
         type: CHECK_ACCESS,
         payload: result.data,
@@ -79,6 +79,8 @@ export const checkaccess = (data) => dispatch => {
     })
 
 }
+
+
 
 
 

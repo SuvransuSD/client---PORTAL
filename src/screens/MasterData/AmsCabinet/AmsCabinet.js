@@ -26,8 +26,10 @@ import {
   get_zone,
 } from "../../../actions/AmsDashboard/GetDropDownAction";
 import Select from "react-select";
+import { useHistory } from "react-router-dom";
 
 function AmsCabinet() {
+  const history = useHistory();
   const tablehead = { background: "#dae3f3", color: "grey" };
   const initialvalue = {
     location: "",
@@ -49,6 +51,7 @@ function AmsCabinet() {
   const [showsavebtn, setshowsavebtn] = React.useState(false);
   const [showupdatebtn, setshowupdatebtn] = React.useState(true);
   const [iszone, setzone] = React.useState();
+  const [isFromCabinetRegistration, setIsFromCabinetRegistration] = React.useState(false);
   const getzone = useSelector((state) => state.Ddwreducer.Zone);
   const getstate = useSelector((state) => state.Ddwreducer.States);
   const getro = useSelector((state) => state.Ddwreducer.RO);
@@ -65,7 +68,10 @@ function AmsCabinet() {
     var ipaddr = sessionStorage.getItem("CABINET_IP_ADDR");
     var rocode = sessionStorage.getItem("CABINET_CODE");
     var roname = sessionStorage.getItem("LOCATION");
+    var isFromRegistration = false;
+    
     if (ipaddr) {
+      isFromRegistration = true;
       var ipstr = ipaddr.split(".").map(Number);
       ipstr[3] = ipstr[3] - 14;
       var gatewayaddr = ipstr.join(".");
@@ -79,6 +85,9 @@ function AmsCabinet() {
         gateway: gatewayaddr,
       });
     }
+
+    // Store registration flow state
+    setIsFromCabinetRegistration(isFromRegistration);
 
     sessionStorage.removeItem("CABINET_IP_ADDR");
     sessionStorage.removeItem("CABINET_CODE");
@@ -121,6 +130,14 @@ function AmsCabinet() {
         MAKE: isform.makecategory,
       };
       dispatch(create_amscabinet(newCabinet));
+      
+      // If this is part of cabinet registration flow, navigate back to dashboard after successful save
+      if (isFromCabinetRegistration) {
+        // Add a small delay to ensure the save operation completes
+        setTimeout(() => {
+          history.push('/Ams-Dashboard/Dashboard');
+        }, 1000);
+      }
     }
 
     if (Object.values(formError).length === 0 && Isupdate) {
@@ -151,7 +168,7 @@ function AmsCabinet() {
       err.state = "State is Required";
     }
     if (!values.r_outlet) {
-      err.r_outlet = "RO is Required";
+      err.r_outlet = "Site is Required";
     }
     // if (!values.location) {
     //     err.location = "Location is Required"
@@ -285,6 +302,8 @@ function AmsCabinet() {
         <h3 className="Header_Text">Manage Cabinet</h3>
       </div>
 
+
+
       <div>
         {checkacc && checkacc[0].AR_RIGHTS == 2 && (
           <CForm method="post" onSubmit={submitform}>
@@ -358,7 +377,7 @@ function AmsCabinet() {
               <CCol lg={4}>
                 <CFormGroup>
                   <CLabel htmlFor="nf-email">
-                    RO Name<i style={{ color: "red" }}>*</i>
+                    Site Name<i style={{ color: "red" }}>*</i>
                   </CLabel>
                   {/* <select
                     className="form-control"
@@ -367,7 +386,7 @@ function AmsCabinet() {
                     id="r_outlet"
                     value={isform.r_outlet}
                   >
-                    <option>Select RO</option>
+                    <option>Select Site</option>
                     {getro.map((data) => (
                       <option value={data.RO_ID} key={data.RO_ID}>
                         {data.RO_NAME}
@@ -380,7 +399,7 @@ function AmsCabinet() {
                       (option) => option.value === isform.r_outlet
                     )}
                     onChange={handleRoChange}
-                    placeholder="Select RO Name"
+                    placeholder="Select Site Name"
                   />
                   <CFormText className="help-block text-danger">
                     <p style={{ color: "red" }}>{formError.r_outlet}</p>
@@ -390,7 +409,7 @@ function AmsCabinet() {
               <CCol lg={4}>
                 <CFormGroup>
                   <CLabel htmlFor="nf-email">
-                    RO Code<i style={{ color: "red" }}>*</i>
+                    Site Code<i style={{ color: "red" }}>*</i>
                   </CLabel>
                   <CInput
                     type="Name"
@@ -398,7 +417,7 @@ function AmsCabinet() {
                     name="Cabinetcode"
                     value={isform.Cabinetcode}
                     onChange={onChange}
-                    placeholder="Enter RO Code.."
+                    placeholder="Enter Site Code.."
                   />
                   <CFormText className="help-block text-danger">
                     <p style={{ color: "red" }}>{formError.Cabinetcode}</p>

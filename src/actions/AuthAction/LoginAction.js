@@ -9,7 +9,7 @@ export const Create_Login = (crediential, history) => dispatch => {
   const MYURL = uri + 'login';
   axiosInstance.post(MYURL, crediential).then((result) => {
     console.log("result", result.data);
-    if (result.status) {
+    if (result.status === 200) {
       let settoken = sessionStorage.setItem('token', JSON.stringify(result.data.tokens.access));
       const tokexp = sessionStorage.setItem('tokenExpiry', result.data.tokens.access.expires);
       const username = sessionStorage.setItem('user', result.data.user.userName);
@@ -53,7 +53,7 @@ export const Create_Login = (crediential, history) => dispatch => {
 export const update_captcha = (captcha) => dispatch => {
   const MYURL = uri + 'update_captcha';
   axiosInstance.post(MYURL, captcha).then((result) => {
-    if (result.status) {
+    if (result.status === 200) {
       dispatch({
         type: CAPTCHA_VALUE,
         payload: result.data,

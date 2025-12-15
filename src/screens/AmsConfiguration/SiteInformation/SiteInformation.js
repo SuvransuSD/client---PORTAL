@@ -152,7 +152,7 @@ const SiteInformation = () => {
   const validateForm = (values) => {
     const err = {};
     if (!values.siteName) {
-      err.siteName = "RO Name is Required"
+      err.siteName = "Site Name is Required"
     }
     if (!values.street) {
       err.street = "Street is Required"
@@ -196,14 +196,14 @@ const SiteInformation = () => {
             <CForm action="" method="post" onSubmit={submitform} className="row">
               <CCol sm={14} >
                 <CFormGroup>
-                  <CLabel htmlFor="siteName">RO Name<i style={{ color: 'red' }}>*</i></CLabel>
+                  <CLabel htmlFor="siteName">Site Name<i style={{ color: 'red' }}>*</i></CLabel>
                   <CInput
                     type="text"
                     id="siteName"
                     name="siteName"
                     value={isform.siteName}
                     onChange={onChangeText}
-                    placeholder="Enter RO name.."
+                    placeholder="Enter Site name.."
                   />
                   <CFormText className="help-block text-danger" >
                     <p style={{ color: 'red' }}>
@@ -307,7 +307,7 @@ const SiteInformation = () => {
               </CCol>
               <CCol md={7}>
                 <CFormGroup>
-                  <CLabel htmlFor="siteContactNumber">RO Contact Number<i style={{ color: 'red' }}>*</i></CLabel>
+                  <CLabel htmlFor="siteContactNumber">Site Contact Number<i style={{ color: 'red' }}>*</i></CLabel>
                   <CInput
                     type="number"
                     id="siteContactNumber"
@@ -326,7 +326,7 @@ const SiteInformation = () => {
               </CCol>
               <CCol md={7}>
                 <CFormGroup>
-                  <CLabel htmlFor="siteRegisterNumber">RO Register Number<i style={{ color: 'red' }}>*</i></CLabel>
+                  <CLabel htmlFor="siteRegisterNumber">Site Register Number<i style={{ color: 'red' }}>*</i></CLabel>
                   <CInput
                     type="number"
                     id="siteRegisterNumber"
@@ -363,7 +363,7 @@ const SiteInformation = () => {
               </CCol>
               <CCol md={5}>
                 <CFormGroup>
-                  <CLabel htmlFor="siteSupervisorName">RO Manager Name<i style={{ color: 'red' }}>*</i></CLabel>
+                  <CLabel htmlFor="siteSupervisorName">Site Manager Name<i style={{ color: 'red' }}>*</i></CLabel>
                   <CInput
                     type="text"
                     id="siteSupervisorName"
@@ -382,7 +382,7 @@ const SiteInformation = () => {
               </CCol>
               <CCol md={5}>
                 <CFormGroup>
-                  <CLabel htmlFor="siteContactNumber">RO Email<i style={{ color: 'red' }}>*</i></CLabel>
+                  <CLabel htmlFor="siteContactNumber">Site Email<i style={{ color: 'red' }}>*</i></CLabel>
                   <CInput
                     type="email"
                     id="siteSupervisorEmail"

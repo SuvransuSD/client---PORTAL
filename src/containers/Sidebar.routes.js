@@ -27,7 +27,7 @@ export const MasterData = [
     link: '/Master-Data/State-List'
   },
   {
-    label: 'RO List',
+    label: 'Site List',
     link: '/Master-Data/Ro-List'
   },
   {

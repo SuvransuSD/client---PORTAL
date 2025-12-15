@@ -231,11 +231,23 @@ function Login() {
                         <CRow>
                           <CCol xs="12" className="text-center">
                             <h6 className="poweredBy">
-                              Powered by{" "}
-                              <a href="http://csinc.in" target="_blank" rel="noopener noreferrer">
-                                CSI
-                              </a>
+                              Developed by
                             </h6>
+                            <div className="csi-logo-container">
+                              <a href="http://csinc.in" target="_blank" rel="noopener noreferrer">
+                                <img 
+                                  src="/images/csilogo.png" 
+                                  alt="CSI Logo" 
+                                  className="csi-logo"
+                                  style={{
+                                    maxWidth: '120px',
+                                    height: 'auto',
+                                    marginTop: '8px',
+                                    transition: 'transform 0.2s ease'
+                                  }}
+                                />
+                              </a>
+                            </div>
                           </CCol>
                         </CRow>
                       </CForm>

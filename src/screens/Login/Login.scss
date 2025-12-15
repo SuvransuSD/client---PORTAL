@@ -80,3 +80,52 @@
     animation: App-logo-spin infinite 20s linear;
   }
 }
+
+// CSI Logo Styles
+.csi-logo-container {
+  margin-top: 8px;
+  
+  .csi-logo {
+    max-width: 120px;
+    height: auto;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.9;
+    
+    &:hover {
+      transform: scale(1.05);
+      opacity: 1;
+    }
+  }
+}
+
+.poweredBy {
+  color: #6c757d;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+// Responsive adjustments for CSI logo
+@media (max-width: 768px) {
+  .csi-logo-container {
+    .csi-logo {
+      max-width: 100px;
+    }
+  }
+  
+  .poweredBy {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .csi-logo-container {
+    .csi-logo {
+      max-width: 80px;
+    }
+  }
+  
+  .poweredBy {
+    font-size: 12px;
+  }
+}

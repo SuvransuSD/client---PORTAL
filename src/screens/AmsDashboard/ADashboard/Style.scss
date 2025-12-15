@@ -2,6 +2,7 @@
   min-height: 100vh;
   background: #f1f5f9; /* slate-100 */
   padding: 16px;
+  margin: 0;
 }
 
 .dash-header {
@@ -11,6 +12,13 @@
   align-items: center;
   justify-content: space-between;
   margin-bottom: 18px;
+}
+
+.dash-header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .dash-title {
@@ -52,6 +60,43 @@
   background: #0f172a; /* slate-900 */
   color: #ffffff;
   border-color: #0f172a;
+}
+
+.dash-external-btn {
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.dash-external-btn:hover {
+  background-color: #1e40af !important;
+  border-color: #1e40af !important;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.dash-external-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments for external button */
+@media (max-width: 768px) {
+  .dash-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .dash-header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .dash-external-btn {
+    margin-left: 0 !important;
+    font-size: 13px;
+    padding: 6px 12px;
+  }
 }
 
 /* grids */
@@ -169,3 +214,224 @@
   flex: 1;
   min-height: 0;
 }
+/* Clickable tile styles */
+.dash-tile--clickable {
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.dash-tile--clickable:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #e2e8f0;
+  background: #fefefe;
+}
+
+.dash-tile--clickable:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Export buttons styling */
+.dash-export-row {
+  .btn {
+    font-size: 12px;
+    padding: 6px 12px;
+  }
+  
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+}
+/* Modal table styling */
+.modal-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  
+  th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    text-align: left;
+    padding: 12px;
+    border-bottom: 2px solid #dee2e6;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    vertical-align: middle;
+  }
+  
+  tbody tr:hover {
+    background-color: #f8f9fa;
+  }
+}
+
+/* Modal styling improvements */
+.modal-content {
+  .modal-body {
+    padding: 20px;
+  }
+  
+  .modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 15px 20px;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 15px 20px;
+  }
+}
+/* Force modal visibility */
+.modal {
+  z-index: 1050 !important;
+}
+
+.modal-backdrop {
+  z-index: 1040 !important;
+}
+
+.modal.show {
+  display: block !important;
+}
+
+/* Registration Modal Styling */
+.registration-modal {
+  .form-group {
+    margin-bottom: 1rem;
+    
+    label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .form-control {
+      border: 1px solid #ced4da;
+      border-radius: 0.25rem;
+      padding: 0.375rem 0.75rem;
+      
+      &:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+      }
+    }
+    
+    .text-danger {
+      color: #dc3545 !important;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+  }
+  
+  .modal-header {
+    border-bottom: 1px solid #dee2e6;
+    padding: 1rem 1.25rem;
+    
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    
+    .close {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      
+      &:hover {
+        opacity: 0.75;
+      }
+    }
+  }
+  
+  .modal-body {
+    padding: 1.25rem;
+  }
+  
+  .modal-footer {
+    border-top: 1px solid #dee2e6;
+    padding: 1rem 1.25rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+}
+/* Chart container fixes */
+.dash-card__body {
+  min-height: 240px;
+  min-width: 250px;
+  position: relative;
+}
+
+.recharts-responsive-container {
+  min-height: 200px !important;
+  min-width: 200px !important;
+}
+
+.recharts-wrapper {
+  min-height: 200px !important;
+  min-width: 200px !important;
+}
+
+/* Ensure charts have proper dimensions */
+.dash-grid--charts-3 .dash-card {
+  min-width: 300px;
+}
+
+@media (max-width: 768px) {
+  .dash-card {
+    min-width: 280px;
+  }
+  
+  .dash-card__body {
+    min-height: 200px;
+    min-width: 240px;
+  }
+}
+/* Register button styling in modal table */
+.modal-table {
+  .btn-sm {
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    &:active {
+      transform: translateY(0);
+    }
+  }
+  
+  // Action column styling
+  th:last-child,
+  td:last-child {
+    position: sticky;
+    right: 0;
+    background: white;
+    border-left: 1px solid #dee2e6;
+    z-index: 1;
+  }
+  
+  // Hover effect for table rows with register buttons
+  tbody tr:hover {
+    background-color: #f8f9fa;
+    
+    .btn-primary {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+  }
+}
+

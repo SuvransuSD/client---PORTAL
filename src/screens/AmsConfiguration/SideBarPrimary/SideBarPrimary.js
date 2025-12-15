@@ -89,7 +89,7 @@ const SideBarPrimary = () => {
                         name="rocode"
                         value={isform.rocode}
                         type="text"
-                        placeholder="Enter RO Code"
+                        placeholder="Enter Site Code"
                         onChange={onChangeText}></CInput>
                   </CCol>
                   <CCol lg={2}>

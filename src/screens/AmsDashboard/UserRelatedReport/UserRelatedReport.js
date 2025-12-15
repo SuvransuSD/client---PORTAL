@@ -67,7 +67,7 @@ function Event_History() {
   const validateForm = (values) => {
     const err = {};
     if (!values.rocode) {
-      err.state = "RO Code is Required";
+      err.state = "Site Code is Required";
     }
     return err;
   };
@@ -114,14 +114,14 @@ function Event_History() {
               <CRow>
                 <CCol lg={6}>
                   <CFormGroup>
-                    {/* <CLabel htmlFor="nf-email">RO Code<i style={{color: 'red'}}>*</i></CLabel> */}
+                    {/* <CLabel htmlFor="nf-email">Site Code<i style={{color: 'red'}}>*</i></CLabel> */}
                     <CInput
                       type="Name"
                       id="rocode"
                       name="rocode"
                       value={isform.aname}
                       onChange={onChangeText}
-                      placeholder="Enter RO Code.."
+                      placeholder="Enter Site Code.."
                     />
                     <CFormText className="help-block text-danger">
                       <p style={{ color: "red" }}>{formError.rocode}</p>

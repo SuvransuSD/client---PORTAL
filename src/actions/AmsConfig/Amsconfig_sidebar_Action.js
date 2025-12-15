@@ -1,4 +1,4 @@
-import axiosInstance from "../../utils/axiosInstance";
+﻿import axiosInstance from "../../utils/axiosInstance";
 import { AMS_CONFIGURATION_SIDEBAR, AMS_CONFIGURATION_SIDEBAR_SELECTED_RO, SEARCH_SIDEBAR } from "../types";
 var uri = "/api/AMS_Configuration/"
 
@@ -7,7 +7,7 @@ var uri = "/api/AMS_Configuration/"
 export const get_left_sidebar = () => dispatch => {
   const MYURL = uri + `sidebar`;
   axiosInstance.get(MYURL).then((result) => {
-    if (result.status) {
+    if (result.status === 200) {
       dispatch({
         type: AMS_CONFIGURATION_SIDEBAR,
         payload: result.data
@@ -22,7 +22,7 @@ export const get_left_sidebar = () => dispatch => {
 export const search_sidebar = (body) => dispatch => {
   const MYURL = uri + `searchsidebar`;
   axiosInstance.post(MYURL, body).then((result) => {
-    if (result.status) {
+    if (result.status === 200) {
       dispatch({
         type: SEARCH_SIDEBAR,
         payload: result.data
@@ -40,4 +40,5 @@ export const set_sidebar_selected_ro = (data) => dispatch => {
     payload: data
   })
 }
+
 

@@ -36,7 +36,7 @@ const KeyStatus = () => {
   React.useEffect(() => {
     const MYURL = '/api/AMS_Configuration/get-key_status';
     axiosInstance.post(MYURL, { roId: seletedRo.roId }).then((result) => {
-      if (result.status) {
+      if (result.status === 200) {
         setServerData(result.data);
       }
     })

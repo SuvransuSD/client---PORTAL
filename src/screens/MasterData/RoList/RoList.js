@@ -26,8 +26,10 @@ import {
 import { checkaccess } from "../../../actions/PortalmngAction/AccessManagementAction";
 import { CSVLink } from "react-csv";
 import Select from "react-select";
+import { useHistory } from "react-router-dom";
 
 function RoList() {
+  const history = useHistory();
   const tablehead = { background: "#dae3f3", color: "grey" };
   const initialvalue = {
     zone: "",
@@ -64,10 +66,9 @@ function RoList() {
   const [selectedState, setSelectedState] = React.useState(null);
   const [selectedStateCode, setSelectedStateCode] = React.useState(null);
   const [selectedCategory, setSelectedCategory] = React.useState(null);
+  const [isFromCabinetRegistration, setIsFromCabinetRegistration] = React.useState(false);
 
-  // console.log("zone---->", getzone);
-  console.log("statecode---->", getStateCode);
-  // console.log("states---->", getstate);
+
 
   const checkacc = useSelector(
     (state) => state.AccessManagement.accesspermission
@@ -100,13 +101,13 @@ function RoList() {
       err.state = "State Name is Required";
     }
     if (!values.name) {
-      err.name = "RO Name is Required";
+      err.name = "Site Name is Required";
     }
     if (!values.code) {
-      err.code = "RO code is Required";
+      err.code = "Site code is Required";
     }
     if (values.rophone > 10) {
-      err.rophone = "RO Phone should be 10 digit long";
+      err.rophone = "Site Phone should be 10 digit long";
     }
     return err;
   };
@@ -118,16 +119,34 @@ function RoList() {
   const getRo = useSelector((state) => state.rolist.ro);
 
   React.useEffect(() => {
+    // Handle existing RO data
     var rocode = sessionStorage.getItem("RO_CODE");
     var roname = sessionStorage.getItem("RO_NAME");
+    
+    // Handle cabinet registration data
+    var cabinetCode = sessionStorage.getItem("CABINET_CODE");
+    var cabinetLocation = sessionStorage.getItem("LOCATION");
+    
     if (rocode) {
       setForm({
         name: roname,
         code: rocode,
       });
+    } else if (cabinetCode) {
+      // Pre-fill form with cabinet data for registration flow
+      setIsFromCabinetRegistration(true);
+      setForm(prev => ({
+        ...prev,
+        name: cabinetLocation || "",
+        code: cabinetCode || "",
+      }));
     }
+    
+    // Clean up sessionStorage for existing RO data
     sessionStorage.removeItem("RO_CODE");
     sessionStorage.removeItem("RO_NAME");
+    
+    // Note: Don't remove CABINET_* data here as AmsCabinet component needs it
 
     dispatch(get_zone());
     dispatch(get_rolist());
@@ -151,6 +170,14 @@ function RoList() {
       };
       console.log(newRo);
       dispatch(create_rolist(newRo));
+      
+      // If this is part of cabinet registration flow, navigate to AmsCabinet after successful save
+      if (isFromCabinetRegistration) {
+        // Add a small delay to ensure the save operation completes
+        setTimeout(() => {
+          history.push('/Master-Data/AmsCabinet');
+        }, 1000);
+      }
     }
 
     if (Object.values(formError).length === 0 && Isupdate) {
@@ -217,7 +244,7 @@ function RoList() {
   };
 
   const deleteform = (value) => {
-    if (window.confirm("Delete the RO?")) {
+    if (window.confirm("Delete the Site?")) {
       dispatch(delete_rolist(value));
     }
   };
@@ -238,6 +265,27 @@ function RoList() {
   const handleStateChange = (selectedOption) => {
     setSelectedState(selectedOption);
     setForm({ ...isform, state: selectedOption.value });
+    
+    // Auto-fill state code when state is selected
+    // Find the corresponding state code from getStateCode array
+    const correspondingStateCode = getStateCode.find(
+      stateCode => stateCode.STATE_ID === selectedOption.value
+    );
+    
+    if (correspondingStateCode) {
+      setForm(prev => ({ 
+        ...prev, 
+        state: selectedOption.value,
+        scode: correspondingStateCode.STATE_CODE 
+      }));
+      
+      // Also update the state code dropdown selection
+      const stateCodeOption = {
+        value: correspondingStateCode.STATE_CODE,
+        label: correspondingStateCode.STATE_CODE
+      };
+      setSelectedStateCode(stateCodeOption);
+    }
   };
 
   const handleStateCodeChange = (selectedOption) => {
@@ -273,8 +321,8 @@ function RoList() {
 
   const Headfields = [
     { key: "SSTATE", label: "STATE NAME", _style: tablehead },
-    { key: "RO_CODE", lable: "RO CODE", _style: tablehead },
-    { key: "RO_NAME", lable: "RO NAME", _style: tablehead },
+    { key: "RO_CODE", lable: "Site CODE", _style: tablehead },
+    { key: "RO_NAME", lable: "Site NAME", _style: tablehead },
     { key: "PINCODE", label: "PINCODE", _style: tablehead },
   ];
 
@@ -289,6 +337,8 @@ function RoList() {
       <div className="Header mb-5">
         <h3 className="Header_Text">Manage Retail Outlet</h3>
       </div>
+
+
 
       <div>
         {checkacc && checkacc[0].AR_RIGHTS == 2 && (
@@ -383,6 +433,7 @@ function RoList() {
                     onChange={handleStateCodeChange}
                     placeholder="Select State Code"
                   />
+
                   <CFormText className="help-block text-danger">
                     <p style={{ color: "red" }}>{formError.scode}</p>
                   </CFormText>
@@ -394,7 +445,7 @@ function RoList() {
               <CCol lg={4}>
                 <CFormGroup>
                   <CLabel htmlFor="nf-email">
-                    RO Code<i style={{ color: "red" }}>*</i>
+                    Site Code<i style={{ color: "red" }}>*</i>
                   </CLabel>
                   <CInput
                     type="Name"
@@ -402,7 +453,7 @@ function RoList() {
                     onChange={onChangeText}
                     id="code"
                     name="code"
-                    placeholder="Enter Ro Code.."
+                    placeholder="Enter Site Code.."
                   />
                   <CFormText className="help-block text-danger">
                     <p style={{ color: "red" }}>{formError.code}</p>
@@ -412,7 +463,7 @@ function RoList() {
               <CCol lg={4}>
                 <CFormGroup>
                   <CLabel htmlFor="nf-email">
-                    RO Name<i style={{ color: "red" }}>*</i>
+                    Site Name<i style={{ color: "red" }}>*</i>
                   </CLabel>
                   <CInput
                     type="Name"
@@ -420,7 +471,7 @@ function RoList() {
                     onChange={onChangeText}
                     id="name"
                     name="name"
-                    placeholder="Enter Ro Name.."
+                    placeholder="Enter Site Name.."
                   />
                   <CFormText className="help-block text-danger">
                     <p style={{ color: "red" }}>{formError.name}</p>
@@ -430,7 +481,7 @@ function RoList() {
 
               <CCol lg={4}>
                 <CFormGroup>
-                  <CLabel htmlFor="nf-email">RO Category</CLabel>
+                  <CLabel htmlFor="nf-email">Site Category</CLabel>
                   {/* <select
                     className="form-control"
                     id="rocategory"
@@ -438,7 +489,7 @@ function RoList() {
                     value={isform.rocategory}
                     onChange={onChangeText}
                   >
-                    <option>Select RO Category</option>
+                    <option>Select Site Category</option>
                     <option value="COCO" key={1}>
                       COCO
                     </option>
@@ -454,7 +505,7 @@ function RoList() {
                     options={categoryOptions}
                     value={selectedCategory}
                     onChange={handleCategoryChange}
-                    placeholder="Select RO Category"
+                    placeholder="Select Site Category"
                   />
                   <CFormText className="help-block text-danger">
                     <p style={{ color: "red" }}>{formError.rocategory}</p>
@@ -586,7 +637,9 @@ function RoList() {
           </CForm>
         )}
       </div>
+      
       <br></br>
+      
       <div className="table text-center">
         <Datatable
           isLoading={isLoading}
@@ -601,7 +654,7 @@ function RoList() {
             },
             { key: "Delete", label: "DELETE", _style: tablehead },
             { key: "SSTATE", label: "STATE NAME", _style: tablehead },
-            { key: "RO_CODE", lable: "RO CODE", _style: tablehead },
+            { key: "RO_CODE", lable: "Site CODE", _style: tablehead },
             { key: "RO_NAME", _style: tablehead },
             { key: "PINCODE", _style: tablehead },
           ]}

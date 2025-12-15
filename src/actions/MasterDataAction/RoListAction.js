@@ -1,4 +1,4 @@
-import axiosInstance from "../../utils/axiosInstance";
+﻿import axiosInstance from "../../utils/axiosInstance";
 import {
   CREATE_RO_LIST,
   DELETE_RO_LIST,
@@ -90,7 +90,7 @@ export const delete_rolist = (newro) => dispatch => {
 
 export const get_state = () => dispatch => {
   axiosInstance.get(uri + 'get_state').then((result) => {
-    if (result.status) {
+    if (result.status === 200) {
       dispatch({
         type: GET_STATE,
         payload: result.data,
