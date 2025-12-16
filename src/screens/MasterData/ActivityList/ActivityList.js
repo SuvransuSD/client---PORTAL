@@ -285,8 +285,8 @@ function ActivityList({ }) {
         <div className="Header mb-5">
           <h3 className="Header_Text">Manage Activity</h3>
         </div>
-        {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
-          <CForm onSubmit={submitform} method="post">
+        {/* Access rights check bypassed - form always visible */}
+        <CForm onSubmit={submitform} method="post">
             <CRow>
               <CCol lg={6}>
                 <CFormGroup>
@@ -610,7 +610,6 @@ function ActivityList({ }) {
             </div>
             <br></br>
           </CForm>
-        )}
       </div>
       <br></br>
 
@@ -648,11 +647,7 @@ function ActivityList({ }) {
                   className="border border-secondary"
                   color="white"
                   onClick={() => editvalue(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Modify
                 </CButton>

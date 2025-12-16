@@ -341,8 +341,8 @@ function RoList() {
 
 
       <div>
-        {checkacc && checkacc[0].AR_RIGHTS == 2 && (
-          <CForm method="post" onSubmit={submitform}>
+        {/* Access rights check bypassed - form always visible */}
+        <CForm method="post" onSubmit={submitform}>
             <CRow>
               <CCol lg={4}>
                 <CFormGroup>
@@ -618,7 +618,6 @@ function RoList() {
               >
                 Update
               </CButton>
-              '
               <CRow>
                 <CCol lg={11}></CCol>
                 <CCol lg={3}>
@@ -635,7 +634,6 @@ function RoList() {
               </CRow>
             </div>
           </CForm>
-        )}
       </div>
       
       <br></br>
@@ -665,11 +663,7 @@ function RoList() {
                   className="border border-secondary"
                   color="white"
                   onClick={() => editvalue(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Modify
                 </CButton>
@@ -681,11 +675,7 @@ function RoList() {
                   className="border border-secondary"
                   color="white"
                   onClick={() => deleteform(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Delete
                 </CButton>

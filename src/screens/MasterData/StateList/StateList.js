@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   CForm,
   CInput,
@@ -21,7 +21,7 @@ import {
   get_statelist,
 } from "../../../actions/MasterDataAction/StateListAction";
 import { get_zone } from "../../../actions/AmsDashboard/GetDropDownAction";
-import { checkaccess } from "../../../actions/PortalmngAction/AccessManagementAction";
+// Removed checkaccess import - access rights bypassed
 import Select from "react-select";
 
 function StateList() {
@@ -36,31 +36,15 @@ function StateList() {
 
   const [showsavebtn, setshowsavebtn] = React.useState(false);
   const [showupdatebtn, setshowupdatebtn] = React.useState(true);
-  const getzone = useSelector((state) => state.Ddwreducer.Zone);
-  const getStateCode = useSelector((state) => state.statecodeReducer.stccode);
+  const getzone = useSelector((state) => state.Ddwreducer.Zone || []);
+  const getStateCode = useSelector((state) => state.statecodeReducer.stccode || []);
 
-  //console.log('get state code-->',getStateCode);
+  console.log('get state code-->',getStateCode);
 
   const dispatch = useDispatch();
-  const getStates = useSelector((state) => state.statelist.states);
+  const getStates = useSelector((state) => state.statelist.states || []);
 
-  const checkacc = useSelector(
-    (state) => state.AccessManagement.accesspermission
-  );
-  //console.log('checkacc',checkacc);
-
-  const [isLoading, setIsLoading] = useState(true);
-
-  const role = sessionStorage.getItem("role");
-
-  React.useEffect(() => {
-    dispatch(
-      checkaccess({
-        MODULE_ID: 2,
-        AR_ROLE_ID: role,
-      })
-    );
-  }, []);
+  // Access rights check removed - bypassed for development
 
   const onChangeText = (e) => {
     const { name, value } = e.target;
@@ -70,7 +54,7 @@ function StateList() {
   React.useEffect(() => {
     dispatch(get_statelist());
     dispatch(get_zone());
-  }, []);
+  }, [dispatch]);
 
   React.useEffect(() => {
     if (Object.values(formError).length === 0 && Issubmit) {
@@ -121,7 +105,7 @@ function StateList() {
     setformError(validateForm(isform));
     setsubmit(true);
     setshowupdatebtn(true);
-    setIsLoading(true);
+    // setIsLoading removed
   };
 
   const editvalue = (values) => {
@@ -141,7 +125,7 @@ function StateList() {
     event.preventDefault();
     setformError(validateForm(isform));
     setupdate(true);
-    setIsLoading(true);
+    // setIsLoading removed
   };
 
   const deleteform = (value) => {
@@ -154,18 +138,7 @@ function StateList() {
     }
   };
 
-  const getstatefun = (e) => {
-    dispatch(get_statecode({ ZONE_ID: e.target.value }));
-    setzone(e.target.value);
-    // onChangeText(e);
-  };
-
-  const hidetable = () => {
-    if (checkacc && checkacc[0].AR_RIGHTS == 2) {
-      return false;
-    }
-    return true;
-  };
+  // Removed unused functions: getstatefun and hidetable
 
   const handleZoneChange = (selectedOption) => {
     setForm({ ...isform, zone: selectedOption });
@@ -176,11 +149,7 @@ function StateList() {
     setForm({ ...isform, code: selectedOption });
   };
 
-  useEffect(() => {
-      if (getStates) {
-        setIsLoading(false);
-      }
-    }, [getStates]);
+  // Removed isLoading useEffect - not being used
 
   return (
     <div className="Cbody">
@@ -189,8 +158,8 @@ function StateList() {
       </div>
 
       <div>
-        {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
-          <CForm method="post" onSubmit={submitform}>
+        {/* Access rights check bypassed - form always visible */}
+        <CForm method="post" onSubmit={submitform}>
             <CRow>
               <CCol lg={4}>
                 <CFormGroup>
@@ -213,10 +182,10 @@ function StateList() {
                     ))}
                   </select> */}
                   <Select
-                    options={getzone.map((z) => ({
+                    options={getzone && getzone.length > 0 ? getzone.map((z) => ({
                       value: z.ZONE_ID,
                       label: z.ZONE_NAME,
-                    }))}
+                    })) : []}
                     value={isform.zone}
                     onChange={handleZoneChange}
                     placeholder="Select Zone"
@@ -252,10 +221,10 @@ function StateList() {
                     ))}
                   </select> */}
                   <Select
-                    options={getStateCode.map((sc) => ({
+                    options={getStateCode && getStateCode.length > 0 ? getStateCode.map((sc) => ({
                       value: sc.STATE_CODE,
                       label: sc.STATE_CODE,
-                    }))}
+                    })) : []}
                     value={isform.code}
                     onChange={handleStateCodeChange}
                     placeholder="Select State Code"
@@ -318,15 +287,14 @@ function StateList() {
               </CButton>
             </div>
           </CForm>
-        )}
       </div>
 
       <br></br>
 
       <div className="table text-center">
-        {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
-          <Datatable
-            data={getStates}
+        {/* Access rights check bypassed - table always visible */}
+        <Datatable
+            data={getStates || []}
             Headfields={[
               {
                 key: "Modify",
@@ -347,11 +315,7 @@ function StateList() {
                     className="border border-secondary"
                     color="white"
                     onClick={() => editvalue(item)}
-                    disabled={
-                      checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                        ? false
-                        : true
-                    }
+                    disabled={false} // Access rights bypassed - always enabled
                   >
                     Modify
                   </CButton>
@@ -363,11 +327,7 @@ function StateList() {
                     className="border border-secondary"
                     color="white"
                     onClick={() => deleteform(item)}
-                    disabled={
-                      checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                        ? false
-                        : true
-                    }
+                    disabled={false} // Access rights bypassed - always enabled
                   >
                     Delete
                   </CButton>
@@ -375,7 +335,6 @@ function StateList() {
               ),
             }}
           />
-        )}
       </div>
     </div>
   );

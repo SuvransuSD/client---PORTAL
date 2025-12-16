@@ -3,7 +3,7 @@ const initialState = {
   modules: [],
   access: [],
   Permission: [],
-
+  accesspermission: []
 };
 
 export default function (state = initialState, action) {

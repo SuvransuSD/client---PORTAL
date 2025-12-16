@@ -119,8 +119,8 @@ function LoginActivityReport() {
 
   return (
     <div className="Cbody">
-      {checkacc && checkacc[0].AR_RIGHTS == 2 && (
-        <CForm method="post" onSubmit={submitform}>
+      {/* Access rights check bypassed - form always visible */}
+      <CForm method="post" onSubmit={submitform}>
           <CRow>
             <CCol lg={9}>
               <div className="Header mb-5">
@@ -206,7 +206,6 @@ function LoginActivityReport() {
             </CRow>
           </div>
         </CForm>
-      )}
 
       <div className="table text-center">
         <Datatable

@@ -191,9 +191,8 @@ const SiteInformation = () => {
     <div className="Cbody">
       <CCol >
         <div className='form-border'>
-          {
-            checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
-            <CForm action="" method="post" onSubmit={submitform} className="row">
+          {/* Access rights check bypassed - form always visible */}
+          <CForm action="" method="post" onSubmit={submitform} className="row">
               <CCol sm={14} >
                 <CFormGroup>
                   <CLabel htmlFor="siteName">Site Name<i style={{ color: 'red' }}>*</i></CLabel>
@@ -405,7 +404,6 @@ const SiteInformation = () => {
                 <CButton color="primary" style={{ "backgroundColor": "#01a757" }} target="_blank" onClick={submitform}>{createSiteInfo ? "Create" : "Update"}</CButton>
               </CCol>
             </CForm>
-          }
         </div>
       </CCol>
     </div>

@@ -218,8 +218,8 @@ function PortalUser() {
       </div>
 
       <div>
-        {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
-          <CForm method="post" onSubmit={submitform}>
+        {/* Access rights check bypassed - form always visible */}
+        <CForm method="post" onSubmit={submitform}>
             <CRow>
               <CCol lg={12}>
                 <CFormGroup>
@@ -401,7 +401,7 @@ function PortalUser() {
                   <Select
                     options={statusOptions}
                     onChange={(selectedOption) =>
-                      onChangeText("role", selectedOption.value)
+                      setForm({ ...isform, status: selectedOption.value })
                     }
                     value={statusOptions.find(
                       (option) => option.value === isform.status
@@ -448,7 +448,6 @@ function PortalUser() {
               </CButton>
             </div>
           </CForm>
-        )}
       </div>
       <br></br>
 
@@ -474,11 +473,7 @@ function PortalUser() {
                   className="border border-secondary"
                   color="white"
                   onClick={() => editvalue(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Modify
                 </CButton>
@@ -490,11 +485,7 @@ function PortalUser() {
                   className="border border-secondary"
                   color="white"
                   onClick={() => deleteform(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Delete
                 </CButton>

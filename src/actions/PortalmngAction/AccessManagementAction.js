@@ -65,11 +65,12 @@ export const checkaccess = (data) => dispatch => {
     if (result.status === 200) {
       dispatch({
         type: CHECK_ACCESS,
-        payload: result.data,
+        payload: result.data || [],
       });
     }
   })
     .catch((err) => {
+      console.error('Access check failed:', err);
       dispatch({
         type: CHECK_ACCESS,
         payload: [{

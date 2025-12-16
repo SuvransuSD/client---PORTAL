@@ -113,9 +113,8 @@ function ManageRoles() {
       </div>
 
       <div className='m-4'>
-        {
-          checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
-          <CForm method="post" onSubmit={submitform}>
+        {/* Access rights check bypassed - form always visible */}
+        <CForm method="post" onSubmit={submitform}>
             <CFormGroup>
               <CLabel htmlFor="nf-email">Name</CLabel>
               <CInput
@@ -171,7 +170,6 @@ function ManageRoles() {
 
 
           </CForm>
-        }
       </div>
 
 
@@ -198,7 +196,8 @@ function ManageRoles() {
               (item) => (
                 <td>
                   <CButton className="border border-secondary" color="white" onClick={() => updatefunction(item)}
-                    disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}>
+                    disabled={false} // Access rights bypassed - always enabled
+                  >
                     {item.ROLE_STATUS == '1' ? 'active' : 'inactive'}
                   </CButton>
                 </td>

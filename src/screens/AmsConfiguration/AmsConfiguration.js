@@ -126,8 +126,8 @@ const AmsConfiguration = () => {
         <CRow>
             <CCol md={3}>
                 <div className='sidebar-container'>
-                    {checkacc && checkacc[0].AR_RIGHTS == 2 &&
-                        <>
+                    {/* Access rights check bypassed - sidebar always visible */}
+                    <>
                             <CRow>
                                 <CCol lg={8}>
                                     <CInput id="rocode"
@@ -206,7 +206,6 @@ const AmsConfiguration = () => {
 
                             </ul>
                         </>
-                    }
                 </div>
             </CCol>
             {seletedRo && seletedRo.roCode ? <>

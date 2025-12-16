@@ -6,7 +6,7 @@ var uri = "/api/Portal_Management/smtp"
 // actions 
 export const create_SmtpAccess = (smtpcall) => dispatch => {
   axiosInstance.post(uri, smtpcall).then((result) => {
-    if (result.status == 200) {
+    if (result.status === 200) {
       dispatch({
         type: CREATE_SMTP,
         payload: result.data,
@@ -45,7 +45,7 @@ export const create_firmware = (firmwaredata, refresh) => dispatch => {
 export const get_OTA = () => dispatch => {
 
   axiosInstance.get('/api/Portal_Management/ota-firmware').then((result) => {
-    if (result.status == 201) {
+    if (result.status === 201) {
 
       dispatch({
         type: GET_OTA,

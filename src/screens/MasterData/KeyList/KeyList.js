@@ -163,10 +163,8 @@ function KeyList() {
   };
 
   const hidetable = () => {
-    if (checkacc && checkacc[0].AR_RIGHTS == 2) {
-      return false;
-    }
-    return true;
+    // Access rights check bypassed - always show table
+    return false;
   };
 
   const colorOptions = [
@@ -221,8 +219,8 @@ function KeyList() {
         <div className="Header mb-5">
           <h3 className="Header_Text">Manage Key</h3>
         </div>
-        {checkacc && checkacc[0].AR_RIGHTS == 2 && (
-          <CForm action="" method="post">
+        {/* Access rights check bypassed - form always visible */}
+        <CForm action="" method="post">
             <CRow>
               <CCol lg={12}>
                 <CFormGroup>
@@ -462,7 +460,6 @@ function KeyList() {
             </div>
             <br></br>
           </CForm>
-        )}
       </div>
       <br></br>
       {/* <div className='Header mb-5'>
@@ -497,11 +494,7 @@ function KeyList() {
                   className="border border-secondary"
                   color="white"
                   onClick={() => editvalue(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Modify
                 </CButton>
@@ -513,11 +506,7 @@ function KeyList() {
                   className="border border-secondary"
                   color="white"
                   onClick={() => deleteform(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Delete
                 </CButton>

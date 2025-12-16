@@ -124,8 +124,8 @@ function Firmware() {
       </div>
 
       <div>
-        {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
-          <CForm action="" method="post" onSubmit={submitform}>
+        {/* Access rights check bypassed - form always visible */}
+        <CForm action="" method="post" onSubmit={submitform}>
             <CRow>
               <CCol lg={4}>
                 <CFormGroup>
@@ -252,7 +252,6 @@ function Firmware() {
               </CButton>
             </div>
           </CForm>
-        )}
       </div>
 
       <br></br>

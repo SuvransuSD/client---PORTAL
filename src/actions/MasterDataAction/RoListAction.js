@@ -23,7 +23,7 @@ export const create_rolist = (newro) => dispatch => {
   })
     .then(() => {
       alert('Ro created successfully!!');
-      window.location.reload();
+      // window.location.reload();
     })
     .catch((err) => {
       console.log(err)

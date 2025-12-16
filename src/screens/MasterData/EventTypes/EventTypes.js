@@ -139,10 +139,8 @@ function EventTypes() {
   };
 
   const hidetable = () => {
-    if (checkacc && checkacc[0].AR_RIGHTS == 2) {
-      return false;
-    }
-    return true;
+    // Access rights check bypassed - always show table
+    return false;
   };
 
   const etypeOptions = [
@@ -163,8 +161,8 @@ function EventTypes() {
       </div>
 
       <div>
-        {checkacc && checkacc[0].AR_RIGHTS && checkacc[0].AR_RIGHTS == 2 && (
-          <CForm action="" method="post">
+        {/* Access rights check bypassed - form always visible */}
+        <CForm action="" method="post">
             <CRow>
               <CCol xs="6">
                 <CFormGroup>
@@ -247,7 +245,6 @@ function EventTypes() {
               </CButton>
             </div>
           </CForm>
-        )}
       </div>
       <br></br>
       <div className="table text-center">
@@ -273,11 +270,7 @@ function EventTypes() {
                   className="border border-secondary"
                   color="white"
                   onClick={() => editvalue(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Modify
                 </CButton>
@@ -289,11 +282,7 @@ function EventTypes() {
                   className="border border-secondary"
                   color="white"
                   onClick={() => deleteform(item)}
-                  disabled={
-                    checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
-                      ? false
-                      : true
-                  }
+                  disabled={false} // Access rights bypassed - always enabled
                 >
                   Delete
                 </CButton>

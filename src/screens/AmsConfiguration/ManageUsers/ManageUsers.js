@@ -200,9 +200,8 @@ const ManageUsers = () => {
 
 
       <div className='form-border'>
-        {
-          checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
-          <CForm method="post" onSubmit={submitform}>
+        {/* Access rights check bypassed - form always visible */}
+        <CForm method="post" onSubmit={submitform}>
             <CFormGroup>
               <CLabel htmlFor="nf-email">Name<i style={{ color: 'red' }}>*</i></CLabel>
               <CInput
@@ -333,7 +332,6 @@ const ManageUsers = () => {
 
 
           </CForm>
-        }
 
         <br></br>
         {
@@ -364,7 +362,7 @@ const ManageUsers = () => {
               'Modify': (item) => (
                 <td>
                   <CButton className="border border-secondary" color="white" onClick={() => editvalue(item)}
-                    disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}
+                    disabled={false} // Access rights bypassed - always enabled
                   >
                     Modify
                   </CButton>
@@ -373,7 +371,7 @@ const ManageUsers = () => {
               'Delete': (item) => (
                 <td>
                   <CButton className="border border-secondary" color="white" onClick={() => deleteform(item)}
-                    disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}
+                    disabled={false} // Access rights bypassed - always enabled
                   >
                     Delete
                   </CButton>

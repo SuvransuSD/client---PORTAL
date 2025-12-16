@@ -81,8 +81,8 @@ const SideBarPrimary = () => {
 
    return (
       <div className='sidebar-container'>
-         {checkacc && checkacc[0].AR_RIGHTS == 2 &&
-            <>
+         {/* Access rights check bypassed - sidebar always visible */}
+         <>
                <CRow>
                   <CCol lg={8}>
                      <CInput id="rocode"
@@ -125,7 +125,7 @@ const SideBarPrimary = () => {
                                                                     </li>
 
                                                                 )} */}
-                                                {state.ro.sort((a, b) => a.roCode.localeCompare(b.roCode)).map((ro) => (
+                                                {value.ro.sort((a, b) => a.roCode.localeCompare(b.roCode)).map((ro) => (
                                                    <li
                                                       key={ro.roCode}
                                                       role="button"
@@ -171,7 +171,7 @@ const SideBarPrimary = () => {
                                                    </li>
 
                                                 )} */}
-                                                {state.ro.sort((a, b) => a.roCode.localeCompare(b.roCode)).map((ro) => (
+                                                {value.ro.sort((a, b) => a.roCode.localeCompare(b.roCode)).map((ro) => (
                                                    <li
                                                       key={ro.roCode}
                                                       role="button"
@@ -197,8 +197,7 @@ const SideBarPrimary = () => {
                   }
 
                </ul>
-            </>
-         }
+         </>
       </div>
    )
 }
