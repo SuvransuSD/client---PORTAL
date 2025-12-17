@@ -7,7 +7,9 @@ var uri = "/api/AMS_Dashboard/"
 
 export const get_zone = () => dispatch => {
   axiosInstance.get(uri + 'get-zone').then((result) => {
-    if (result.status === 200) {
+    // Checking for 200 (OK) or 201 (Created) as this API typically returns 201
+    if (result.status === 200 || result.status === 201) {
+      console.log("get_zone response data:", result.data);
       dispatch({
         type: GET_ZONE,
         payload: result.data,
@@ -34,7 +36,7 @@ export const get_state = (params = {}) => dispatch => {
 
   axiosInstance.get(uri + 'get-state/' + ZONE_ID).then((result) => {
     console.log('Action state--->', result);
-    if (result.status === 200) {
+    if (result.status === 200 || result.status === 201) {
       dispatch({
         type: GET_STATE,
         payload: result.data,
@@ -60,7 +62,7 @@ export const get_statecode = (params = {}) => dispatch => {
   }
 
   axiosInstance.get(uri + 'get-state-code/' + ZONE_ID).then((result) => {
-    if (result.status === 200) {
+    if (result.status === 200 || result.status === 201) {
       console.log('Action state code--->', result);
       dispatch({
         type: GET_STATE_CODE,
@@ -87,7 +89,7 @@ export const get_ro = (params = {}) => dispatch => {
   }
 
   axiosInstance.get(uri + 'get-ro/' + ZONE_ID + '/' + STATE_ID).then((result) => {
-    if (result.status === 200) {
+    if (result.status === 200 || result.status === 201) {
       dispatch({
         type: GET_RO,
         payload: result.data,

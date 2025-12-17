@@ -4,12 +4,12 @@ const initialState = {
   Zone: [],
   States: [],
   RO: []
-
 };
 
 export default function (state = initialState, action) {
   switch (action.type) {
     case GET_ZONE:
+      console.log("GetDropDownReducer received GET_ZONE:", action.payload);
       return {
         ...state,
         Zone: action.payload,
@@ -21,7 +21,6 @@ export default function (state = initialState, action) {
         States: action.payload,
       };
 
-
     case GET_RO:
       return {
         ...state,
@@ -32,4 +31,3 @@ export default function (state = initialState, action) {
       return state;
   }
 }
-

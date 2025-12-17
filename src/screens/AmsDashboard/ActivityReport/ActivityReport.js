@@ -42,6 +42,10 @@ function Event_History() {
   const get_table_data = [];
   const dispatch = useDispatch();
   const getzone = useSelector((state) => state.Ddwreducer.Zone);
+
+  React.useEffect(() => {
+    console.log("ActivityReport getzone data from Redux:", getzone);
+  }, [getzone]);
   const getstate = useSelector((state) => state.Ddwreducer.States);
   const getro = useSelector((state) => state.Ddwreducer.RO);
   const gettable = useSelector((state) => state.Amsdashboard.activityreport);
