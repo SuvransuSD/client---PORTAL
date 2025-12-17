@@ -467,7 +467,7 @@ function ADashboard() {
                   <div key={`cabinet-${index}`} className="d-flex justify-content-between">
                     {state.ENTRY == "Unregistered" ? (
                       <CButton onClick={() => setVisible6(true)}>
-                        {state.ENTRY}
+                        Unregistered-NonOTP sites
                       </CButton>
                     ) : state.ENTRY == "Online" ? (
                       <CButton onClick={() => setVisible7(true)}>
@@ -510,7 +510,7 @@ function ADashboard() {
               onClose={() => setVisible6(false)}
             >
               <CModalHeader onClose={() => setVisible6(false)}>
-                <CModalTitle>Unregistered Sites</CModalTitle>
+                <CModalTitle>Unregistered Sites - NonOTP sites</CModalTitle>
               </CModalHeader>
               <CModalBody>
                 <div className="table text-center">
