@@ -1,4 +1,4 @@
-var mainUrl = "http://192.168.1.118:8001";
+var mainUrl = "http://45.120.138.103:8001";
 
 if (process.env.NODE_ENV === "development") {
   mainUrl = "http://45.120.138.103:8001";
