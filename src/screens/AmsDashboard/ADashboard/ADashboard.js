@@ -131,29 +131,10 @@ const toNum = (v) => {
   return Number.isFinite(n) ? n : 0;
 };
 
-const DATA_KEYS = {
-  ONLINE: "Online",
-  OFFLINE: "Offline",
-  UNREGISTERED: "Unregistered",
-  TOTAL_OTPED: "Total OTPed Cabinets",
-  EVENTS_WITH: "Cabinets with Events",
-  EVENTS_ZERO: "Cabinets with Zero Event",
-  ACT_WITH: ["Cabinets with Activities", "Cabinets with Action"],
-  ACT_ZERO: "Cabinets with Zero Activity",
-  PIN_ACCESS: ["PIN + CARD Access", "PIN + CARD"],
-  WEB_ACCESS: ["WEB + Emergency Access", "WEB + Emergency"],
-  MULTI_ACCESS: "Multi Access",
-  ZERO_ACCESS: ["Cabinet With Zero Access", "No Access"],
-  TEST_WITH: ["Cabinets with test performed", "Cabinets with Test performed"],
-  TEST_ZERO: ["Cabinets with Zero Test", "Zero Test"],
-  GET_ACT_VAL: (r) => toNum(r?.TOTAL_ACTIVITIES || r?.TOTAL_ACITIVITIES),
-};
-
-const pickByKeys = (list, keys) => {
+const pickCounter = (list, entryName) => {
   if (!Array.isArray(list)) return 0;
-  const keyArr = Array.isArray(keys) ? keys : [keys];
-  const found = list.find((x) =>
-    keyArr.some((k) => String(x?.ENTRY || "").toLowerCase() === k.toLowerCase())
+  const found = list.find(
+    (x) => String(x?.ENTRY || "").toLowerCase() === String(entryName).toLowerCase()
   );
   return toNum(found?.COUNTER);
 };
@@ -272,11 +253,11 @@ export default function ADashboard() {
 
   const startGraceTimer = () => {
     clearGraceTimer();
-    // Architectural Change: Reduced noise, focused on actual completion detection
     graceTimerRef.current = setTimeout(() => {
       setNoDataGraceExpired(true);
       setIsLoading(false);
-    }, 15000); // 15s timeout for network failure recovery
+      setHasEverLoaded(true);
+    }, NO_DATA_GRACE_MS);
   };
 
   const loadDashboardData = useCallback(() => {
@@ -393,251 +374,312 @@ export default function ADashboard() {
     setModalVisible(false);
     history.push("/Master-Data/Ro-List");
   };
+const accessHeaders = [
+  { label: "Site Code", key: "RO_CODE" },
+  { label: "Site Name", key: "RO_NAME" },
+  { label: "Zone", key: "ZONE_NAME" },
+  { label: "State", key: "STATE_NAME" },
+];
+
+const handleBioAccessClick = () => {
+  showModal("Biometric Access Sites", bioaccess_popups, accessHeaders);
+};
+
+const handleFpAccessClick = () => {
+  showModal("FP + PIN / CARD Access Sites", fpaccess_popups, accessHeaders);
+};
+
+const handleMultiAccessClick = () => {
+  showModal("Multi Access Sites", pinpluswebaccess_popups, accessHeaders);
+};
 
   // Tile click handlers
-  const handlers = useMemo(() => ({
-    handleOnlineClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Online Cabinets", onlinesite, headers);
-    },
-    handleOfflineClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
-        { label: "Last Active", key: "Last_Active_On" },
-        { label: "Zone", key: "ZONE_NAME" },
-      ];
-      showModal("Offline Cabinets", offlinesite, headers);
-    },
-    handleUnregisteredClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Unregistered Cabinets", unregisteredpopups, headers);
-    },
-    handleTotalOtpedClick: () => {
-      const totalOtpedData = [...(onlinesite || []), ...(offlinesite || [])];
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
-        { label: "Status", key: "STATUS" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      const dataWithStatus = totalOtpedData.map((item) => ({
-        ...item,
-        STATUS: (onlinesite || []).some((x) => x?.CABINET_IP_ADDR === item?.CABINET_IP_ADDR) ? "Online" : "Offline",
-      }));
-      showModal("Total OTPed Cabinets", dataWithStatus, headers);
-    },
-    handleEventsClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "Total Events", key: "TOTAL_EVENTS" },
-      ];
-      showModal("Sites with Events", eventlists_popup, headers);
-    },
-    handleZeroEventsClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Sites with Zero Events", zeroeventlists_popup, headers);
-    },
-    handleActivitiesClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "Total Activities", key: "TOTAL_ACTIVITIES" },
-      ];
-      showModal("Sites with Activities", activitylists_popup, headers);
-    },
-    handleZeroActivitiesClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Sites with Zero Activities", zeroactivitylists_popup, headers);
-    },
-    handlePinAccessClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("PIN Access Sites", pinaccess_popups, headers);
-    },
-    handleWebAccessClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Web Access Sites", webaccess_popups, headers);
-    },
-    handlePinWebAccessClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("PIN + Web Access Sites", pinpluswebaccess_popups, headers);
-    },
-    handleZeroAccessClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Sites with Zero Access", nobox_popups, headers);
-    },
-    handleTestsClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Sites with Tests", testact_popups, headers);
-    },
-    handleZeroTestsClick: () => {
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Sites with Zero Tests", notestact_popups, headers);
-    },
-    handleAlertsClick: () => {
-      const headers = [
-        { label: "Cabinet ID", key: "CABINET_ID" },
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Battery %", key: "BATTERY_PC" },
-        { label: "Last Ping", key: "LAST_PING_TS" },
-        { label: "Zone", key: "ZONE_NAME" },
-      ];
-      showModal("Devices with Alerts", get_batterys, headers);
-    },
-    handleTotalCabinetsClick: () => {
-      const allCabinets = [
-        ...(onlinesite || []).map((item) => ({ ...item, STATUS: "Online" })),
-        ...(offlinesite || []).map((item) => ({ ...item, STATUS: "Offline" })),
-        ...(unregisteredpopups || []).map((item) => ({ ...item, STATUS: "Unregistered" })),
-      ];
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
-        { label: "Status", key: "STATUS" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("All Cabinets", allCabinets, headers);
-    },
-    handleBatteryClick: () => {
-      const headers = [
-        { label: "Cabinet ID", key: "CABINET_ID" },
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Battery %", key: "BATTERY_PC" },
-        { label: "Last Ping", key: "LAST_PING_TS" },
-        { label: "Zone", key: "ZONE_NAME" },
-      ];
-      showModal("Battery Status", get_batterys, headers);
-    },
-    handleOfflineUnregisteredClick: () => {
-      const offlineUnregistered = [
-        ...(offlinesite || []).map((item) => ({ ...item, STATUS: "Offline" })),
-        ...(unregisteredpopups || []).map((item) => ({ ...item, STATUS: "Unregistered" })),
-      ];
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
-        { label: "Status", key: "STATUS" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Offline + Unregistered Cabinets", offlineUnregistered, headers);
-    },
-    handleTestCoverageClick: () => {
-      const testCoverageData = [
-        ...(testact_popups || []).map((item) => ({ ...item, TEST_STATUS: "With Test" })),
-        ...(notestact_popups || []).map((item) => ({ ...item, TEST_STATUS: "Zero Test" })),
-      ];
-      const headers = [
-        { label: "Site Code", key: "RO_CODE" },
-        { label: "Site Name", key: "RO_NAME" },
-        { label: "Test Status", key: "TEST_STATUS" },
-        { label: "Zone", key: "ZONE_NAME" },
-        { label: "State", key: "STATE_NAME" },
-      ];
-      showModal("Test Coverage Details", testCoverageData, headers);
-    },
-  }), [onlinesite, offlinesite, unregisteredpopups, eventlists_popup, zeroeventlists_popup, activitylists_popup, zeroactivitylists_popup, pinaccess_popups, webaccess_popups, pinpluswebaccess_popups, nobox_popups, testact_popups, notestact_popups, get_batterys, showModal]);
+  const handleOnlineClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Online Cabinets", onlinesite, headers);
+  };
+
+  const handleOfflineClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
+      { label: "Last Active", key: "Last_Active_On" },
+      { label: "Zone", key: "ZONE_NAME" },
+    ];
+    showModal("Offline Cabinets", offlinesite, headers);
+  };
+
+  const handleUnregisteredClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Unregistered Cabinets", unregisteredpopups, headers);
+  };
+
+  const handleTotalOtpedClick = () => {
+    const totalOtpedData = [...(onlinesite || []), ...(offlinesite || [])];
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
+      { label: "Status", key: "STATUS" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+
+    const dataWithStatus = totalOtpedData.map((item) => ({
+      ...item,
+      STATUS: (onlinesite || []).some((x) => x?.CABINET_IP_ADDR === item?.CABINET_IP_ADDR) ? "Online" : "Offline",
+    }));
+
+    showModal("Total OTPed Cabinets", dataWithStatus, headers);
+  };
+
+  const handleEventsClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "Total Events", key: "TOTAL_EVENTS" },
+    ];
+    showModal("Sites with Events", eventlists_popup, headers);
+  };
+
+  const handleZeroEventsClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Sites with Zero Events", zeroeventlists_popup, headers);
+  };
+
+  const handleActivitiesClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      // NOTE: your API sometimes uses TOTAL_ACTIVITIES or TOTAL_ACITIVITIES
+      { label: "Total Activities", key: "TOTAL_ACTIVITIES" },
+    ];
+    showModal("Sites with Activities", activitylists_popup, headers);
+  };
+
+  const handleZeroActivitiesClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Sites with Zero Activities", zeroactivitylists_popup, headers);
+  };
+
+  const handlePinAccessClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("PIN Access Sites", pinaccess_popups, headers);
+  };
+
+  const handleWebAccessClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Web Access Sites", webaccess_popups, headers);
+  };
+
+  const handlePinWebAccessClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("PIN + Web Access Sites", pinpluswebaccess_popups, headers);
+  };
+
+  const handleZeroAccessClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Sites with Zero Access", nobox_popups, headers);
+  };
+
+  const handleTestsClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Sites with Tests", testact_popups, headers);
+  };
+
+  const handleZeroTestsClick = () => {
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Sites with Zero Tests", notestact_popups, headers);
+  };
+
+  const handleAlertsClick = () => {
+    const headers = [
+      { label: "Cabinet ID", key: "CABINET_ID" },
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Battery %", key: "BATTERY_PC" },
+      { label: "Last Ping", key: "LAST_PING_TS" },
+      { label: "Zone", key: "ZONE_NAME" },
+    ];
+    showModal("Battery Alerts", get_batterys, headers);
+  };
+
+  const handleTotalCabinetsClick = () => {
+    const allCabinets = [
+      ...(onlinesite || []).map((item) => ({ ...item, STATUS: "Online" })),
+      ...(offlinesite || []).map((item) => ({ ...item, STATUS: "Offline" })),
+      ...(unregisteredpopups || []).map((item) => ({ ...item, STATUS: "Unregistered" })),
+    ];
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
+      { label: "Status", key: "STATUS" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("All Cabinets", allCabinets, headers);
+  };
+
+  const handleBatteryClick = () => {
+    const headers = [
+      { label: "Cabinet ID", key: "CABINET_ID" },
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Battery %", key: "BATTERY_PC" },
+      { label: "Last Ping", key: "LAST_PING_TS" },
+      { label: "Zone", key: "ZONE_NAME" },
+    ];
+    showModal("Battery Status", get_batterys, headers);
+  };
+
+  const handleOfflineUnregisteredClick = () => {
+    const offlineUnregistered = [
+      ...(offlinesite || []).map((item) => ({ ...item, STATUS: "Offline" })),
+      ...(unregisteredpopups || []).map((item) => ({ ...item, STATUS: "Unregistered" })),
+    ];
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Cabinet IP", key: "CABINET_IP_ADDR" },
+      { label: "Status", key: "STATUS" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Offline + Unregistered Cabinets", offlineUnregistered, headers);
+  };
+
+  const handleTestCoverageClick = () => {
+    const testCoverageData = [
+      ...(testact_popups || []).map((item) => ({ ...item, TEST_STATUS: "With Test" })),
+      ...(notestact_popups || []).map((item) => ({ ...item, TEST_STATUS: "Zero Test" })),
+    ];
+    const headers = [
+      { label: "Site Code", key: "RO_CODE" },
+      { label: "Site Name", key: "RO_NAME" },
+      { label: "Test Status", key: "TEST_STATUS" },
+      { label: "Zone", key: "ZONE_NAME" },
+      { label: "State", key: "STATE_NAME" },
+    ];
+    showModal("Test Coverage Details", testCoverageData, headers);
+  };
 
   // ---------------- build dashboard from redux ----------------
   const dashboard = useMemo(() => {
-    // 1. Core Summary Stats (using DATA_KEYS to fix casing/typo leaks)
-    const online = pickByKeys(cabinetstatuss, DATA_KEYS.ONLINE);
-    const offline = pickByKeys(cabinetstatuss, DATA_KEYS.OFFLINE);
-    const unregistered = pickByKeys(cabinetstatuss, DATA_KEYS.UNREGISTERED);
-    const totalOtpedCabinets = pickByKeys(cabinetstatuss, DATA_KEYS.TOTAL_OTPED);
+    const online = pickCounter(cabinetstatuss, "Online");
+    const offline = pickCounter(cabinetstatuss, "Offline");
+    const unregistered = pickCounter(cabinetstatuss, "Unregistered");
+    const totalOtpedCabinets = pickCounter(cabinetstatuss, "Total OTPed Cabinets");
 
-    const cabinetsWithEvents = pickByKeys(eventlists, DATA_KEYS.EVENTS_WITH);
-    const cabinetsWithZeroEvent = pickByKeys(eventlists, DATA_KEYS.EVENTS_ZERO);
+    const cabinetsWithEvents = pickCounter(eventlists, "Cabinets with Events");
+    const cabinetsWithZeroEvent = pickCounter(eventlists, "Cabinets with Zero Event");
 
-    const cabinetsWithActivities = pickByKeys(activitylists, DATA_KEYS.ACT_WITH);
-    const cabinetsWithZeroActivity = pickByKeys(activitylists, DATA_KEYS.ACT_ZERO);
+    const cabinetsWithActivities = pickCounter(activitylists, "Cabinets with Activities");
+    const cabinetsWithZeroActivity = pickCounter(activitylists, "Cabinets with Zero Activity");
 
-    const pinAccess = pickByKeys(accesslists, DATA_KEYS.PIN_ACCESS);
-    const webAccess = pickByKeys(accesslists, DATA_KEYS.WEB_ACCESS);
-    const pinWebAccess = pickByKeys(accesslists, DATA_KEYS.MULTI_ACCESS);
-    const cabinetWithZeroAccess = pickByKeys(accesslists, DATA_KEYS.ZERO_ACCESS);
+   const pinCardAccess =
+  pickCounter(accesslists, "PIN + CARD Access") || pickCounter(accesslists, "PIN + CARD");
 
-    const cabinetsWithTest = pickByKeys(testact_counts, DATA_KEYS.TEST_WITH);
-    const cabinetsWithZeroTest = pickByKeys(testact_counts, DATA_KEYS.TEST_ZERO);
+const biometricAccess = pickCounter(accesslists, "Biometric Access");
+
+const webEmergencyAccess =
+  pickCounter(accesslists, "WEB + Emergency Access") || pickCounter(accesslists, "WEB + Emergency");
+
+const fpPinCardAccess = pickCounter(accesslists, "FP + PIN / CARD Access");
+
+const multiAccess = pickCounter(accesslists, "Multi Access");
+
+const zeroAccess =
+  pickCounter(accesslists, "Cabinet With Zero Access") || pickCounter(accesslists, "No Access");
+
+    const cabinetsWithTest =
+      pickCounter(testact_counts, "Cabinets with test performed") ||
+      pickCounter(testact_counts, "Cabinets with Test performed");
+    const cabinetsWithZeroTest =
+      pickCounter(testact_counts, "Cabinets with Zero Test") || pickCounter(testact_counts, "Zero Test");
 
     const alertCount = Array.isArray(get_batterys) ? get_batterys.length : 0;
-    const batteryNums = (get_batterys || []).map((x) => toNum(x?.BATTERY_PC)).filter((n) => n >= 0);
-    const avgBatteryPc = batteryNums.length > 0 ? Math.round(batteryNums.reduce((a, b) => a + b, 0) / batteryNums.length) : 0;
 
-    // FIX: Standardize "Total Cabinets" source of truth
-    const totalCabinets = toNum(totalOtpedCabinets) || (online + offline + unregistered) || (Array.isArray(totalsite) ? totalsite.length : 0);
+    const batteryNums = (get_batterys || [])
+      .map((x) => toNum(x?.BATTERY_PC))
+      .filter((n) => n >= 0);
+    const avgBatteryPc =
+      batteryNums.length > 0 ? Math.round(batteryNums.reduce((a, b) => a + b, 0) / batteryNums.length) : 0;
 
-    // 2. Regional Grouping
+    const totalCabinets =
+      toNum(totalOtpedCabinets) ||
+      (Array.isArray(totalsite) ? totalsite.length : 0) ||
+      (online + offline + unregistered);
+
     const onlineByRegion = groupBy(onlinesite, (x) => x?.ZONE_NAME || "Unknown");
     const offlineByRegion = groupBy(offlinesite, (x) => x?.ZONE_NAME || "Unknown");
     const unregByRegion = groupBy(unregisteredpopups, (x) => x?.ZONE_NAME || "Unknown");
+
     const eventsByRegion = groupBy(eventlists_popup, (x) => x?.ZONE_NAME || "Unknown");
     const actByRegion = groupBy(activitylists_popup, (x) => x?.ZONE_NAME || "Unknown");
 
-    const regionSet = new Set([...onlineByRegion.keys(), ...offlineByRegion.keys(), ...unregByRegion.keys(), ...eventsByRegion.keys(), ...actByRegion.keys()]);
+    const regionSet = new Set([
+      ...onlineByRegion.keys(),
+      ...offlineByRegion.keys(),
+      ...unregByRegion.keys(),
+      ...eventsByRegion.keys(),
+      ...actByRegion.keys(),
+    ]);
 
     const byRegion = Array.from(regionSet).map((region) => ({
       region,
@@ -645,28 +687,50 @@ export default function ADashboard() {
       offline: (offlineByRegion.get(region) || []).length,
       unregistered: (unregByRegion.get(region) || []).length,
       events: (eventsByRegion.get(region) || []).reduce((sum, r) => sum + toNum(r?.TOTAL_EVENTS), 0),
-      activities: (actByRegion.get(region) || []).reduce((sum, r) => sum + DATA_KEYS.GET_ACT_VAL(r), 0),
+      activities: (actByRegion.get(region) || []).reduce(
+        (sum, r) => sum + toNum(r?.TOTAL_ACTIVITIES || r?.TOTAL_ACITIVITIES),
+        0
+      ),
     }));
 
-    // 3. Trends (Fixes "Fake" 7-day projection; only project if no real trend data exists)
     const today = moment().startOf("day");
-    const generateTrend = (valuesMap) => Array.from({ length: 7 }).map((_, i) => ({
-      date: formatDay(today.clone().subtract(6 - i, "days")),
-      ...valuesMap,
-    }));
+    const cabinetTrend = Array.from({ length: 7 }).map((_, i) => {
+      const d = today.clone().subtract(6 - i, "days");
+      return { date: formatDay(d), online, offline, unregistered };
+    });
 
-    const cabinetTrend = generateTrend({ online, offline, unregistered });
-    const eventsTrend = generateTrend({ events: cabinetsWithEvents, activities: cabinetsWithActivities });
-    const accessTrend = generateTrend({ pin: pinAccess, web: webAccess, pinWeb: pinWebAccess, zero: cabinetWithZeroAccess });
-    const testsTrend = generateTrend({ withTest: cabinetsWithTest, zeroTest: cabinetsWithZeroTest });
+    const eventsTrend = Array.from({ length: 7 }).map((_, i) => {
+      const d = today.clone().subtract(6 - i, "days");
+      return { date: formatDay(d), events: cabinetsWithEvents, activities: cabinetsWithActivities };
+    });
 
-    const healthByBattery = [
+    const accessTrend = Array.from({ length: 7 }).map((_, i) => {
+      const d = today.clone().subtract(6 - i, "days");
+return {
+  date: formatDay(d),
+  pinCard: pinCardAccess,
+  biometric: biometricAccess,
+  webEmergency: webEmergencyAccess,
+  fpPinCard: fpPinCardAccess,
+  multi: multiAccess,
+  zero: zeroAccess,
+};
+    });
+
+    const testsTrend = Array.from({ length: 7 }).map((_, i) => {
+      const d = today.clone().subtract(6 - i, "days");
+      return { date: formatDay(d), withTest: cabinetsWithTest, zeroTest: cabinetsWithZeroTest };
+    });
+
+    const buckets = [
       { bucket: "0-20", min: 0, max: 20 },
       { bucket: "21-40", min: 21, max: 40 },
       { bucket: "41-60", min: 41, max: 60 },
       { bucket: "61-80", min: 61, max: 80 },
       { bucket: "81-100", min: 81, max: 100 },
-    ].map((b) => ({
+    ];
+
+    const healthByBattery = buckets.map((b) => ({
       bucket: b.bucket,
       count: (get_batterys || []).filter((x) => {
         const n = toNum(x?.BATTERY_PC);
@@ -679,12 +743,19 @@ export default function ADashboard() {
         cabinetStatusDate: moment().format("DD-MM-YYYY"),
         eventStatusDate: moment().format("DD-MM-YYYY"),
         accessStatusDate: moment().format("DD-MM-YYYY"),
-        period: "Last 7 days (Snapshot)",
+        period: "Last 7 days",
       },
       cabinetStatus: { online, offline, unregistered, totalOtpedCabinets },
       eventSitesStatus: { cabinetsWithEvents, cabinetsWithZeroEvent },
       activitySitesStatus: { cabinetsWithActivities, cabinetsWithZeroActivity },
-      accessTypeStatus: { pinAccess, webAccess, pinWebAccess, cabinetWithZeroAccess },
+accessTypeStatus: {
+  pinCardAccess,
+  biometricAccess,
+  webEmergencyAccess,
+  fpPinCardAccess,
+  multiAccess,
+  zeroAccess,
+},
       pumpTestStatus: { cabinetsWithTest, cabinetsWithZeroTest },
       deviceHealth: { alertCount, totalCabinets, avgBatteryPc },
       byRegion,
@@ -694,7 +765,31 @@ export default function ADashboard() {
       testsTrend,
       healthByBattery,
     };
-  }, [cabinetstatuss, unregisteredpopups, onlinesite, offlinesite, totalsite, eventlists, eventlists_popup, activitylists, activitylists_popup, accesslists, testact_counts, get_batterys]);
+  }, [
+    cabinetstatuss,
+    unregisteredpopups,
+    onlinesite,
+    offlinesite,
+    totalsite,
+    eventlists,
+    eventlists_popup,
+    activitylists,
+    activitylists_popup,
+    accesslists,
+    testact_counts,
+    get_batterys,
+    emergencydoor_popups,
+    zeroeventlists_popup,
+    zeroactivitylists_popup,
+    pinaccess_popups,
+    bioaccess_popups,
+    webaccess_popups,
+    pinpluswebaccess_popups,
+    fpaccess_popups,
+    nobox_popups,
+    testact_popups,
+    notestact_popups,
+  ]);
 
   const totalCabinets = dashboard.deviceHealth.totalCabinets || dashboard.cabinetStatus.totalOtpedCabinets;
 
@@ -755,14 +850,17 @@ export default function ADashboard() {
   );
 
   const accessPie = useMemo(
-    () => [
-      { name: "Pin", value: dashboard.accessTypeStatus.pinAccess },
-      { name: "Web", value: dashboard.accessTypeStatus.webAccess },
-      { name: "Pin + Web", value: dashboard.accessTypeStatus.pinWebAccess },
-      { name: "Zero", value: dashboard.accessTypeStatus.cabinetWithZeroAccess },
-    ],
-    [dashboard]
-  );
+  () => [
+    { name: "PIN + CARD Access", value: dashboard.accessTypeStatus.pinCardAccess },
+    { name: "Biometric Access", value: dashboard.accessTypeStatus.biometricAccess },
+    { name: "WEB + Emergency Access", value: dashboard.accessTypeStatus.webEmergencyAccess },
+    { name: "FP + PIN / CARD Access", value: dashboard.accessTypeStatus.fpPinCardAccess },
+    { name: "Multi Access", value: dashboard.accessTypeStatus.multiAccess },
+    { name: "Cabinet With Zero Access", value: dashboard.accessTypeStatus.zeroAccess },
+  ],
+  [dashboard]
+);
+
 
   const testsPie = useMemo(
     () => [
@@ -776,9 +874,7 @@ export default function ADashboard() {
 
   /* ------------------------ views ------------------------ */
 
-  /* ------------------------ views (Extracted for Performance) ------------------------ */
-
-  const Overview = ({ dashboard, isNoData, cabinetStatusPie, csvData, csvHeaders, handlers }) => (
+  const Overview = () => (
     <>
       <div
         className="dash-export-row"
@@ -814,12 +910,12 @@ export default function ADashboard() {
       </div>
 
       <div className="dash-grid dash-grid--kpi">
-        <Tile label="Online Cabinets" value={dashboard.cabinetStatus.online} color={COLORS[0]} subLabel="Actively communicating" onClick={handlers.handleOnlineClick} />
-        <Tile label="Offline Cabinets" value={dashboard.cabinetStatus.offline} color={COLORS[1]} subLabel="Need attention" onClick={handlers.handleOfflineClick} />
-        <Tile label="Total OTPed" value={dashboard.cabinetStatus.totalOtpedCabinets} color={COLORS[2]} subLabel="Onboarded to AMS" onClick={handlers.handleTotalOtpedClick} />
-        <Tile label="Unregistered" value={dashboard.cabinetStatus.unregistered} color={COLORS[3]} subLabel="Cabinets to onboard" onClick={handlers.handleUnregisteredClick} />
-        <Tile label="Sites with Events" value={dashboard.eventSitesStatus.cabinetsWithEvents} color={COLORS[4]} subLabel="Operational activity" onClick={handlers.handleEventsClick} />
-        <Tile label="Devices with Alerts" value={dashboard.deviceHealth.alertCount} color={COLORS[1]} subLabel={`Avg Battery: ${dashboard.deviceHealth.avgBatteryPc}%`} onClick={handlers.handleAlertsClick} />
+        <Tile label="Online Cabinets" value={dashboard.cabinetStatus.online} color={COLORS[0]} subLabel="Actively communicating" onClick={handleOnlineClick} />
+        <Tile label="Offline Cabinets" value={dashboard.cabinetStatus.offline} color={COLORS[1]} subLabel="Need attention" onClick={handleOfflineClick} />
+        <Tile label="Total OTPed" value={dashboard.cabinetStatus.totalOtpedCabinets} color={COLORS[2]} subLabel="Onboarded to AMS" onClick={handleTotalOtpedClick} />
+        <Tile label="Unregistered" value={dashboard.cabinetStatus.unregistered} color={COLORS[3]} subLabel="Cabinets to onboard" onClick={handleUnregisteredClick} />
+        <Tile label="Sites with Events" value={dashboard.eventSitesStatus.cabinetsWithEvents} color={COLORS[4]} subLabel="Operational activity" onClick={handleEventsClick} />
+        <Tile label="Battery Alerts" value={dashboard.deviceHealth.alertCount} color={COLORS[1]} subLabel={`Avg Battery: ${dashboard.deviceHealth.avgBatteryPc}%`} onClick={handleAlertsClick} />
       </div>
 
       <div className="dash-grid dash-grid--charts-3">
@@ -884,13 +980,13 @@ export default function ADashboard() {
     </>
   );
 
-  const Events = ({ dashboard, isNoData, handlers }) => (
+  const Events = () => (
     <>
       <div className="dash-grid dash-grid--kpi-4">
-        <Tile label="Sites with Events" value={dashboard.eventSitesStatus.cabinetsWithEvents} color={COLORS[4]} onClick={handlers.handleEventsClick} />
-        <Tile label="Sites with Zero Events" value={dashboard.eventSitesStatus.cabinetsWithZeroEvent} color="#64748b" onClick={handlers.handleZeroEventsClick} />
-        <Tile label="Sites with Activities" value={dashboard.activitySitesStatus.cabinetsWithActivities} color={COLORS[5]} onClick={handlers.handleActivitiesClick} />
-        <Tile label="Sites with Zero Activity" value={dashboard.activitySitesStatus.cabinetsWithZeroActivity} color={COLORS[1]} onClick={handlers.handleZeroActivitiesClick} />
+        <Tile label="Sites with Events" value={dashboard.eventSitesStatus.cabinetsWithEvents} color={COLORS[4]} onClick={handleEventsClick} />
+        <Tile label="Sites with Zero Events" value={dashboard.eventSitesStatus.cabinetsWithZeroEvent} color="#64748b" onClick={handleZeroEventsClick} />
+        <Tile label="Sites with Activities" value={dashboard.activitySitesStatus.cabinetsWithActivities} color={COLORS[5]} onClick={handleActivitiesClick} />
+        <Tile label="Sites with Zero Activity" value={dashboard.activitySitesStatus.cabinetsWithZeroActivity} color={COLORS[1]} onClick={handleZeroActivitiesClick} />
       </div>
 
       <div className="dash-grid dash-grid--charts-3">
@@ -952,14 +1048,17 @@ export default function ADashboard() {
     </>
   );
 
-  const Access = ({ dashboard, isNoData, accessPie, handlers }) => (
+  const Access = () => (
     <>
-      <div className="dash-grid dash-grid--kpi-4">
-        <Tile label="Pin Access" value={dashboard.accessTypeStatus.pinAccess} color={COLORS[0]} onClick={handlers.handlePinAccessClick} />
-        <Tile label="Web Access" value={dashboard.accessTypeStatus.webAccess} color={COLORS[2]} onClick={handlers.handleWebAccessClick} />
-        <Tile label="Pin + Web" value={dashboard.accessTypeStatus.pinWebAccess} color={COLORS[4]} onClick={handlers.handlePinWebAccessClick} />
-        <Tile label="Zero Access" value={dashboard.accessTypeStatus.cabinetWithZeroAccess} color={COLORS[1]} onClick={handlers.handleZeroAccessClick} />
-      </div>
+<div className="dash-grid dash-grid--kpi dash-grid--kpi-6">
+  <Tile label="PIN + CARD Access" value={dashboard.accessTypeStatus.pinCardAccess} color={COLORS[0]} onClick={handlePinAccessClick} />
+  <Tile label="Biometric Access" value={dashboard.accessTypeStatus.biometricAccess} color={COLORS[4]} onClick={handleBioAccessClick} />
+  <Tile label="WEB + Emergency Access" value={dashboard.accessTypeStatus.webEmergencyAccess} color={COLORS[2]} onClick={handleWebAccessClick} />
+  <Tile label="FP + PIN / CARD Access" value={dashboard.accessTypeStatus.fpPinCardAccess} color={COLORS[5]} onClick={handleFpAccessClick} />
+  <Tile label="Multi Access" value={dashboard.accessTypeStatus.multiAccess} color={COLORS[3]} onClick={handleMultiAccessClick} />
+  <Tile label="Cabinet With Zero Access" value={dashboard.accessTypeStatus.zeroAccess} color={COLORS[1]} onClick={handleZeroAccessClick} />
+</div>
+
 
       <div className="dash-grid dash-grid--charts-3">
         <Card title="Access Split" subtitle={`As of ${dashboard.meta.accessStatusDate}`}>
@@ -1021,7 +1120,7 @@ export default function ADashboard() {
     </>
   );
 
-  const Tests = ({ dashboard, isNoData, testsPie, totalCabinets, handlers }) => {
+  const Tests = () => {
     const tested = dashboard.pumpTestStatus.cabinetsWithTest;
     const zeroTest = dashboard.pumpTestStatus.cabinetsWithZeroTest;
     const testedPct = totalCabinets > 0 ? Math.round((tested / totalCabinets) * 100) : 0;
@@ -1029,9 +1128,9 @@ export default function ADashboard() {
     return (
       <>
         <div className="dash-grid dash-grid--kpi-3">
-          <Tile label="Cabinets with Test" value={tested} color={COLORS[0]} subLabel="Covered by recent pump test" onClick={handlers.handleTestsClick} />
-          <Tile label="Cabinets with Zero Test" value={zeroTest} color={COLORS[1]} subLabel="High risk – no validation" onClick={handlers.handleZeroTestsClick} />
-          <Tile label="Test Coverage" value={`${testedPct}%`} color={COLORS[2]} subLabel="Tested / total cabinets" onClick={handlers.handleTestCoverageClick} />
+          <Tile label="Cabinets with Test" value={tested} color={COLORS[0]} subLabel="Covered by recent pump test" onClick={handleTestsClick} />
+          <Tile label="Cabinets with Zero Test" value={zeroTest} color={COLORS[1]} subLabel="High risk – no validation" onClick={handleZeroTestsClick} />
+          <Tile label="Test Coverage" value={`${testedPct}%`} color={COLORS[2]} subLabel="Tested / total cabinets" onClick={handleTestCoverageClick} />
         </div>
 
         <div className="dash-grid dash-grid--charts-3">
@@ -1097,17 +1196,17 @@ export default function ADashboard() {
     );
   };
 
-  const Health = ({ dashboard, isNoData, totalCabinets, handlers }) => (
+  const Health = () => (
     <>
       <div className="dash-grid dash-grid--kpi-4">
-        <Tile label="Devices with Alerts" value={dashboard.deviceHealth.alertCount} color={COLORS[1]} onClick={handlers.handleAlertsClick} />
-        <Tile label="Total Cabinets" value={totalCabinets} color={COLORS[2]} onClick={handlers.handleTotalCabinetsClick} />
-        <Tile label="Avg Battery" value={`${dashboard.deviceHealth.avgBatteryPc}%`} color={COLORS[0]} onClick={handlers.handleBatteryClick} />
+        <Tile label="Battery Alerts" value={dashboard.deviceHealth.alertCount} color={COLORS[1]} onClick={handleAlertsClick} />
+        <Tile label="Total Cabinets" value={totalCabinets} color={COLORS[2]} onClick={handleTotalCabinetsClick} />
+        <Tile label="Avg Battery" value={`${dashboard.deviceHealth.avgBatteryPc}%`} color={COLORS[0]} onClick={handleBatteryClick} />
         <Tile
           label="Offline + Unregistered"
           value={dashboard.cabinetStatus.offline + dashboard.cabinetStatus.unregistered}
           color={COLORS[3]}
-          onClick={handlers.handleOfflineUnregisteredClick}
+          onClick={handleOfflineUnregisteredClick}
         />
       </div>
 
@@ -1233,17 +1332,7 @@ export default function ADashboard() {
         )}
 
         {/* Always render views so tiles + modals continue to work */}
-        {view === VIEWS.EVENTS ? (
-          <Events dashboard={dashboard} isNoData={isNoData} handlers={handlers} />
-        ) : view === VIEWS.ACCESS ? (
-          <Access dashboard={dashboard} isNoData={isNoData} accessPie={accessPie} handlers={handlers} />
-        ) : view === VIEWS.TESTS ? (
-          <Tests dashboard={dashboard} isNoData={isNoData} testsPie={testsPie} totalCabinets={totalCabinets} handlers={handlers} />
-        ) : view === VIEWS.HEALTH ? (
-          <Health dashboard={dashboard} isNoData={isNoData} totalCabinets={totalCabinets} handlers={handlers} />
-        ) : (
-          <Overview dashboard={dashboard} isNoData={isNoData} cabinetStatusPie={cabinetStatusPie} csvData={csvData} csvHeaders={csvHeaders} handlers={handlers} />
-        )}
+        {view === VIEWS.EVENTS ? <Events /> : view === VIEWS.ACCESS ? <Access /> : view === VIEWS.TESTS ? <Tests /> : view === VIEWS.HEALTH ? <Health /> : <Overview />}
       </>
     );
 
