@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+﻿import React, { useState, useEffect } from "react";
 import {
   CForm,
   CInput,
@@ -400,9 +400,7 @@ function PortalUser() {
                   </select> */}
                   <Select
                     options={statusOptions}
-                    onChange={(selectedOption) =>
-                      onChangeText("role", selectedOption.value)
-                    }
+                    onChange={(selectedOption) => setForm({ ...isform, status: selectedOption.value })}
                     value={statusOptions.find(
                       (option) => option.value === isform.status
                     )}

@@ -5,6 +5,7 @@ import {
     GET_TOTAL_SITES, GET_USERWITHROCODE, GET_EVENT_SITE, GET_EVENT_SITE_POPUP, GET_ACTIVITY_SITE, GET_ACTIVTIY_SITE_POPUP,
     GET_ZEROEVENT_SITE_POPUP, GET_ZEROACTIVITY_SITE_POPUP, GET_ACCESS_LIST, GET_PINACCESS_POPUP, GET_BIOACCESS_POPUP, GET_WEBACCESS_POPUP, GET_FPACCESS_POPUP, GET_NOBOX_POPUP,
     GET_NOACTIVITY_BOX, GET_TOTALEVENTTYPE_DESC, GET_TOTALEVENT_DESC, GET_TESTACT_COUNT, GET_TESTACT_POPUP, GET_NOTESTACT_POPUP, GET_KEYSBYACT, GET_BATTERY,
+    GET_BATTERY_CRITICAL_POPUP, GET_BATTERY_MODERATE_POPUP, GET_BATTERY_HEALTHY_POPUP, GET_BATTERY_NODATA_POPUP,
     GET_PINPLUSWEBACCESS_POPUP,
 } from "../../actions/types";
 
@@ -51,7 +52,11 @@ const initialState = {
     testact_popups: [],
     notestact_popups: [],
     keysbyactivity: [],
-    get_batterys: []
+    get_batterys: [],
+    get_battery_critical_popups: [],
+    get_battery_moderate_popups: [],
+    get_battery_healthy_popups: [],
+    get_battery_nodata_popups: []
 };
 
 export default function (state = initialState, action) {
@@ -276,6 +281,26 @@ export default function (state = initialState, action) {
             return {
                 ...state,
                 get_batterys: action.payload,
+            };
+        case GET_BATTERY_CRITICAL_POPUP:
+            return {
+                ...state,
+                get_battery_critical_popups: action.payload,
+            };
+        case GET_BATTERY_MODERATE_POPUP:
+            return {
+                ...state,
+                get_battery_moderate_popups: action.payload,
+            };
+        case GET_BATTERY_HEALTHY_POPUP:
+            return {
+                ...state,
+                get_battery_healthy_popups: action.payload,
+            };
+        case GET_BATTERY_NODATA_POPUP:
+            return {
+                ...state,
+                get_battery_nodata_popups: action.payload,
             };
 
         default:

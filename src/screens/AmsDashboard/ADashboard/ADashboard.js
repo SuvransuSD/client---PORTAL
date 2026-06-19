@@ -40,6 +40,10 @@ import {
   testact_popup,
   notestact_popup,
   get_battery,
+  get_battery_critical_popup,
+  get_battery_moderate_popup,
+  get_battery_healthy_popup,
+  get_battery_nodata_popup,
   clearCaptcha,
 } from "../../../actions/AmsDashboard/AmsDashboardAction";
 import moment from "moment";
@@ -95,6 +99,10 @@ function ADashboard() {
   const notestact_popups = useSelector((state) => state.Amsdashboard.notestact_popups);
   const keysbyactivity = useSelector((state) => state.Amsdashboard.keysbyactivity);
   const get_batterys = useSelector((state) => state.Amsdashboard.get_batterys);
+  const get_battery_critical_popups = useSelector((state) => state.Amsdashboard.get_battery_critical_popups);
+  const get_battery_moderate_popups = useSelector((state) => state.Amsdashboard.get_battery_moderate_popups);
+  const get_battery_healthy_popups = useSelector((state) => state.Amsdashboard.get_battery_healthy_popups);
+  const get_battery_nodata_popups = useSelector((state) => state.Amsdashboard.get_battery_nodata_popups);
 
 
 
@@ -120,6 +128,8 @@ function ADashboard() {
   const [visible22, setVisible22] = useState(false);
   const [visible23, setVisible23] = useState(false);
   const [visible24, setVisible24] = useState(false);
+  const [visible25, setVisible25] = useState(false);
+  const [visible26, setVisible26] = useState(false);
 
   React.useEffect(() => {
     dispatch(emergencydoor_popup());
@@ -139,6 +149,10 @@ function ADashboard() {
     dispatch(noactivitybox());
     dispatch(testact_count());
     dispatch(get_battery());
+    dispatch(get_battery_critical_popup());
+    dispatch(get_battery_moderate_popup());
+    dispatch(get_battery_healthy_popup());
+    dispatch(get_battery_nodata_popup());
     dispatch(clearCaptcha());
     dispatch(offlinesites());
     dispatch(cabinetstatus());
@@ -1666,20 +1680,53 @@ function ADashboard() {
 
         <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
           <CCardBody className="p-3">
-            <div className="d-flex justify-content-around">
-              <CButton onClick={() => setVisible20(true)}>
-                <div
-                  style={{
-                    "padding-left": "0.1em",
-                    "font-size": "5rem",
-                    "align-self": "center",
-                  }}
-                >
-                  <p style={{ color: "red" }}>{get_batterys.length}</p>
-                </div>
-              </CButton>
-            </div>
+            {get_batterys.length > 0 ? (
+              get_batterys.map((state, index) => {
+                return (
+                  <div key={`battery-${index}`} className="d-flex justify-content-between">
+                    {state.ENTRY == "CRITICAL" ? (
+                      <CButton onClick={() => setVisible20(true)}>
+                        Critical Battery
+                      </CButton>
+                    ) : state.ENTRY == "MODERATE" ? (
+                      <CButton onClick={() => setVisible21(true)}>
+                        Moderate Battery
+                      </CButton>
+                    ) : state.ENTRY == "HEALTHY" ? (
+                      <CButton onClick={() => setVisible25(true)}>
+                        Healthy Battery
+                      </CButton>
+                    ) : state.ENTRY == "NO_DATA" ? (
+                      <CButton onClick={() => setVisible26(true)}>
+                        No Battery Data
+                      </CButton>
+                    ) : (
+                      <p className="cabstatus">{state.ENTRY}</p>
+                    )}
 
+                    <p
+                      className={
+                        state.ENTRY == "CRITICAL"
+                          ? "text-danger counter"
+                          : state.ENTRY == "MODERATE"
+                          ? "text-warning counter"
+                          : state.ENTRY == "HEALTHY"
+                          ? "text-success counter"
+                          : state.ENTRY == "NO_DATA"
+                          ? "text-secondary counter"
+                          : "text-dark counter"
+                      }
+                    >
+                      <b>{state.COUNTER || 0}</b>
+                    </p>
+                  </div>
+                );
+              })
+            ) : (
+              <Loader />
+            )}
+
+            {/* Critical Battery Popup */}
             <CModal
               style={{ width: 600 }}
               show={visible20}
@@ -1687,13 +1734,13 @@ function ADashboard() {
             >
               <CModalHeader onClose={() => setVisible20(false)}>
                 <CModalTitle>
-                  Device Health Parameters Sites Details
+                  Critical Battery Sites Details
                 </CModalTitle>
               </CModalHeader>
               <CModalBody>
                 <div className="table text-center">
                   <Datatable
-                    data={get_batterys}
+                    data={get_battery_critical_popups}
                     Headfields={[
                       { key: "RO_CODE", label: "RO CODE", _style: tablehead },
                       { key: "RO_NAME", label: "RO NAME", _style: tablehead },
@@ -1712,6 +1759,11 @@ function ADashboard() {
                         label: "BATTERY PERCENTAGE",
                         _style: tablehead,
                       },
+                      {
+                        key: "BATTERY_STATUS",
+                        label: "STATUS",
+                        _style: tablehead,
+                      },
                     ]}
                     scopedSlots={{
                       RO_CODE: (item) => (
@@ -1727,14 +1779,212 @@ function ADashboard() {
               <CModalFooter>
                 <CButton color="secondary">
                   <CSVLink
-                    data={formatCSVData(get_batterys)}
-                    filename={"Event-Sites.csv"}
+                    data={formatCSVData(get_battery_critical_popups)}
+                    filename={"Critical-Battery-Sites.csv"}
                     headers={csvHeadersBattery}
                   >
                     Export to Excel
                   </CSVLink>
                 </CButton>
                 <CButton color="secondary" onClick={() => setVisible20(false)}>
+                  Close
+                </CButton>
+              </CModalFooter>
+            </CModal>
+
+            {/* Moderate Battery Popup */}
+            <CModal
+              style={{ width: 600 }}
+              show={visible21}
+              onClose={() => setVisible21(false)}
+            >
+              <CModalHeader onClose={() => setVisible21(false)}>
+                <CModalTitle>
+                  Moderate Battery Sites Details
+                </CModalTitle>
+              </CModalHeader>
+              <CModalBody>
+                <div className="table text-center">
+                  <Datatable
+                    data={get_battery_moderate_popups}
+                    Headfields={[
+                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
+                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
+                      {
+                        key: "ZONE_NAME",
+                        label: "REGION NAME",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "STATE_NAME",
+                        label: "STATE NAME",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "BATTERY_PC",
+                        label: "BATTERY PERCENTAGE",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "BATTERY_STATUS",
+                        label: "STATUS",
+                        _style: tablehead,
+                      },
+                    ]}
+                    scopedSlots={{
+                      RO_CODE: (item) => (
+                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
+                      ),
+                      RO_NAME: (item) => (
+                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
+                      ),
+                    }}
+                  />
+                </div>
+              </CModalBody>
+              <CModalFooter>
+                <CButton color="secondary">
+                  <CSVLink
+                    data={formatCSVData(get_battery_moderate_popups)}
+                    filename={"Moderate-Battery-Sites.csv"}
+                    headers={csvHeadersBattery}
+                  >
+                    Export to Excel
+                  </CSVLink>
+                </CButton>
+                <CButton color="secondary" onClick={() => setVisible21(false)}>
+                  Close
+                </CButton>
+              </CModalFooter>
+            </CModal>
+
+            {/* Healthy Battery Popup */}
+            <CModal
+              style={{ width: 600 }}
+              show={visible25}
+              onClose={() => setVisible25(false)}
+            >
+              <CModalHeader onClose={() => setVisible25(false)}>
+                <CModalTitle>
+                  Healthy Battery Sites Details
+                </CModalTitle>
+              </CModalHeader>
+              <CModalBody>
+                <div className="table text-center">
+                  <Datatable
+                    data={get_battery_healthy_popups}
+                    Headfields={[
+                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
+                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
+                      {
+                        key: "ZONE_NAME",
+                        label: "REGION NAME",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "STATE_NAME",
+                        label: "STATE NAME",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "BATTERY_PC",
+                        label: "BATTERY PERCENTAGE",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "BATTERY_STATUS",
+                        label: "STATUS",
+                        _style: tablehead,
+                      },
+                    ]}
+                    scopedSlots={{
+                      RO_CODE: (item) => (
+                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
+                      ),
+                      RO_NAME: (item) => (
+                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
+                      ),
+                    }}
+                  />
+                </div>
+              </CModalBody>
+              <CModalFooter>
+                <CButton color="secondary">
+                  <CSVLink
+                    data={formatCSVData(get_battery_healthy_popups)}
+                    filename={"Healthy-Battery-Sites.csv"}
+                    headers={csvHeadersBattery}
+                  >
+                    Export to Excel
+                  </CSVLink>
+                </CButton>
+                <CButton color="secondary" onClick={() => setVisible25(false)}>
+                  Close
+                </CButton>
+              </CModalFooter>
+            </CModal>
+
+            {/* No Data Battery Popup */}
+            <CModal
+              style={{ width: 600 }}
+              show={visible26}
+              onClose={() => setVisible26(false)}
+            >
+              <CModalHeader onClose={() => setVisible26(false)}>
+                <CModalTitle>
+                  No Battery Data Sites Details
+                </CModalTitle>
+              </CModalHeader>
+              <CModalBody>
+                <div className="table text-center">
+                  <Datatable
+                    data={get_battery_nodata_popups}
+                    Headfields={[
+                      { key: "RO_CODE", label: "RO CODE", _style: tablehead },
+                      { key: "RO_NAME", label: "RO NAME", _style: tablehead },
+                      {
+                        key: "ZONE_NAME",
+                        label: "REGION NAME",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "STATE_NAME",
+                        label: "STATE NAME",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "BATTERY_PC",
+                        label: "BATTERY PERCENTAGE",
+                        _style: tablehead,
+                      },
+                      {
+                        key: "BATTERY_STATUS",
+                        label: "STATUS",
+                        _style: tablehead,
+                      },
+                    ]}
+                    scopedSlots={{
+                      RO_CODE: (item) => (
+                        <td>{item.RO_CODE ? item.RO_CODE : "-"}</td>
+                      ),
+                      RO_NAME: (item) => (
+                        <td>{item.RO_NAME ? item.RO_NAME : "-"}</td>
+                      ),
+                    }}
+                  />
+                </div>
+              </CModalBody>
+              <CModalFooter>
+                <CButton color="secondary">
+                  <CSVLink
+                    data={formatCSVData(get_battery_nodata_popups)}
+                    filename={"No-Battery-Data-Sites.csv"}
+                    headers={csvHeadersBattery}
+                  >
+                    Export to Excel
+                  </CSVLink>
+                </CButton>
+                <CButton color="secondary" onClick={() => setVisible26(false)}>
                   Close
                 </CButton>
               </CModalFooter>

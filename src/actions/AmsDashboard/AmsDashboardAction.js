@@ -43,6 +43,10 @@ import {
   GET_NOTESTACT_POPUP,
   GET_KEYSBYACT,
   GET_BATTERY,
+  GET_BATTERY_CRITICAL_POPUP,
+  GET_BATTERY_MODERATE_POPUP,
+  GET_BATTERY_HEALTHY_POPUP,
+  GET_BATTERY_NODATA_POPUP,
   CLEAR_CAPTCHA_VALUE
 } from "../types";
 var uri = "/api/AMS_Dashboard/"
@@ -740,7 +744,66 @@ export const get_battery = () => dispatch => {
     .catch((err) => {
       console.log(err)
     })
+}
 
+export const get_battery_critical_popup = () => dispatch => {
+  const MYURL = uri + 'get_battery_critical_popup';
+  axiosInstance.get(MYURL).then((result) => {
+    if (result.status) {
+      dispatch({
+        type: GET_BATTERY_CRITICAL_POPUP,
+        payload: result.data,
+      })
+    }
+  })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+export const get_battery_moderate_popup = () => dispatch => {
+  const MYURL = uri + 'get_battery_moderate_popup';
+  axiosInstance.get(MYURL).then((result) => {
+    if (result.status) {
+      dispatch({
+        type: GET_BATTERY_MODERATE_POPUP,
+        payload: result.data,
+      })
+    }
+  })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+export const get_battery_healthy_popup = () => dispatch => {
+  const MYURL = uri + 'get_battery_healthy_popup';
+  axiosInstance.get(MYURL).then((result) => {
+    if (result.status) {
+      dispatch({
+        type: GET_BATTERY_HEALTHY_POPUP,
+        payload: result.data,
+      })
+    }
+  })
+    .catch((err) => {
+      console.log(err)
+    })
+}
+
+export const get_battery_nodata_popup = () => dispatch => {
+  const MYURL = uri + 'get_battery_nodata_popup';
+  axiosInstance.get(MYURL).then((result) => {
+    if (result.status) {
+      dispatch({
+        type: GET_BATTERY_NODATA_POPUP,
+        payload: result.data,
+      })
+    }
+  })
+    .catch((err) => {
+      console.log(err)
+    })
 }
 
 export const clearCaptcha = () => dispatch => {
