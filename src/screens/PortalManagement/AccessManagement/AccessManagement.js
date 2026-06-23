@@ -115,7 +115,7 @@ function AccessManagement() {
         <h3 className="Header_Text">Manage Access</h3>
       </div>
 
-      <div className="m-4">
+      <div className="form-section">
         {/* {
           checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 1 && */}
         <CForm method="post" onSubmit={() => {}}>
@@ -147,7 +147,7 @@ function AccessManagement() {
       </div>
 
       {Isdispkay ? (
-        <div className="table text-center">
+        <div className="table-section text-center">
           <table style={{ width: "100%" }}>
             <thead style={{ background: "#dae3f3", color: "grey" }}>
               <th>id</th>
@@ -209,7 +209,6 @@ function AccessManagement() {
           </table>
         </div>
       ) : null}
-      <br></br>
     </div>
   );
 }

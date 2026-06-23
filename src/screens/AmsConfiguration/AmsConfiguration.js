@@ -141,7 +141,6 @@ const AmsConfiguration = () => {
                                     <CButton disabled={searchDisable} className='searchbtn' onClick={searchfn}>Search</CButton>
                                 </CCol>
                             </CRow>
-                            <br></br>
                             <ul id="myUL">
 
                                 {

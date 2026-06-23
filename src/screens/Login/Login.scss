@@ -1,47 +1,37 @@
-.center {
-  margin: 0;
-  position: absolute;
-  top: 50%;
-  left: 85%;
-  -ms-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-position: center;
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  padding: 2rem 1rem;
 }
 
-.col-md-7 {
-  flex: 1 0 50%;
-  max-width: 100%;
+.login-card-wrapper {
+  width: 100%;
+  max-width: 420px;
 }
 
 .p-4 {
-  box-shadow: 0px 18px 53px 0px rgba(0, 0, 0, 1);
-  padding-left: 1.5rem !important;
-  padding-right: 1.5rem !important;
-  padding-top: 0.5rem !important;
-  padding-bottom: 0.5rem !important;
+  box-shadow: 0px 20px 60px rgba(0, 0, 0, 0.35) !important;
+  border-radius: 12px !important;
+  padding: 2rem 2.25rem !important;
 }
 
-.bg {
-  height: 745px !important;
-  max-height: auto !important;
-  background-position: center !important;
-  background-attachment: fixed;
-  background-size: cover;
-  -webkit-background-size:cover;
-  -moz-background-size:cover;
-  -o-background-size:cover;
-  background-repeat: no-repeat;
-  width: 100% !important;
-  // opacity: 1 !important;
-}
-.heading{
-  color: #01a757 !important; 
-  font-size: 19px !important;
+.heading {
+  color: #01a757 !important;
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+  text-align: center;
+  margin-top: 0.75rem;
 }
 
 .container {
   position: relative;
   text-align: center;
-  //color: white;
 }
 
 .centered {
@@ -69,5 +59,11 @@
 @media (prefers-reduced-motion: no-preference) {
   .loader {
     animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+@media (max-width: 480px) {
+  .p-4 {
+    padding: 1.5rem 1.25rem !important;
   }
 }

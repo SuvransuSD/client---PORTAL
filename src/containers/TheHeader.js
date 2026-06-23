@@ -113,7 +113,7 @@ const TheHeader = () => {
 
         </div>
       </CSubheader>
-      <div style={{ "display": "flex", "justifyContent": "space-between", "backgroundColor": "rgb(0 196 102)", width: "100%", height: "50px" }}>
+      <div className="app-nav-bar">
         <CHeaderNav className="mr-auto">
           <CHeaderNavItem className="px-3" >
             {"   "}

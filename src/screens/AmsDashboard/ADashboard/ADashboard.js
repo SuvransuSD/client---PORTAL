@@ -345,8 +345,8 @@ function ADashboard() {
 
   return (
     <div>
-      <div className="d-flex justify-content-around">
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
+      <div className="dashboard-row">
+        <CCard className="ccard dashboard-card">
           <CCardBody className="p-3">
             {cabinetstatuss && cabinetstatuss.length > 0 ? (
               cabinetstatuss.map((state, index) => {
@@ -667,7 +667,7 @@ function ADashboard() {
           </CCardFooter>
         </CCard>
 
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
+        <CCard className="ccard dashboard-card">
           <CCardBody className="p-3">
             {eventlists && eventlists.length > 0 ? (
               eventlists.map((state, index) => {
@@ -844,7 +844,7 @@ function ADashboard() {
           </CCardFooter>
         </CCard>
 
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
+        <CCard className="ccard dashboard-card">
           <CCardBody className="p-3">
             {activitylists && activitylists.length > 0 ? (
               activitylists.map((state, index) => {
@@ -1022,8 +1022,8 @@ function ADashboard() {
         </CCard>
       </div>
 
-      <div className="d-flex justify-content-around">
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
+      <div className="dashboard-row">
+        <CCard className="ccard dashboard-card">
           <CCardBody className="p-3">
             {accesslists && accesslists.length > 0 ? (
               accesslists.map((state, index) => {
@@ -1393,7 +1393,7 @@ function ADashboard() {
           </CCardFooter>
         </CCard>
 
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
+        <CCard className="ccard dashboard-card">
           <CCardBody className="p-3">
             {testact_counts && testact_counts.length > 0 ? (
               testact_counts.map((state, index) => {
@@ -1537,19 +1537,11 @@ function ADashboard() {
           </CCardFooter>
         </CCard>
 
-        <CCard style={{ width: "22vw", height: "18vw" }} className="ccard">
+        <CCard className="ccard dashboard-card">
           <CCardBody className="p-3">
             <div className="d-flex justify-content-around">
               <CButton onClick={() => setVisible20(true)}>
-                <div
-                  style={{
-                    "padding-left": "0.1em",
-                    "font-size": "5rem",
-                    "align-self": "center",
-                  }}
-                >
-                  <p style={{ color: "red" }}>{get_batterys ? get_batterys.length : 0}</p>
-                </div>
+                <p className="battery-count">{get_batterys ? get_batterys.length : 0}</p>
               </CButton>
             </div>
 

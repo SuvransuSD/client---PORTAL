@@ -151,7 +151,7 @@ const ManageEvents = () => {
         </h3>
       </div>
 
-      <div>
+      <div className="form-section">
         {
           checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
           <CForm action="" method="post">
@@ -192,17 +192,17 @@ const ManageEvents = () => {
 
 
 
-            <div>
+            <div className="btn-group-actions">
 
-              <CButton color="primary mr-3" style={{ "backgroundColor": "grey" }} target="_blank" onClick={resetForm}>Reset</CButton>
-              <CButton color="primary" style={{ "backgroundColor": "#01a757" }} target="_blank" onClick={submitform}>{modifyKey ? "Update" : "Create"}</CButton>
+              <CButton color="primary mr-3" className="btn-cancel" onClick={resetForm}>Reset</CButton>
+              <CButton color="primary" className="btn-save" onClick={submitform}>{modifyKey ? "Update" : "Create"}</CButton>
 
             </div>
 
           </CForm>
         }
-      </div><br></br>
-      <div className='table text-center'>
+      </div>
+      <div className="table-section text-center">
         <Datatable
           data={getEvent}
           Headfields={[
@@ -214,7 +214,7 @@ const ManageEvents = () => {
           scopedSlots={{
             'Modify': (item) => (
               <td>
-                <CButton className="border border-secondary" color="white" onClick={() => updatefunction(item)}
+                <CButton className="btn-modify" onClick={() => updatefunction(item)}
                   disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}
                 >
                   Modify
@@ -223,7 +223,7 @@ const ManageEvents = () => {
             ),
             'Delete': (item) => (
               <td>
-                <CButton className="border border-secondary" color="white" onClick={() => deleteform(item)}
+                <CButton className="btn-delete" onClick={() => deleteform(item)}
                   disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}
                 >
                   Delete
@@ -232,7 +232,7 @@ const ManageEvents = () => {
             ),
           }
           } />
-      </div><br></br>
+      </div>
     </div>
   )
 }

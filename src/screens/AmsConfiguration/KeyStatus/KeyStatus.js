@@ -128,7 +128,6 @@ Key Taken at: ${moment.utc(isServerData[index].KEY_TAKEN_AT).format('DD-MM-YYYY 
 
               </div>
             </div>
-            <br /><br /><br />
             <div className="row rowmargin">
               {
                 isServerData && isServerData.map((value, index) => {

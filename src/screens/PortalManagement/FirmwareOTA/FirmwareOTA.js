@@ -123,7 +123,7 @@ function Firmware() {
         <h3 className="Header_Text">Firmware</h3>
       </div>
 
-      <div>
+      <div className="form-section">
         {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
           <CForm action="" method="post" onSubmit={submitform}>
             <CRow>
@@ -231,19 +231,17 @@ function Firmware() {
                 </CFormGroup>
               </CCol>
             </CRow>
-            <div>
+            <div className="btn-group-actions">
               <CButton
                 color="primary mr-3"
-                target="_blank"
-                style={{ backgroundColor: "#01a757" }}
+                className="btn-save"
                 onClick={submitform}
               >
                 Upload
               </CButton>
               <CButton
                 color="primary"
-                target="_blank"
-                style={{ backgroundColor: "grey" }}
+                className="btn-cancel"
                 onClick={() => {
                   setForm(initialvalue);
                 }}
@@ -255,9 +253,7 @@ function Firmware() {
         )}
       </div>
 
-      <br></br>
-
-      <div className="table text-center">
+      <div className="table-section text-center">
         <Datatable
           data={getOTA}
           Headfields={[
@@ -293,10 +289,6 @@ function Firmware() {
           }}
         />
       </div>
-
-      <br />
-      <br />
-      <br />
     </div>
   );
 }

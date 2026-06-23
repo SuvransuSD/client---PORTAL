@@ -46,7 +46,7 @@ const TheContent = ({ theprop }) => {
 
 
   return (
-    <main style={{ "backgroundColor": "white" }}>
+    <main className="main-content">
 
 
       <CRow>

@@ -125,7 +125,7 @@ function RoleAndAccess() {
         <h3 className="Header_Text">Manage Role</h3>
       </div>
 
-      <div className="m-4">
+      <div className="form-section">
         {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
           <CForm method="post" onSubmit={submitform}>
             <CRow>
@@ -201,28 +201,24 @@ function RoleAndAccess() {
               </CCol>
             </CRow>
 
-            <div>
+            <div className="btn-group-actions">
               <CButton
                 color="primary mr-3"
-                target="_blank"
-                style={{ backgroundColor: "grey" }}
+                className="btn-cancel"
                 onClick={() => setForm(initialvalue)}
               >
                 Clear
               </CButton>
               <CButton
-                color="primary "
-                target="_blank"
-                style={{ backgroundColor: "#01a757" }}
-                className={issavebtn ? "d-none" : null}
+                color="primary"
+                className={issavebtn ? "btn-save d-none" : "btn-save"}
                 onClick={submitform}
               >
                 Save
               </CButton>
               <CButton
-                color="primary "
-                target="_blank"
-                className={issavebtn ? null : "d-none"}
+                color="primary"
+                className={issavebtn ? "btn-save" : "btn-save d-none"}
                 onClick={updateform}
               >
                 Update
@@ -232,9 +228,7 @@ function RoleAndAccess() {
         )}
       </div>
 
-      <br />
-
-      <div className="table text-center">
+      <div className="table-section text-center">
         <Datatable
           data={getUsers}
           // loading  = {'true'}
@@ -262,8 +256,8 @@ function RoleAndAccess() {
             ROLE_STATUS: (item) => (
               <td>
                 <CButton
-                  className="border border-secondary"
-                  color="white"
+                  className="btn-modify"
+                  color=""
                   onClick={() => updatefunction(item)}
                   disabled={
                     checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2

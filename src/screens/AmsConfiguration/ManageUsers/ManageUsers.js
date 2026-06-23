@@ -199,7 +199,7 @@ const ManageUsers = () => {
     <div className="Cbody">
 
 
-      <div className='form-border'>
+      <div className="form-section">
         {
           checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
           <CForm method="post" onSubmit={submitform}>
@@ -323,10 +323,10 @@ const ManageUsers = () => {
 
 
 
-            <div>
+            <div className="btn-group-actions">
 
-              <CButton color="primary mr-3" style={{ "backgroundColor": "grey" }} target="_blank" onClick={resetForm}>Reset</CButton>
-              <CButton color="primary" style={{ "backgroundColor": "#01a757" }} target="_blank" onClick={submitform}>{modifyKey ? "Update" : "Create"}</CButton>
+              <CButton color="primary mr-3" className="btn-cancel" onClick={resetForm}>Reset</CButton>
+              <CButton color="primary" className="btn-save" onClick={submitform}>{modifyKey ? "Update" : "Create"}</CButton>
 
             </div>
 
@@ -335,12 +335,11 @@ const ManageUsers = () => {
           </CForm>
         }
 
-        <br></br>
         {
           console.log(getUsers)
         }
 
-        <div className='table text-center'>
+        <div className="table-section text-center">
           <Datatable
             data={getUsers}
             loading={true}
@@ -363,7 +362,7 @@ const ManageUsers = () => {
               ),
               'Modify': (item) => (
                 <td>
-                  <CButton className="border border-secondary" color="white" onClick={() => editvalue(item)}
+                  <CButton className="btn-modify" onClick={() => editvalue(item)}
                     disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}
                   >
                     Modify
@@ -372,7 +371,7 @@ const ManageUsers = () => {
               ),
               'Delete': (item) => (
                 <td>
-                  <CButton className="border border-secondary" color="white" onClick={() => deleteform(item)}
+                  <CButton className="btn-delete" onClick={() => deleteform(item)}
                     disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}
                   >
                     Delete
@@ -381,7 +380,7 @@ const ManageUsers = () => {
               ),
               'USER_ROLE': (item) => (
                 <td>
-                  <CButton className="border border-secondary" color="white">
+                  <CButton className="btn-modify">
                     {item.ROLE_NAME}
                   </CButton>
                 </td>
@@ -403,9 +402,6 @@ const ManageUsers = () => {
         </div>
       </div>
 
-      <br />
-      <br />
-      <br />
 
     </div>
   )

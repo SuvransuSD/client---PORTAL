@@ -112,7 +112,7 @@ function ManageRoles() {
         </h3>
       </div>
 
-      <div className='m-4'>
+      <div className="form-section">
         {
           checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
           <CForm method="post" onSubmit={submitform}>
@@ -161,11 +161,11 @@ function ManageRoles() {
               <CFormText className="help-block text-danger">{formError.role}</CFormText>
             </CFormGroup>
 
-            <div>
+            <div className="btn-group-actions">
 
-              <CButton color="primary mr-3" target="_blank" onClick={() => setForm(initialvalue)} >Clear</CButton>
-              <CButton color="primary " target="_blank" className={issavebtn ? 'd-none' : null} onClick={submitform} >Save</CButton>
-              <CButton color="primary " target="_blank" className={issavebtn ? null : 'd-none'} onClick={updateform} >Update</CButton>
+              <CButton color="primary mr-3" className="btn-cancel" onClick={() => setForm(initialvalue)} >Clear</CButton>
+              <CButton color="primary" className={issavebtn ? 'd-none btn-save' : 'btn-save'} onClick={submitform} >Save</CButton>
+              <CButton color="primary" className={issavebtn ? 'btn-save' : 'd-none btn-save'} onClick={updateform} >Update</CButton>
             </div>
 
 
@@ -175,10 +175,7 @@ function ManageRoles() {
       </div>
 
 
-      <br />
-
-
-      <div className='table text-center'>
+      <div className="table-section text-center">
         <Datatable
           data={getUsers}
           // loading  = {'true'}
@@ -197,7 +194,7 @@ function ManageRoles() {
             'ROLE_STATUS':
               (item) => (
                 <td>
-                  <CButton className="border border-secondary" color="white" onClick={() => updatefunction(item)}
+                  <CButton className="btn-modify" onClick={() => updatefunction(item)}
                     disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}>
                     {item.ROLE_STATUS == '1' ? 'active' : 'inactive'}
                   </CButton>
@@ -205,7 +202,6 @@ function ManageRoles() {
               ),
           }} />
       </div>
-      <br></br>
     </div>
 
 

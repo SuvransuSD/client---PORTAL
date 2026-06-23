@@ -157,7 +157,7 @@ const ManageKeys = () => {
             <CRow>
                 <CCol >
 
-                    <div className='form-border'>
+                    <div className="form-section">
                         {
                             checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
                             <CForm action="" method="post">
@@ -267,12 +267,11 @@ const ManageKeys = () => {
                                         </CFormGroup>
                                     </CCol>
                                 </CRow>
-                                <div>
-                                    <CButton color="primary mr-3" style={{ "backgroundColor": "grey" }} target="_blank" onClick={resetForm}>Reset</CButton>
-                                    <CButton color="primary" style={{ "backgroundColor": "#01a757" }} target="_blank" onClick={submitform}>{modifyKey ? "Update" : "Create"}</CButton>
+                                <div className="btn-group-actions">
+                                    <CButton color="primary mr-3" className="btn-cancel" onClick={resetForm}>Reset</CButton>
+                                    <CButton color="primary" className="btn-save" onClick={submitform}>{modifyKey ? "Update" : "Create"}</CButton>
                                 </div>
-                                <br></br>
-                                <div className='table text-center'>
+                                <div className="table-section text-center">
                                     <Datatable
                                         data={manageKeysForm}
                                         // loading  = {'true'}
@@ -306,7 +305,7 @@ const ManageKeys = () => {
                                             'MODIFY':
                                                 (item) => (
                                                     <td>
-                                                        <CButton className="border border-secondary" color="white" onClick={() => updatefunction(item)}
+                                                        <CButton className="btn-modify" onClick={() => updatefunction(item)}
                                                             disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}>
                                                             Modify
                                                         </CButton>
@@ -316,7 +315,7 @@ const ManageKeys = () => {
                                             'DELETE':
                                                 (item) => (
                                                     <td>
-                                                        <CButton className="border border-secondary" color="white" onClick={() => deletefunction(item)}
+                                                        <CButton className="btn-delete" onClick={() => deletefunction(item)}
                                                             disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}>
                                                             Delete
                                                         </CButton>
@@ -332,7 +331,7 @@ const ManageKeys = () => {
                                 </div>
                             </CForm>
                         }
-                    </div><br></br>
+                    </div>
                 </CCol>
             </CRow>
         </div>

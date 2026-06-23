@@ -87,11 +87,10 @@ function Event_History() {
 
   return (
     <div className="Cbody">
+      <div className="form-section">
       <div className="Header mb-5">
         <h3 className="Header_Text">AMS Web Users Report</h3>
       </div>
-
-      <br></br>
 
       <CRow>
         <CCol lg={4}></CCol>
@@ -99,13 +98,12 @@ function Event_History() {
           <h5>TOTAL NUMBER OF WEB USERS: {getUsers.length} </h5>
         </CCol>
         {/* <CCol lg={7}>
-          
+
           <CButton className='border border-danger text-center p-3 ' onClick={handleClick} >TOTAL NUMBER OF CABINET USERS: {getCab.length} </CButton>
-        
+
         </CCol>
         <CCol lg={1}></CCol> */}
       </CRow>
-      <br></br>
       <CRow>
         <CCol lg={7}></CCol>
         <CCol lg={6}>
@@ -129,23 +127,24 @@ function Event_History() {
                   </CFormGroup>
                 </CCol>
                 <CCol lg={4}>
+                  <div className="btn-group-actions">
                   <CButton
-                    color="primary "
-                    style={{ backgroundColor: "#01a757" }}
-                    target="_blank"
+                    className="btn-save"
+                    color="primary"
                     onClick={submitform}
                   >
                     Filter
                   </CButton>
+                  </div>
                 </CCol>
               </CRow>
             </div>
           )}
         </CCol>
       </CRow>
-      <br></br>
+      </div>
 
-      <div className="table text-center">
+      <div className="table-section text-center">
         <Datatable
           data={Isclicked ? getCabwithRo : getUsers}
           isLoading={isLoading}
@@ -223,9 +222,6 @@ function Event_History() {
         />
       </div>
 
-      <br />
-      <br />
-      <br />
     </div>
   );
 }

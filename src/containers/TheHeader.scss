@@ -1,3 +1,49 @@
 .active-nav-link {
-    color: yellow !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: #7dffc0;
+    border-radius: 2px 2px 0 0;
+  }
+}
+
+// Top subheader — logo + user area
+.c-subheader {
+  .c-header-nav-item {
+    span.h1 {
+      font-size: 1.3rem !important;
+      font-weight: 800 !important;
+      color: #003366;
+      letter-spacing: 0.02em;
+    }
+
+    span.h4 {
+      font-size: 0.78rem !important;
+      font-weight: 600 !important;
+      color: #6b7280;
+      letter-spacing: 0.04em;
+    }
+  }
+
+  .c-subheader-nav-link {
+    color: #374151 !important;
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.4rem 0.75rem;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+
+    &:hover {
+      background: #f0f5fb;
+      color: #003366 !important;
+    }
+  }
 }

@@ -200,6 +200,7 @@ function Event_History() {
   return (
     <div className="Cbody">
       {checkacc && checkacc[0].AR_RIGHTS == 2 && (
+        <div className="form-section">
         <CForm method="post" onSubmit={submitform}>
           <CRow>
             <CCol lg={9}>
@@ -350,12 +351,10 @@ function Event_History() {
             </CCol>
             <CCol lg={4}></CCol>
           </CRow>
-          <div>
-            {/* <CButton color="primary mr-3" target="_blank" onClick={() => setForm(initialvalue)} >Clear</CButton> */}
+          <div className="btn-group-actions">
             <CButton
-              color="primary "
-              style={{ backgroundColor: "#01a757" }}
-              target="_blank"
+              className="btn-save"
+              color="primary"
               onClick={submitform}
             >
               Filter
@@ -376,8 +375,9 @@ function Event_History() {
             </CRow>
           </div>
         </CForm>
+        </div>
       )}
-      <div className="table text-center">
+      <div className="table-section text-center">
         <Datatable
           isLoading={isLoading}
           data={Issubmit ? gettable : getsearchtbl}
@@ -425,9 +425,6 @@ function Event_History() {
           }}
         />
       </div>
-      <br />
-      <br />
-      <br />
     </div>
   );
 }

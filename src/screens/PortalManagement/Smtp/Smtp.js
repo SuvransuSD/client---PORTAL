@@ -83,7 +83,7 @@ function Smtp() {
         </h3>
       </div>
 
-      <div>
+      <div className="form-section">
         {
           checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
           <CForm action="" method="post" onSubmit={submitform}>
@@ -169,11 +169,9 @@ function Smtp() {
             </CFormGroup>
 
 
-            <div>
-
-              <CButton color="primary mr-3" target="_blank" style={{ "backgroundColor": "#01a757" }} onClick={submitform}>Save</CButton>
-              <CButton color="primary" target="_blank" style={{ "backgroundColor": "grey" }} onClick={() => { setForm(initialvalue) }}>Clear</CButton>
-
+            <div className="btn-group-actions">
+              <CButton color="primary mr-3" className="btn-save" onClick={submitform}>Save</CButton>
+              <CButton color="primary" className="btn-cancel" onClick={() => { setForm(initialvalue) }}>Clear</CButton>
             </div>
 
 

@@ -3,7 +3,6 @@ import {
   CButton,
   CCard,
   CCardBody,
-  CCardGroup,
   CCol,
   CForm,
   CFormText,
@@ -157,161 +156,114 @@ function Login() {
   }, [formError])
 
   return (
-    <>{Object.values(formError).length === 0 && Issubmit ? 
-      <Loader/> : <div
-      style={{ backgroundImage: "url(/images/Reliance-BP.jpg)" }}
-      className="bg">
-      <div className='center'>
+    <>{Object.values(formError).length === 0 && Issubmit ?
+      <Loader /> : <div
+        className="login-page"
+        style={{ backgroundImage: "url(/images/Reliance-BP.jpg)" }}>
+        <div className="login-card-wrapper">
           <CRow className="justify-content-center">
+            <CCard className="p-4" style={{ "backgroundColor": "white" }}>
+              <CCardBody>
+                { }
+                <ToastContainer
+                  position={ToastContainer.POSITION.TOP_RIGHT}
+                  store={ToastStore}
+                />
 
-            <CCol md="14">
-
-              {/* <center>
-            <span className="h1" style={{ fontWeight: '1000', color: 'green' }}>CSI AMS</span>
-            <span className="h1" style={{ fontWeight: '1000' }}>CENTRAL</span>
-          </center> */}
-
-              <CCardGroup>
-
-                <CCard className="p-4" style={{ "backgroundColor": "white" }}>
-                  <CCardBody>
-                    { }
-                    <ToastContainer
-                      position={ToastContainer.POSITION.TOP_RIGHT}
-                      store={ToastStore}
-                    />
-
-                    <CForm
-                      //onSubmit={this.onSubmit} 
-                      autoComplete="off">
-                      <center>
-                        <img src={logoUrl} alt="logopng" style={{ "width": "220px", "height": "auto" }} />
-                      </center>
-                      <h5 className='heading'
-                      //style={{ color: '#01a757', fontsize:"19px"}}
-                      >AMS Central Portal Login</h5><br></br>
-                      {/* <p style={{ color: '#fff' }}>Please enter your Email &amp; password to login</p> */}
-
-                      <CInputGroup className="mb-4">
-                        <CInputGroupPrepend>
-                          <CInputGroupText>
-                            <CIcon name="cil-lock-locked" />
-                          </CInputGroupText>
-                        </CInputGroupPrepend>
-                        <CInput type="text"
-                          placeholder="Enter Username"
-                          onChange={onChangeText}
-                          name="username"
-                          size="lg"
-                        />
-                      </CInputGroup>
-                      <CFormText className="help-block text-danger" >
-                        <p style={{ color: 'red' }}>
-                          {formError.username}
-                        </p>
-                      </CFormText>
-
-                      <CInputGroup className="mb-4">
-                        <CInputGroupPrepend>
-                          <CInputGroupText>
-                            <CIcon name="cil-lock-locked" />
-                          </CInputGroupText>
-                        </CInputGroupPrepend>
-                        <CInput type="password"
-                          placeholder="Enter PIN"
-                          onChange={onChangeText}
-                          name="password"
-                          size="lg"
-                        />
-
-                      </CInputGroup>
-
-                      <CFormText className="help-block text-danger" >
-                        <p style={{ color: 'red' }}>
-                          {formError.password}
-                        </p>
-                      </CFormText>
-
-                      {/* <div className="App">
-                    <Captcha onChange={onChange} placeholder="Enter captcha" />
-                  </div> <br></br> */}
-
-                      <CRow>
-
-                        <CCol xs="14">
-                          <div className="container">
-                            <img src={captchaImg} className="mt-3 mb-3" height="50" />
-                            <div className="centered"><h4 id="captcha">{captchavalue}</h4></div>
-
-                          </div>
-                        </CCol>
-                      </CRow>
-                      <CInputGroup className="mb-4">
-                        <CInput type="password"
-                          placeholder="Enter Captcha"
-                          onChange={onChangeText}
-                          name="captchv"
-                          size="lg"
-                        />
-                      </CInputGroup>
-                      <CFormText className="help-block text-danger" >
-                        <p style={{ color: 'red' }}>
-                          {formError.captchv}
-                        </p>
-                      </CFormText>
-                      {/* <CRow>
-                    <CCol>
-                      <input type="text" id="inputType" className="form-control" placeholder="Enter Captcha"
-                        name="username"  onChange={handleChange} autocomplete="off"
-                        />
-                    </CCol>
-                    
-                  </CRow><br></br>
-                  <CRow>
-                    <center>
-                  <CCol xs="14">
-                      <button type="button" id="succesBTN" onClick={onCheckCaptcha} class="btn btn-primary">Verify Captcha</button>
-                    </CCol></center>
-                  </CRow><br></br> */}
-
-                      <CRow>
-
-                        <CCol xs="14">
-                          <center>
-                            <CButton
-                              //disabled={!Iscaptcha}
-                              onClick={submitform}
-                              type="submit" color="success" size="lg">
-                              <strong>Login</strong></CButton></center>
-                        </CCol>
-                      </CRow>
-                      <br></br>
-                      <CRow>
-                        <CCol xs="5"></CCol>
-                        <CCol xs="8"><h6 style={{ "color": "#01a757" }}>Powered by
-                          <a href="http://csinc.in" style={{ "color": "#01a757" }} target="_blank" rel="noopener noreferrer"> CSI</a>
-                        </h6></CCol>
-                      </CRow>
-                    </CForm>
-                  </CCardBody>
-                </CCard>
-                {/* <CCard className="text-white bg-primary py-5 d-md-down-none" style={{ width: '44%' }}>
-                <CCardBody className="text-center">
-                  <div>
-                    <h2>Sign up</h2>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut
-                      labore et dolore magna aliqua.</p>
-                    <Link to="/register">
-                      <CButton color="primary" className="mt-3" active tabIndex={-1}>Register Now!</CButton>
-                    </Link>
+                <CForm
+                  //onSubmit={this.onSubmit}
+                  autoComplete="off">
+                  <div className="text-center">
+                    <img src={logoUrl} alt="logopng" style={{ "width": "220px", "height": "auto" }} />
                   </div>
-                </CCardBody>
-              </CCard> */}
-              </CCardGroup>
-            </CCol>
+                  <h5 className='heading'
+                  //style={{ color: '#01a757', fontsize:"19px"}}
+                  >AMS Central Portal Login</h5>
+
+                  <CInputGroup className="mb-4">
+                    <CInputGroupPrepend>
+                      <CInputGroupText>
+                        <CIcon name="cil-lock-locked" />
+                      </CInputGroupText>
+                    </CInputGroupPrepend>
+                    <CInput type="text"
+                      placeholder="Enter Username"
+                      onChange={onChangeText}
+                      name="username"
+                      size="lg"
+                    />
+                  </CInputGroup>
+                  <CFormText className="help-block text-danger" >
+                    <p style={{ color: 'red' }}>
+                      {formError.username}
+                    </p>
+                  </CFormText>
+
+                  <CInputGroup className="mb-4">
+                    <CInputGroupPrepend>
+                      <CInputGroupText>
+                        <CIcon name="cil-lock-locked" />
+                      </CInputGroupText>
+                    </CInputGroupPrepend>
+                    <CInput type="password"
+                      placeholder="Enter PIN"
+                      onChange={onChangeText}
+                      name="password"
+                      size="lg"
+                    />
+                  </CInputGroup>
+
+                  <CFormText className="help-block text-danger" >
+                    <p style={{ color: 'red' }}>
+                      {formError.password}
+                    </p>
+                  </CFormText>
+
+                  <CRow>
+                    <CCol xs="14">
+                      <div className="container">
+                        <img src={captchaImg} className="mt-3 mb-3" height="50" />
+                        <div className="centered"><h4 id="captcha">{captchavalue}</h4></div>
+                      </div>
+                    </CCol>
+                  </CRow>
+                  <CInputGroup className="mb-4">
+                    <CInput type="password"
+                      placeholder="Enter Captcha"
+                      onChange={onChangeText}
+                      name="captchv"
+                      size="lg"
+                    />
+                  </CInputGroup>
+                  <CFormText className="help-block text-danger" >
+                    <p style={{ color: 'red' }}>
+                      {formError.captchv}
+                    </p>
+                  </CFormText>
+
+                  <CRow>
+                    <CCol xs="14">
+                      <CButton
+                        //disabled={!Iscaptcha}
+                        className="btn-save w-100"
+                        onClick={submitform}
+                        type="submit" color="success" size="lg">
+                        <strong>Login</strong>
+                      </CButton>
+                    </CCol>
+                  </CRow>
+                  <CRow>
+                    <CCol xs="5"></CCol>
+                    <CCol xs="8"><h6 style={{ "color": "#01a757" }}>Powered by
+                      <a href="http://csinc.in" style={{ "color": "#01a757" }} target="_blank" rel="noopener noreferrer"> CSI</a>
+                    </h6></CCol>
+                  </CRow>
+                </CForm>
+              </CCardBody>
+            </CCard>
           </CRow>
         </div>
-    </div>}</>
+      </div>}</>
   );
 
 }

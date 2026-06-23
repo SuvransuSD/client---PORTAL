@@ -176,7 +176,7 @@ const ManageActivities = () => {
     return (
         <div className="Cbody">
 
-            <div className='form-border'>
+            <div className="form-section">
                 {
                     checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
                     <CForm onSubmit={submitform} method="post">
@@ -251,7 +251,6 @@ const ManageActivities = () => {
                                 </CFormGroup>
                             </CCol>
                         </CRow>
-                        <br></br>
                         <CFormGroup row>
                             <CCol xs="1">
                                 <CSwitch
@@ -411,24 +410,19 @@ const ManageActivities = () => {
                         </CRow>
 
 
-                        <div>
+                        <div className="btn-group-actions">
 
-                            <CButton color="primary mr-3" style={{ "backgroundColor": "grey" }} target="_blank" onClick={resetForm}>Reset</CButton>
-                            <CButton color="primary" style={{ "backgroundColor": "#01a757" }} target="_blank" onClick={submitform}>{modifyKey ? "Update" : "Create"}</CButton>
+                            <CButton color="primary mr-3" className="btn-cancel" onClick={resetForm}>Reset</CButton>
+                            <CButton color="primary" className="btn-save" onClick={submitform}>{modifyKey ? "Update" : "Create"}</CButton>
 
                         </div>
-                        <br></br>
 
 
 
                     </CForm>
                 }
-                <br></br>
 
-
-
-
-                <div className='table text-center'>
+                <div className="table-section text-center">
                     <Datatable
                         data={getActivity}
                         Headfields={[
@@ -443,7 +437,7 @@ const ManageActivities = () => {
                         scopedSlots={{
                             'Modify': (item) => (
                                 <td>
-                                    <CButton className="border border-secondary" color="white" onClick={() => updatefunction(item)}
+                                    <CButton className="btn-modify" onClick={() => updatefunction(item)}
                                         disabled={checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 ? false : true}
                                     >
                                         Modify
@@ -460,7 +454,7 @@ const ManageActivities = () => {
                         }
                         } />
                 </div>
-            </div><br></br>
+            </div>
         </div>
     )
 }

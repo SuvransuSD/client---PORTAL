@@ -285,6 +285,7 @@ function ActivityList({ }) {
         <div className="Header mb-5">
           <h3 className="Header_Text">Manage Activity</h3>
         </div>
+        <div className="form-section">
         {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
           <CForm onSubmit={submitform} method="post">
             <CRow>
@@ -576,45 +577,41 @@ function ActivityList({ }) {
               </CCol>
             </CRow>
 
-            <div>
+            <div className="btn-group-actions">
               <CButton
                 color="primary mr-3"
-                target="_blank"
-                style={{ backgroundColor: "gray" }}
+                className="btn-cancel"
                 onClick={resetForm}
               >
                 Clear
               </CButton>
               <CButton
                 color="primary"
+                className="btn-save"
                 style={{
                   display: showsavebtn ? "none" : "",
-                  backgroundColor: "#01a757"
                 }}
-                target="_blank"
                 onClick={submitform}
               >
                 Save
               </CButton>
               <CButton
                 color="primary"
+                className="btn-save"
                 style={{
                   display: showupdatebtn ? "none" : "",
-                  backgroundColor: "#01a757"
                 }}
-                target="_blank"
                 onClick={updateform}
               >
                 Update
               </CButton>
             </div>
-            <br></br>
           </CForm>
         )}
+        </div>
       </div>
-      <br></br>
 
-      <div className="table text-center">
+      <div className="table-section text-center">
         <Datatable
           isLoading={isLoading}
           data={getActivity}
@@ -645,8 +642,7 @@ function ActivityList({ }) {
             Modify: (item) => (
               <td>
                 <CButton
-                  className="border border-secondary"
-                  color="white"
+                  className="btn-modify"
                   onClick={() => editvalue(item)}
                   disabled={
                     checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2

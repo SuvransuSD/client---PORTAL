@@ -190,7 +190,7 @@ const SiteInformation = () => {
   return (
     <div className="Cbody">
       <CCol >
-        <div className='form-border'>
+        <div className="form-section">
           {
             checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 &&
             <CForm action="" method="post" onSubmit={submitform} className="row">
@@ -401,8 +401,10 @@ const SiteInformation = () => {
               </CCol>
 
               <CCol xs={12}>
-                <CButton color="primary mr-3" style={{ "backgroundColor": "grey" }} target="_blank" onClick={resetForm}>Reset</CButton>
-                <CButton color="primary" style={{ "backgroundColor": "#01a757" }} target="_blank" onClick={submitform}>{createSiteInfo ? "Create" : "Update"}</CButton>
+                <div className="btn-group-actions">
+                  <CButton color="primary mr-3" className="btn-cancel" onClick={resetForm}>Reset</CButton>
+                  <CButton color="primary" className="btn-save" onClick={submitform}>{createSiteInfo ? "Create" : "Update"}</CButton>
+                </div>
               </CCol>
             </CForm>
           }

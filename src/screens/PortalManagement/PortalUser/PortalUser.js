@@ -32,7 +32,6 @@ function PortalUser() {
     password: "",
     email: "",
     phoneno: "",
-    status: "",
     validity_from: "",
     validity_to: "",
     status: "",
@@ -74,10 +73,6 @@ function PortalUser() {
 
   React.useEffect(() => {
     if (Object.values(formError).length === 0 && Issubmit) {
-      var date1 = new Date(isform.validity_from);
-      var date2 = new Date(isform.validity_to);
-      var diffDays = date2.getDate() - date1.getDate();
-
       const newUser = {
         USER_NAME: isform.name,
         USER_ROLE: isform.role,
@@ -88,34 +83,42 @@ function PortalUser() {
         USER_TO_DATE: isform.validity_to,
         USER_STATUS: isform.status,
       };
+      setsubmit(false);
       dispatch(create_protalUser(newUser));
+      clearForm();
     }
 
-    if (Isupdate) {
-      // var date12 = new Date(isform.validity_from);
-      // var date22 = new Date(isform.validity_to);
-      // var diffDays2 = date22.getDate() - date12.getDate();
-
+    if (Object.values(formError).length === 0 && Isupdate) {
       const updUser = {
         USER_ID: isupdateid,
         USER_NAME: isform.name,
         USER_ROLE: parseInt(isform.role),
-        //USER_PASSWORD: isform.password,
         USER_EMAIL: isform.email,
         USER_CONTACT_NO: isform.phoneno,
         USER_FROM_DATE: isform.validity_from,
         USER_TO_DATE: isform.validity_to,
         USER_STATUS: isform.status,
       };
-      console.log(updUser);
+      setupdate(false);
       dispatch(update_protalUser(updUser));
+      clearForm();
     }
   }, [formError]);
 
   const validateForm = (values) => {
     const err = {};
-    if (
-      validator.isStrongPassword(values.password, {
+    if (!values.name) {
+      err.name = "Name is Required";
+    } else if (/[ `!@#$ %^&*()_+\-=\[\]{};':"\\|,.<>\/? ~]/.test(values.name)) {
+      err.name = "Special Characters are not allowed";
+    }
+    if (!values.role) {
+      err.role = "Role is Required";
+    }
+    if (!values.password) {
+      err.password = "Password is Required";
+    } else if (
+      !validator.isStrongPassword(values.password, {
         minLength: 8,
         minLowercase: 1,
         minUppercase: 1,
@@ -123,22 +126,7 @@ function PortalUser() {
         minSymbols: 1,
       })
     ) {
-      console.log("Strong password");
-    } else {
-      err.password = "Password not strong";
-    }
-    if (!values.name) {
-      err.name = "Name is Required";
-    }
-    if (/[ `!@#$ %^&*()_+\-=\[\]{};':"\\|,.<>\/? ~]/.test(values.name)) {
-      err.name = "Special Characters are not allowed";
-    }
-    if (!values.role) {
-      err.role = "Role is Required";
-    }
-
-    if (!values.password) {
-      err.password = "Password is Required";
+      err.password = "Password not strong enough (min 8 chars, upper, lower, number, symbol)";
     }
     if (!values.email) {
       err.email = "Email is Required";
@@ -158,11 +146,49 @@ function PortalUser() {
     return err;
   };
 
+  // Separate validation for update — password is not changed during update
+  const validateUpdateForm = (values) => {
+    const err = {};
+    if (!values.name) {
+      err.name = "Name is Required";
+    } else if (/[ `!@#$ %^&*()_+\-=\[\]{};':"\\|,.<>\/? ~]/.test(values.name)) {
+      err.name = "Special Characters are not allowed";
+    }
+    if (!values.role) {
+      err.role = "Role is Required";
+    }
+    if (!values.email) {
+      err.email = "Email is Required";
+    }
+    if (!values.phoneno) {
+      err.phoneno = "Phone no. is Required";
+    }
+    if (!values.validity_from) {
+      err.validity_from = "Valid from is Required";
+    }
+    if (!values.validity_to) {
+      err.validity_to = "Valid to is Required";
+    }
+    if (!values.status) {
+      err.status = "Status is Required";
+    }
+    return err;
+  };
+
+  const clearForm = () => {
+    setForm(initialvalue);
+    setshowsavebtn(false);
+    setshowupdatebtn(true);
+    setshowpassword(true);
+    setformError({});
+    setupdate(false);
+    setsubmit(false);
+  };
+
   const submitform = (event) => {
     event.preventDefault();
     setformError(validateForm(isform));
     setsubmit(true);
-    setshowupdatebtn(true);
     setIsLoading(true);
   };
 
@@ -175,7 +201,7 @@ function PortalUser() {
       validity_from: values.USER_FROM_DATE,
       validity_to: values.USER_TO_DATE,
       status: values.USER_STATUS,
-      password: values.USER_PASSWORD,
+      password: "",
     });
     setupdateid(values.USER_ID);
     setshowsavebtn(true);
@@ -185,7 +211,7 @@ function PortalUser() {
 
   const updateform = (event) => {
     event.preventDefault();
-    setformError(validateForm(isform));
+    setformError(validateUpdateForm(isform));
     setupdate(true);
     setIsLoading(true);
   };
@@ -217,7 +243,7 @@ function PortalUser() {
         <h3 className="Header_Text">Portal User</h3>
       </div>
 
-      <div>
+      <div className="form-section">
         {checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2 && (
           <CForm method="post" onSubmit={submitform}>
             <CRow>
@@ -298,7 +324,6 @@ function PortalUser() {
                     placeholder="Enter mobile no.."
                     onChange={onChangeText}
                   />
-
                   <CFormText className="help-block text-danger">
                     <p style={{ color: "red" }}>{formError.phoneno}</p>
                   </CFormText>
@@ -320,7 +345,7 @@ function PortalUser() {
                     onChange={onChangeText}
                   />
                   <CFormText className="help-block text-danger">
-                    <p style={{ color: "red" }}>{formError.validity_to}</p>
+                    <p style={{ color: "red" }}>{formError.validity_from}</p>
                   </CFormText>
                 </CFormGroup>
               </CCol>
@@ -336,9 +361,8 @@ function PortalUser() {
                     value={isform.validity_to}
                     onChange={onChangeText}
                   />
-
                   <CFormText className="help-block text-danger">
-                    <p style={{ color: "red" }}>{formError.validity_from}</p>
+                    <p style={{ color: "red" }}>{formError.validity_to}</p>
                   </CFormText>
                 </CFormGroup>
               </CCol>
@@ -362,23 +386,6 @@ function PortalUser() {
                   </CFormGroup>
                 </CCol>
               ) : null}
-              {/* <CCol lg={4}>
-              <CFormGroup>
-                <CLabel htmlFor="nf-email">Password</CLabel>
-                <CInput
-                  type="Password"
-                  id="password"
-                  name="password"
-                  placeholder="Enter password .."
-                  onChange={onChangeText}
-                  value={isform.password}
-
-                />
-                <CFormText className="help-block text-danger">
-                <p style={{ color: 'red' }}>{formError.password}</p></CFormText>
-              </CFormGroup>
-
-            </CCol> */}
             </CRow>
 
             <CRow>
@@ -387,25 +394,12 @@ function PortalUser() {
                   <CLabel htmlFor="nf-email">
                     Status<i style={{ color: "red" }}>*</i>
                   </CLabel>
-                  {/* <select
-                    className="form-control"
-                    name="status"
-                    id="status"
-                    onChange={onChangeText}
-                    value={isform.status}
-                  >
-                    <option>Select status</option>
-                    <option value="1">Active</option>
-                    <option value="2">Inactive</option>
-                  </select> */}
                   <Select
                     options={statusOptions}
-                    onChange={(selectedOption) =>
-                      onChangeText("role", selectedOption.value)
-                    }
+                    onChange={(selectedOption) => setForm({ ...isform, status: selectedOption.value })}
                     value={statusOptions.find(
                       (option) => option.value === isform.status
-                    )}
+                    ) || null}
                     placeholder="Select Status"
                   />
                   <CFormText className="help-block text-danger">
@@ -415,33 +409,26 @@ function PortalUser() {
               </CCol>
             </CRow>
 
-            <div>
+            <div className="btn-group-actions">
               <CButton
                 color="primary mr-3"
-                target="_blank"
-                style={{ backgroundColor: "gray" }}
-                onClick={() => setForm(initialvalue)}
+                className="btn-cancel"
+                onClick={clearForm}
               >
-                Clear
+                {showsavebtn ? "Cancel" : "Clear"}
               </CButton>
               <CButton
-                color="primary "
-                style={{
-                  display: showsavebtn ? "none" : "",
-                  backgroundColor: "#01a757",
-                }}
-                target="_blank"
-                onClick={submitform}
+                type="submit"
+                color="primary"
+                className="btn-save"
+                style={{ display: showsavebtn ? "none" : "" }}
               >
                 Save
               </CButton>
               <CButton
                 color="primary"
-                style={{
-                  display: showupdatebtn ? "none" : "",
-                  backgroundColor: "#01a757",
-                }}
-                target="_blank"
+                className="btn-save"
+                style={{ display: showupdatebtn ? "none" : "" }}
                 onClick={updateform}
               >
                 Update
@@ -450,9 +437,8 @@ function PortalUser() {
           </CForm>
         )}
       </div>
-      <br></br>
 
-      <div className="table text-center">
+      <div className="table-section text-center">
         <Datatable
           isLoading={isLoading}
           data={getUsers}
@@ -460,7 +446,6 @@ function PortalUser() {
             { key: "Modify", sorter: false, filter: false, _style: tablehead },
             { key: "Delete", _style: tablehead },
             { key: "USER_NAME", _style: tablehead },
-            // { key: 'USER_PASSWORD', _style: tablehead },
             { key: "USER_EMAIL", _style: tablehead },
             { key: "USER_CONTACT_NO", _style: tablehead },
             { key: "USER_ROLE", _style: tablehead },
@@ -471,8 +456,8 @@ function PortalUser() {
             Modify: (item) => (
               <td>
                 <CButton
-                  className="border border-secondary"
-                  color="white"
+                  className="btn-modify"
+                  color=""
                   onClick={() => editvalue(item)}
                   disabled={
                     checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
@@ -487,8 +472,8 @@ function PortalUser() {
             Delete: (item) => (
               <td>
                 <CButton
-                  className="border border-secondary"
-                  color="white"
+                  className="btn-delete"
+                  color=""
                   onClick={() => deleteform(item)}
                   disabled={
                     checkacc && checkacc[0] && checkacc[0].AR_RIGHTS == 2
@@ -517,15 +502,6 @@ function PortalUser() {
                   : "-"}
               </td>
             ),
-            // 'Validity' : (item)=>(
-            //   <td>
-            //     {
-            //       new Date(item.USER_FROM_DATE) - new Date(item.USER_TO_DATE)
-
-            //      }
-
-            //   </td>
-            //   )
           }}
         />
       </div>

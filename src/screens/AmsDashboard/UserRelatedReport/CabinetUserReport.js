@@ -166,17 +166,16 @@ function Cabinet_User() {
 
   return (
     <div className="Cbody">
+      <div className="form-section">
       <div className="Header mb-5">
         <h3 className="Header_Text">AMS Cabinet Users Report</h3>
       </div>
-      <br></br>
       <CRow>
         <CCol lg={4}></CCol>
         <CCol lg={6}>
           <h5>TOTAL NUMBER OF CABINET USERS: {getCab.length} </h5>
         </CCol>
       </CRow>
-      <br></br>
 
       <div>
         <CRow>
@@ -260,21 +259,21 @@ function Cabinet_User() {
           </CCol>
 
           <CCol lg={2}>
+            <div className="btn-group-actions">
             <CButton
-              color="primary "
-              style={{ backgroundColor: "#01a757", "margin-top": "28px" }}
-              target="_blank"
+              className="btn-save"
+              color="primary"
               onClick={submitform}
             >
               Filter
             </CButton>
+            </div>
           </CCol>
         </CRow>
       </div>
+      </div>
 
-      <br></br>
-
-      <div className="table text-center">
+      <div className="table-section text-center">
         <Datatable
           isLoading={isLoading}
           data={getCabwithRo}
@@ -323,9 +322,6 @@ function Cabinet_User() {
         />
       </div>
 
-      <br />
-      <br />
-      <br />
     </div>
   );
 }
