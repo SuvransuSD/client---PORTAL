@@ -150,7 +150,9 @@ function LoginActivityReport() {
             </CCol>
             <CCol lg={4}>
               <CFormGroup>
-                <CLabel htmlFor="nf-email">Valid From</CLabel>
+                <CLabel htmlFor="nf-email">
+                  Valid From<i style={{ color: "red" }}>*</i>
+                </CLabel>
                 <CInput
                   type="date"
                   id="dt_from"
@@ -165,7 +167,9 @@ function LoginActivityReport() {
 
             <CCol lg={4}>
               <CFormGroup>
-                <CLabel htmlFor="nf-email">Valid to</CLabel>
+                <CLabel htmlFor="nf-email">
+                  Valid to<i style={{ color: "red" }}>*</i>
+                </CLabel>
                 <CInput
                   type="date"
                   id="dt_to"
