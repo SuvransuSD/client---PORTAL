@@ -23,6 +23,8 @@ import {
 import { get_zone } from "../../../actions/AmsDashboard/GetDropDownAction";
 import { checkaccess } from "../../../actions/PortalmngAction/AccessManagementAction";
 import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
+import axiosInstance from "../../../utils/axiosInstance";
 
 function StateList() {
   const tablehead = { background: "#dae3f3", color: "grey" };
@@ -79,8 +81,8 @@ function StateList() {
       const newState = {
         STATE_ID: isupdateid,
         STATE_NAME: isform.name,
-        ZONE: iszone,
-        STATE_CODE: isform.code,
+        ZONE: isform.zone && isform.zone.value,
+        STATE_CODE: isform.code && isform.code.value,
       };
       dispatch(create_statelist(newState));
     }
@@ -91,8 +93,8 @@ function StateList() {
       const updateState = {
         STATE_ID: isupdateid,
         STATE_NAME: isform.name,
-        ZONE: iszone,
-        STATE_CODE: isform.code,
+        ZONE: isform.zone && isform.zone.value,
+        STATE_CODE: isform.code && isform.code.value,
       };
       dispatch(update_statelist(updateState));
     }
@@ -125,10 +127,13 @@ function StateList() {
   };
 
   const editvalue = (values) => {
+    const z = getzone.find((x) => x.ZONE_ID == values.ZONE);
     setForm({
       name: values.STATE_NAME,
-      zone: values.ZONE,
-      code: values.STATE_CODE,
+      zone: z ? { value: z.ZONE_ID, label: z.ZONE_NAME } : "",
+      code: values.STATE_CODE
+        ? { value: values.STATE_CODE, label: values.STATE_CODE }
+        : "",
     });
     setupdateid(values.STATE_ID);
     setzone(values.ZONE);
@@ -174,6 +179,25 @@ function StateList() {
 
   const handleStateCodeChange = (selectedOption) => {
     setForm({ ...isform, code: selectedOption });
+  };
+
+  // Typed state code not in the dropdown -> save it, refresh the list, select it
+  const handleCreateStateCode = async (input) => {
+    if (!isform.zone) {
+      setformError({ ...formError, zone: "Select Zone first" });
+      return;
+    }
+    const code = input.trim().toUpperCase();
+    try {
+      await axiosInstance.post("/api/Master_Data/state-code", {
+        ZONE: isform.zone.value,
+        STATE_CODE: code,
+      });
+      dispatch(get_statecode({ ZONE_ID: isform.zone.value }));
+      setForm({ ...isform, code: { value: code, label: code } });
+    } catch (err) {
+      alert("Could not save the new state code");
+    }
   };
 
   useEffect(() => {
@@ -251,14 +275,17 @@ function StateList() {
                       </option>
                     ))}
                   </select> */}
-                  <Select
+                  <CreatableSelect
+                    isClearable
+                    onCreateOption={handleCreateStateCode}
+                    formatCreateLabel={(v) => `Save new state code "${v}"`}
                     options={getStateCode.map((sc) => ({
                       value: sc.STATE_CODE,
                       label: sc.STATE_CODE,
                     }))}
                     value={isform.code}
                     onChange={handleStateCodeChange}
-                    placeholder="Select State Code"
+                    placeholder="Select or type a new State Code"
                   />
                   <CFormText className="help-block text-danger">
                     <p style={{ color: "red" }}>{formError.code}</p>

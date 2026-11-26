@@ -790,7 +790,7 @@ function ADashboard() {
                       <CButton onClick={() => setVisible10(true)}>
                         {state.ENTRY}
                       </CButton>
-                    ) : state.ENTRY == "Cabinets with Zero Event" ? (
+                    ) : state.ENTRY == "Cabinets without Events" ? (
                       <CButton onClick={() => setVisible12(true)}>
                         {state.ENTRY}
                       </CButton>
@@ -802,7 +802,7 @@ function ADashboard() {
                       className={
                         state.ENTRY == "Cabinets with Events"
                           ? "text-success counter"
-                          : state.ENTRY == "Cabinets with Zero Event"
+                          : state.ENTRY == "Cabinets without Events"
                           ? "text-danger counter"
                           : "text-dark counter"
                       }
